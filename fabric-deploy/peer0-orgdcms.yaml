@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peer0
+  namespace: orgdcms
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: peer0 }
+  template:
+    metadata:
+      labels: { app: peer0 }
+    spec:
+      containers:
+      - name: peer
+        image: hyperledger/fabric-peer:2.5
+        env:
+        - name: CORE_PEER_ID
+          value: peer0.orgdcms
+        - name: CORE_PEER_LOCALMSPID
+          value: OrgDCMSMSP
+        - name: CORE_PEER_MSPCONFIGPATH
+          value: /var/hyperledger/peer/msp
+        - name: CORE_PEER_ADDRESS
+          value: peer0:7051
+        - name: CORE_PEER_LISTENADDRESS
+          value: 0.0.0.0:7051
+        - name: CORE_PEER_TLS_ENABLED
+          value: "true"
+        - name: CORE_PEER_TLS_CERT_FILE
+          value: /var/hyperledger/peer/tls/signcerts/cert.pem
+        - name: CORE_PEER_TLS_KEY_FILE
+          value: /var/hyperledger/peer/tls/keystore/2cb1b0b8beed8471cdb7eee385406194a82764da8f8886c56b4d9b0334be4356_sk
+        - name: CORE_PEER_TLS_ROOTCERT_FILE
+          value: /var/hyperledger/peer/tls/tlscacerts/tls-localhost-7054.pem
+        - name: CORE_PEER_CHAINCODELISTENADDRESS
+          value: 0.0.0.0:7052
+
+        - name: CORE_PEER_CHAINCODEADDRESS
+          value: peer0.orgdcms:7052
+
+        ports:
+        - containerPort: 7051
+        volumeMounts:
+        - name: msp
+          mountPath: /var/hyperledger/peer/msp
+        - name: tls
+          mountPath: /var/hyperledger/peer/tls
+      volumes:
+      - name: msp
+        hostPath:
+          path: /home/asantopadre/fabric-deploy/peer0-msp
+      - name: tls
+        hostPath:
+          path: /home/asantopadre/fabric-deploy/peer0-tls

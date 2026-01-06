@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer0
+  namespace: orgdcms
+spec:
+  selector:
+    app: peer0
+  ports:
+    - name: peer
+      port: 7051
+      targetPort: 7051
+    - name: chaincode
+      port: 7052
+      targetPort: 7052

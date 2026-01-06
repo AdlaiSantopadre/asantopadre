@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderer1-orgdcms
+  namespace: orderer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderer1-orgdcms
+  template:
+    metadata:
+      labels:
+        app: orderer1-orgdcms
+    spec:
+      containers:
+        - name: orderer
+          image: hyperledger/fabric-orderer:2.5
+          env:
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: "0.0.0.0"
+            - name: ORDERER_GENERAL_LISTENPORT
+              value: "8050"
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: "OrdererOrgDCMS"
+            - name: ORDERER_GENERAL_LOCALMSPDIR
+              value: /var/hyperledger/orderer/msp
+            - name: ORDERER_GENERAL_TLS_ENABLED
+              value: "true"
+            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+              value: /var/hyperledger/orderer/tls/keystore
+            - name: ORDERER_GENERAL_TLS_CERTIFICATE
+              value: /var/hyperledger/orderer/tls/signcerts
+            - name: ORDERER_GENERAL_TLS_ROOTCAS
+              value: /var/hyperledger/orderer/tls/tlscacerts
+            - name: ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE
+              value: /var/hyperledger/orderer/tls/signcerts
+            - name: ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY
+              value: /var/hyperledger/orderer/tls/keystore
+            - name: ORDERER_GENERAL_CLUSTER_ROOTCAS
+              value: /var/hyperledger/orderer/tls/tlscacerts
+          volumeMounts:
+            - name: msp
+              mountPath: /var/hyperledger/orderer/msp
+            - name: tls
+              mountPath: /var/hyperledger/orderer/tls
+      volumes:
+        - name: msp
+          hostPath:
+            path: /work/orgdcms/orderers/orderer1/msp
+        - name: tls
+          hostPath:
+            path: /work/orgdcms/orderers/orderer1/tls
