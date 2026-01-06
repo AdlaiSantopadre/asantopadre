@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "17"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{"deployment.kubernetes.io/revision":"16"},"creationTimestamp":"2026-01-04T20:21:37Z","generation":17,"name":"orderer1","namespace":"orgdcms","resourceVersion":"160420","uid":"76a77369-e2f0-448c-b78a-c0a7d8edaed7"},"spec":{"progressDeadlineSeconds":600,"replicas":1,"revisionHistoryLimit":10,"selector":{"matchLabels":{"app":"orderer1"}},"strategy":{"rollingUpdate":{"maxSurge":"25%","maxUnavailable":"25%"},"type":"RollingUpdate"},"template":{"metadata":{"annotations":{"kubectl.kubernetes.io/restartedAt":"2026-01-05T19:22:49Z"},"creationTimestamp":null,"labels":{"app":"orderer1"}},"spec":{"containers":[{"env":[{"name":"FABRIC_LOGGING_SPEC","value":"INFO"},{"name":"ORDERER_GENERAL_LISTENADDRESS","value":"0.0.0.0"},{"name":"ORDERER_GENERAL_LISTENPORT","value":"7050"},{"name":"ORDERER_GENERAL_LOCALMSPID","value":"OrdererMSP"},{"name":"ORDERER_GENERAL_LOCALMSPDIR","value":"/var/hyperledger/orderer/msp"},{"name":"ORDERER_GENERAL_TLS_ENABLED","value":"true"},{"name":"ORDERER_GENERAL_TLS_PRIVATEKEY","value":"/var/hyperledger/orderer/tls/keystore/5a22b8c606d012f8e843a320d3ace8e602b786a1d21316c0e35e86535aff2975_sk"},{"name":"ORDERER_GENERAL_TLS_CERTIFICATE","value":"/var/hyperledger/orderer/tls/signcerts/cert.pem"},{"name":"ORDERER_GENERAL_TLS_ROOTCAS","value":"/var/hyperledger/orderer/tls/tlscacerts/tls-localhost-7054.pem"},{"name":"ORDERER_CHANNELPARTICIPATION_ENABLED","value":"true"},{"name":"ORDERER_GENERAL_BOOTSTRAPMETHOD","value":"none"},{"name":"ORDERER_ADMIN_LISTENADDRESS","value":"0.0.0.0:7053"},{"name":"ORDERER_ADMIN_TLS_ENABLED","value":"true"},{"name":"ORDERER_ADMIN_TLS_PRIVATEKEY","value":"/var/hyperledger/orderer/tls/keystore/5a22b8c606d012f8e843a320d3ace8e602b786a1d21316c0e35e86535aff2975_sk"},{"name":"ORDERER_ADMIN_TLS_CERTIFICATE","value":"/var/hyperledger/orderer/tls/signcerts/cert.pem"},{"name":"ORDERER_ADMIN_TLS_ROOTCAS","value":"/var/hyperledger/orderer/tls/tlscacerts/tls-localhost-7054.pem"}],"image":"hyperledger/fabric-orderer:2.5","imagePullPolicy":"IfNotPresent","name":"orderer","ports":[{"containerPort":7050,"protocol":"TCP"},{"containerPort":7053,"protocol":"TCP"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","volumeMounts":[{"mountPath":"/var/hyperledger/orderer/msp","name":"msp"},{"mountPath":"/var/hyperledger/orderer/tls","name":"tls"}]}],"dnsPolicy":"ClusterFirst","restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":30,"volumes":[{"hostPath":{"path":"/home/asantopadre/fabric-deploy/orderer1-msp","type":""},"name":"msp"},{"hostPath":{"path":"/home/asantopadre/fabric-deploy/orderer1-tls","type":""},"name":"tls"}]}}},"status":{"availableReplicas":1,"conditions":[{"lastTransitionTime":"2026-01-05T19:26:24Z","lastUpdateTime":"2026-01-05T19:26:24Z","message":"Deployment has minimum availability.","reason":"MinimumReplicasAvailable","status":"True","type":"Available"},{"lastTransitionTime":"2026-01-06T09:55:35Z","lastUpdateTime":"2026-01-06T09:55:36Z","message":"ReplicaSet \"orderer1-8cbff6cd5\" has successfully progressed.","reason":"NewReplicaSetAvailable","status":"True","type":"Progressing"}],"observedGeneration":17,"readyReplicas":1,"replicas":1,"updatedReplicas":1}}
+  creationTimestamp: "2026-01-04T20:21:37Z"
+  generation: 19
+  name: orderer1
+  namespace: orgdcms
+  resourceVersion: "169152"
+  uid: 76a77369-e2f0-448c-b78a-c0a7d8edaed7
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: orderer1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2026-01-05T19:22:49Z"
+      creationTimestamp: null
+      labels:
+        app: orderer1
+    spec:
+      containers:
+      - env:
+        - name: FABRIC_LOGGING_SPEC
+          value: INFO
+        - name: ORDERER_GENERAL_LISTENADDRESS
+          value: 0.0.0.0
+        - name: ORDERER_GENERAL_LISTENPORT
+          value: "7050"
+        - name: ORDERER_GENERAL_LOCALMSPID
+          value: OrdererMSP
+        - name: ORDERER_GENERAL_LOCALMSPDIR
+          value: /var/hyperledger/orderer/msp
+        - name: ORDERER_GENERAL_TLS_ENABLED
+          value: "true"
+        - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+          value: /var/hyperledger/orderer/tls/keystore/5a22b8c606d012f8e843a320d3ace8e602b786a1d21316c0e35e86535aff2975_sk
+        - name: ORDERER_GENERAL_TLS_CERTIFICATE
+          value: /var/hyperledger/orderer/tls/signcerts/cert.pem
+        - name: ORDERER_GENERAL_TLS_ROOTCAS
+          value: /var/hyperledger/orderer/tls/tlscacerts/tls-localhost-7054.pem
+        - name: ORDERER_CHANNELPARTICIPATION_ENABLED
+          value: "true"
+        - name: ORDERER_GENERAL_BOOTSTRAPMETHOD
+          value: none
+        - name: ORDERER_ADMIN_LISTENADDRESS
+          value: 0.0.0.0:7053
+        - name: ORDERER_ADMIN_TLS_ENABLED
+          value: "true"
+        - name: ORDERER_ADMIN_TLS_PRIVATEKEY
+          value: /var/hyperledger/orderer/tls/keystore/5a22b8c606d012f8e843a320d3ace8e602b786a1d21316c0e35e86535aff2975_sk
+        - name: ORDERER_ADMIN_TLS_CERTIFICATE
+          value: /var/hyperledger/orderer/tls/signcerts/cert.pem
+        - name: ORDERER_ADMIN_TLS_ROOTCAS
+          value: /var/hyperledger/orderer/tls/tlscacerts/tls-localhost-7054.pem
+        - name: ORDERER_ADMIN_TLS_CLIENTROOTCAS
+          value: /var/hyperledger/orderer/tls/tlscacerts/tls-localhost-7054.pem
+        image: hyperledger/fabric-orderer:2.5
+        imagePullPolicy: IfNotPresent
+        name: orderer
+        ports:
+        - containerPort: 7050
+          protocol: TCP
+        - containerPort: 7053
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/hyperledger/orderer/msp
+          name: msp
+        - mountPath: /var/hyperledger/orderer/tls
+          name: tls
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /home/asantopadre/fabric-deploy/orderer1-msp
+          type: ""
+        name: msp
+      - hostPath:
+          path: /home/asantopadre/fabric-deploy/orderer1-tls
+          type: ""
+        name: tls
+status:
+  availableReplicas: 1
+  conditions:
+  - lastTransitionTime: "2026-01-05T19:26:24Z"
+    lastUpdateTime: "2026-01-05T19:26:24Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  - lastTransitionTime: "2026-01-06T09:55:35Z"
+    lastUpdateTime: "2026-01-06T16:49:40Z"
+    message: ReplicaSet "orderer1-6b66657bf8" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  observedGeneration: 19
+  readyReplicas: 1
+  replicas: 1
+  updatedReplicas: 1
