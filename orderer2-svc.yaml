@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer2
+  namespace: orgdcms
+spec:
+  selector:
+    app: orderer2
+  ports:
+  - name: grpc
+    port: 7050
+    targetPort: 7050
+  - name: admin
+    port: 7053
+    targetPort: 7053

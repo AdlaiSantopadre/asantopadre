@@ -1409,3 +1409,143 @@ sudo kubectl -n orgdcms exec -it orderer1-7465b988fb-fc57m -- bash -lc 'find / -
 sudo kubectl -n orgdcms exec -it orderer1-7465b988fb-fc57m -- bash -lc 'ls /usr/local/bin'
 cd ~
 curl -sSL https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/bootstrap.sh | bash -s -- 2.5.0
+kubectl port-forward -n orgdcms svc/orderer1 7053:7053
+kubectl port-forward -n orgdcms svc/fabric-ca 7054:7054
+kubectl get pods -n orgdcms
+kubectl logs orderer1-* -n orgdcms | head
+kubectl logs orderer1-6b66657bf8-djr7z -n orgdcms
+osnadmin channel list --orderer-address orderer1.orgdcms.svc.cluster.local:7053
+getent hosts orderer1.orgdcms.svc.cluster.local
+kubectl port-forward -n orgdcms svc/fabric-ca 7054:7054
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client
+export FABRIC_CA_CLIENT_TLS_CERTFILES=~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem
+fabric-ca-client enroll   -u https://orderer2:orderer2pw@localhost:7054   --enrollment.profile tls   --csr.hosts orderer2,orderer2.orgdcms.svc.cluster.local   -M ~/fabric-deploy/orderer2-tls
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client
+export FABRIC_CA_CLIENT_TLS_CERTFILES=~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem
+fabric-ca-client enroll   -u https://orderer2:orderer2pw@localhost:7054   --enrollment.profile tls   --csr.hosts orderer2,orderer2.orgdcms.svc.cluster.local   -M ~/fabric-deploy/orderer2-tls
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client
+fabric-ca-client register   --id.name orderer2   --id.secret orderer2pw   --id.type orderer   -u https://localhost:7054
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client
+fabric-ca-client register   --id.name orderer2   --id.secret orderer2pw   --id.type orderer   -u https://localhost:7054
+ls ~/fabric-deploy/ca-client/msp
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client
+fabric-ca-client enroll   -u https://admin:adminpw@localhost:7054
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client
+fabric-ca-client register   --id.name orderer2   --id.secret orderer2pw   --id.type orderer   -u https://localhost:7054
+orderer2pw
+fabric-ca-client enroll   -u https://orderer2:orderer2pw@localhost:7054   --enrollment.profile tls   --csr.hosts orderer2,orderer2.orgdcms.svc.cluster.local   -M ~/fabric-deploy/orderer2-tls
+openssl x509 -in ~/fabric-deploy/orderer2-tls/signcerts/cert.pem -noout -text | grep -A1 "Subject Alternative Name"
+nano -n orderer2-svc.yaml
+nano -n apiVersion: apps/v1
+kind: Deployment
+metadata:
+spec:
+nano -n orderer2-deployment.yaml
+kubectl apply -n orgdcms -f orderer2-deployment.yaml
+kubectl apply -n orgdcms -f orderer2-svc.yaml
+nano -n orderer2-deployment.yaml
+kubectl apply -n orgdcms -f orderer2-svc.yaml
+nano -n orderer2-deployment.yaml
+osnadmin channel list --orderer-address localhost:7053 --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem --client-key ~/fabric-deploy/orderer1-tls/keystore/5a22b8c606d012f8e843a320d3ace8e602b786a1d21316c0e35e86535aff2975_sk
+kubectl get pods -n orgdcms -o wide
+kubectl logs -n orgdcms orderer1-6b66657bf8-djr7z | tail -n 30
+kubectl get svc orderer1 -n orgdcms -o wide
+kubectl exec -n orgdcms orderer1-6b66657bf8-djr7z -- getent hosts orderer1
+kubectl exec -n orgdcms orderer1-6b66657bf8-djr7z -- getent hosts orderer1.orgdcms.svc.cluster.local
+kubectl scale deployment orderer1 -n orgdcms --replicas=0
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client
+fabric-ca-client enroll   -u https://orderer1:ordererpw@localhost:7054   --enrollment.profile tls   --csr.hosts orderer1,orderer1.orgdcms.svc.cluster.local,10.43.3.32   -M ~/fabric-deploy/orderer1-tls
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client
+export FABRIC_CA_CLIENT_TLS_CERTFILES=~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client
+export FABRIC_CA_CLIENT_TLS_CERTFILES=~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem
+fabric-ca-client enroll   -u https://orderer1:ordererpw@localhost:7054   --enrollment.profile tls   --csr.hosts orderer1,orderer1.orgdcms.svc.cluster.local,10.43.3.32   -M ~/fabric-deploy/orderer1-tls
+fabric-ca-client enroll   -u https://orderer1:ordererpw@localhost:7054   --enrollment.profile tls   --csr.hosts orderer1,orderer1.orgdcms.svc.cluster.local,10.43.3.32   -M ~/fabric-deploy/orderer1-tls
+openssl x509 -in ~/fabric-deploy/orderer1-tls/signcerts/cert.pem -noout -text | grep -A1 "Subject Alternative Name"
+kubectl scale deployment orderer1 -n orgdcms --replicas=1
+kubectl logs -n orgdcms $(kubectl get pod -n orgdcms -l app=orderer1 -o name)
+kubectl scale deployment orderer1 -n orgdcms --replicas=0
+ls -lt ~/fabric-deploy/orderer1-tls/keystore
+kubectl edit deployment orderer1 -n orgdcms
+kubectl scale deployment orderer1 -n orgdcms --replicas=1
+kubectl logs -n orgdcms $(kubectl get pod -n orgdcms -l app=orderer1 -o name) | tail -n 20
+kubectl exec -n orgdcms orderer1-6b66657bf8-djr7z -- getent hosts orderer1.orgdcms.svc.cluster.local
+kubectl get pods -n orgdcms -l app=orderer1
+kubectl exec -n orgdcms orderer1-865f456f94-xgxsg -- getent hosts orderer1.orgdcms.svc.cluster.local
+/home/asantopadre/fabric-deploy/orderer2-tls/keystore
+ls -lt ~/fabric-deploy/orderer2-tls/keystore
+sed -i 's/REPLACE_WITH_ORDERER2_SK/7d54c7090da8245c90cf1ecd6d13c2dfc80c21f57b1fd93f8f253b7a66016791_sk/g' orderer2-deployment.yaml
+grep ORDERER_GENERAL_TLS_PRIVATEKEY -n orderer2-deployment.yaml
+grep ORDERER_ADMIN_TLS_PRIVATEKEY -n orderer2-deployment.yaml
+sed -n '30,50p' orderer2-deployment.yaml
+kubectl apply -n orgdcms -f orderer2-deployment.yaml
+kubectl apply -n orgdcms -f orderer2-svc.yaml
+kubectl get pods -n orgdcms -l app=orderer2
+kubectl logs -n orgdcms -l app=orderer2 | tail -n 20
+sudo kubectl port-forward -n orgx pod/fabric-ca-b9848678-9ncpc 8054:7054
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client
+export FABRIC_CA_CLIENT_TLS_CERTFILES=~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem
+register   --id.name orderer3   --id.secret orderer3pw   --id.type orderer   -u https://localhost:7054
+kubectl get ns orgx || kubectl create ns orgx
+kubectl get svc -n orgx
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client-orgx
+fabric-ca-client enroll -u https://admin:adminpw@localhost:7054
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client-orgx
+fabric-ca-client enroll -u https://admin:adminpw@localhost:7054
+kubectl delete deployment fabric-ca -n orgx
+kubectl delete svc fabric-ca -n orgx
+kubectl apply -n orgx -f fabric-ca-pv.yaml
+cd ~/fabric-deploy
+ls
+kubectl apply -n orgx -f fabric-ca-pv.yaml
+kubectl apply -n orgx -f fabric-ca.yaml
+cp fabric-ca.yaml fabric-ca-orgx.yaml
+cp fabric-ca-pv.yaml fabric-ca-pv-orgx.yaml
+sed -i 's/namespace: orgdcms/namespace: orgx/g' fabric-ca-orgx.yaml
+sed -i 's/namespace: orgdcms/namespace: orgx/g' fabric-ca-pv-orgx.yaml
+kubectl apply -f fabric-ca-pv-orgx.yaml
+kubectl apply -f fabric-ca-orgx.yaml
+kubectl get pods -n orgx
+kubectl get svc -n orgx
+kubectl get pods -n orgx
+kubectl get svc -n orgx
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client-orgx
+abric-ca-client enroll -u https://admin:adminpw@localhost:7054
+fabric-ca-client enroll -u https://admin:adminpw@localhost:7054
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client-orgx
+fabric-ca-client enroll -u https://admin:adminpw@localhost:8054
+curl -k https://localhost:8054/cainfo
+kubectl get endpoints -n orgx fabric-ca
+kubectl logs -n orgx deploy/fabric-ca | tail -n 20
+curl -k https://localhost:8054/cainfo
+sudo kubectl port-forward -n orgx pod/fabric-ca-b9848678-9ncpc 8054:7054
+curl -k https://localhost:8054/cainfo
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client-orgx
+fabric-ca-client enroll -u https://admin:adminpw@localhost:8054
+ls ~/fabric-deploy/fabric-ca-server/tls-cert.pem
+ls /home/asantopadre/fabric-deploy/fabric-ca-server/tls-cert.pem
+kubectl exec -n orgx deploy/fabric-ca -- ls /etc/hyperledger/fabric-ca-server
+kubectl cp orgx/$(kubectl get pod -n orgx -l app=fabric-ca -o jsonpath='{.items[0].metadata.name}'):/etc/hyperledger/fabric-ca-server/ca-cert.pem ~/fabric-deploy/ca-orgx-tls-root.pem
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client-orgx
+export FABRIC_CA_CLIENT_TLS_CERTFILES=~/fabric-deploy/ca-orgx-tls-root.pem
+fabric-ca-client enroll -u https://admin:adminpw@localhost:8054
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-client-orgx
+export FABRIC_CA_CLIENT_TLS_CERTFILES=~/fabric-deploy/ca-orgx-tls-root.pem
+fabric-ca-client register   --id.name orderer3   --id.secret orderer3pw   --id.type orderer   -u https://localhost:8054
+fabric-ca-client enroll   -u https://orderer3:orderer3pw@localhost:8054   --enrollment.profile tls   --csr.hosts orderer3,orderer3.orgx.svc.cluster.local   -M ~/fabric-deploy/orderer3-tls
+openssl x509 -in ~/fabric-deploy/orderer3-tls/signcerts/cert.pem -noout -text | grep -A1 "Subject Alternative Name"
+cp orderer2-deployment.yaml orderer3-deployment.yaml
+cd ~
+cp orderer2-deployment.yaml orderer3-deployment.yaml
+cp orderer2-svc.yaml orderer3-svc.yaml
+nano orderer3-deployment.yaml
+nano orderer3-svc.yaml
+kubectl apply -n orgx -f orderer3-deployment.yaml
+kubectl apply -n orgx -f orderer3-svc.yaml
+kubectl logs -n orgx -l app=orderer3 | tail -n 20
+ls ~/fabric-deploy/orderer3-tls
+ls ~/fabric-deploy/orderer3-tls/tlscacerts
+cd ~/fabric-deploy/orderer3-tls/tlscacerts
+cp tls-localhost-8054.pem tls-localhost-7054.pem
+kubectl rollout restart deployment orderer3 -n orgx
+kubectl logs -n orgx -l app=orderer3 | tail -n 20
