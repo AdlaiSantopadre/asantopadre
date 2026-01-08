@@ -2,7 +2,5 @@
 **/tls.bak.*
 **/production/
 .vscode-server/
+.ssh/
 
-.vscode-server/
-.ssh/
-.ssh/
