@@ -1,0 +1,94 @@
+Organizations:
+  - &OrgDCMS
+    Name: OrgDCMS
+    ID: OrgDCMSMSP
+    MSPDir: /home/asantopadre/fabric-deploy/orgdcms-msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrgDCMSMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrgDCMSMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrgDCMSMSP.admin')"
+
+  - &OrgX
+    Name: OrgX
+    ID: OrgXMSP
+    MSPDir: /home/asantopadre/fabric-deploy/ca-client-orgx/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrgXMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrgXMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrgXMSP.admin')"
+
+Orderer: &Orderer
+  OrdererType: etcdraft
+  Addresses:
+    - orderer1.orgdcms.svc.cluster.local:7050
+    - orderer2.orgdcms.svc.cluster.local:7050
+    - orderer3.orgx.svc.cluster.local:7050
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+  EtcdRaft:
+    Consenters:
+      - Host: orderer1.orgdcms.svc.cluster.local
+        Port: 7050
+        ClientTLSCert: /home/asantopadre/fabric-deploy/orderer1-tls/signcerts/cert.pem
+        ServerTLSCert: /home/asantopadre/fabric-deploy/orderer1-tls/signcerts/cert.pem
+      - Host: orderer2.orgdcms.svc.cluster.local
+        Port: 7050
+        ClientTLSCert: /home/asantopadre/fabric-deploy/orderer2-tls/signcerts/cert.pem
+        ServerTLSCert: /home/asantopadre/fabric-deploy/orderer2-tls/signcerts/cert.pem
+      - Host: orderer3.orgx.svc.cluster.local
+        Port: 7050
+        ClientTLSCert: /home/asantopadre/fabric-deploy/orderer3-tls/signcerts/cert.pem
+        ServerTLSCert: /home/asantopadre/fabric-deploy/orderer3-tls/signcerts/cert.pem
+
+Profiles:
+  Canale1:
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
+    Consortium: SampleConsortium
+    Application:
+      Policies:
+        Readers:
+          Type: ImplicitMeta
+          Rule: "ANY Readers"
+        Writers:
+          Type: ImplicitMeta
+          Rule: "ANY Writers"
+        Admins:
+          Type: ImplicitMeta
+          Rule: "MAJORITY Admins"
+      Organizations:
+        - *OrgDCMS
+        - *OrgX
+    Orderer:
+      <<: *Orderer
