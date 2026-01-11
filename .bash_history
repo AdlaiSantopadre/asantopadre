@@ -1,4 +1,3 @@
-ip a
 sudo apt update && sudo apt install -y docker.io && sudo systemctl enable --now docker
 docker version
 curl -sfL https://get.k3s.io | sh -
@@ -1549,3 +1548,453 @@ cd ~/fabric-deploy/orderer3-tls/tlscacerts
 cp tls-localhost-8054.pem tls-localhost-7054.pem
 kubectl rollout restart deployment orderer3 -n orgx
 kubectl logs -n orgx -l app=orderer3 | tail -n 20
+git add
+git add .
+git commit
+git push
+git push origin main
+echo ".vscode-server/" >> .gitignore
+git rm -r --cached .vscode-server
+git add .gitignore
+git commit -m "Remove vscode-server artifacts and ignore them"
+git push origin main
+git filter-branch --force --index-filter "git rm -r --cached --ignore-unmatch .vscode-server" --prune-empty --tag-name-filter cat -- --all
+git reset --hard
+git filter-branch --force --index-filter "git rm -r --cached --ignore-unmatch .vscode-server" --prune-empty --tag-name-filter cat -- --all
+git push origin main --force
+git filter-branch --force --index-filter "git rm -f --cached --ignore-unmatch .ssh/id_ed25519" --prune-empty --tag-name-filter cat -- --all
+echo ".ssh/" >> .gitignore
+git add .gitignore
+git commit -m "Ignore ssh directory"
+git push origin main --force
+echo ".ssh/" >> .gitignore
+git add .gitignore
+git commit -m "Ignore ssh directory"
+git push origin main --force
+git remote set-url origin https://github.com/AdlaiSantopadre/asantopadre.git
+git push origin main --force
+ls ~/.ssh/id_ed25519
+ls ~/.ssh/id_ed25519.pub
+ssh-keygen -t ed25519 -C "AdlaiSantopadre"
+ssh-add ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub
+git push origin main --force
+git remote -v
+ssh-add ~/.ssh/id_ed25519
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+git push origin main --force
+git remote set-url origin git@github.com:AdlaiSantopadre/asantopadre.git
+git push origin main --force
+mkdir -p ~/fabric-deploy/channel-artifacts
+cd ~/fabric-deploy/channel-artifacts
+# orderer1
+osnadmin channel list   --orderer-address localhost:7053   --ca-file  ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key  ~/fabric-deploy/orderer1-tls/keystore/*
+# orderer2 (stesso comando ma con orderer2-*)
+osnadmin channel list   --orderer-address localhost:7053   --ca-file  ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key  ~/fabric-deploy/orderer2-tls/keystore/*
+# orderer3 (con orderer3-* e ca orgx)
+osnadmin channel list   --orderer-address localhost:7053   --ca-file  ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-?054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key  ~/fabric-deploy/orderer3-tls/keystore/*
+osnadmin channel list   --orderer-address localhost:7053   --ca-file  ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key  ~/fabric-deploy/orderer1-tls/keystore/*
+osnadmin channel list   --orderer-address localhost:7053   --ca-file  ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key  "~/fabric-deploy/orderer1-tls/keystore/*"
+ls /home/asantopadre/fabric-deploy/orderer1-tls/keystore
+osnadmin channel list   --orderer-address localhost:7053   --ca-file  /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key  /home/asantopadre/fabric-deploy/orderer1-tls/keystore/5a22b8c606d012f8e843a320d3ace8e602b786a1d21316c0e35e86535aff2975_sk
+fabric-ca-client enroll   -u https://orderer-admin:ORDERER_ADMIN_PW@ca-orgdcms:7054   --enrollment.profile tls   --csr.hosts localhost   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgdcms/tls-cert.pem   -M /home/asantopadre/fabric-deploy/osnadmin-tls
+find /home/asantopadre/fabric-deploy/ca-orgdcms -name "*pem"
+ls /home/asantopadre/fabric-deploy/ca-orgdcms/tls/
+find /home/asantopadre/fabric-deploy/ca-orgdcms -type f -name "*.pem"
+find /home/asantopadre/fabric-deploy -maxdepth 3 -type d | grep ca
+ls /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts
+ls /home/asantopadre/fabric-deploy/osnadmin-tls/tls/keystore
+find /home/asantopadre/fabric-deploy -type f -path "*osnadmin*" -name "*_sk"
+find /home/asantopadre -type f -name "*_sk"
+osnadmin channel list   --orderer-address localhost:7053   --ca-file  /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key  /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+osnadmin channel list   --orderer-address localhost:7053   --ca-file  /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key  /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file  /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key  /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+osnadmin channel list   --orderer-address localhost:7053   --tls-server-name orderer1.orgdcms.svc.cluster.local   --ca-file  /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key  /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+sudo nano /etc/hosts
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file  /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key  /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+mkdir -p ~/fabric-deploy/channel-artifacts
+mkdir -p ~/fabric-deploy/configtx
+cd ~/fabric-deploy
+export FABRIC_CFG_PATH=$HOME/fabric-deploy/configtx
+export CHANNEL_NAME=mychannel
+export CHANNEL_NAME=canale1
+nano $FABRIC_CFG_PATH/configtx.yaml
+configtxgen   -profile ApplicationChannel   -channelID $CHANNEL_NAME   -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block
+nano $FABRIC_CFG_PATH/configtx.yaml
+configtxgen   -profile Canale1   -channelID canale1   -outputBlock ./channel-artifacts/canale1.block
+nano $FABRIC_CFG_PATH/configtx.yaml
+Profiles:[A
+configtxgen -profile Canale1 -channelID canale1 -outputBlock ./channel-artifacts/canale1.block
+git add .
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file  /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key  /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+ls /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts
+ls /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts
+ls /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts
+ls /home/asantopadre/fabric-deploy/orderer3-tls/tlscacert
+ls /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts
+ls /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts
+cp /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem    /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts/orderer2-tls-ca.pem
+mkdir -p /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts
+cp /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/*.pem    /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts/
+ls /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts
+ls /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts
+cp /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts/*.pem    /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts/orderer2-tls-ca.pem
+ls /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts
+kubectl get pods -n orgx | grep orderer3
+kubectl get deploy orderer3 -n orgx -o yaml | less
+cp /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem    /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts/orderer3-tls-ca.pem
+ls /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts
+kubectl get pods -n orgdcms | grep orderer1
+kubectl port-forward -n orgdcms pod/orderer1-865f456f94-xgxsg 7053:7053
+kubectl port-forward -n orgdcms pod/orderer1-<id> 7053:7053 --address 0.0.0.0
+kubectl port-forward -n orgdcms pod/orderer1-865f456f94-xgxsg 7053:7053 --address 0.0.0.0
+kubectl port-forward -n orgdcms orderer2-65ccbf97b8-8sn9s 7053:7053
+kubectl port-forward -n orgx orderer3-94679fcb9-b9grx 7053:7053
+kubectl get pod -n orgx orderer3-94679fcb9-b9grx
+kubectl exec -n orgx orderer3-94679fcb9-b9grx -- printenv | grep ADMIN
+kubectl port-forward -n orgdcms pod/orderer1-865f456f94-xgxsg 7053:7053 --address 0.0.0.0
+kubectl port-forward -n orgx orderer3-94679fcb9-b9grx 7053:7053
+kubectl get pods -n orgx | grep orderer3
+kubectl cp /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem orgx/orderer3-6669998894-bxx85:/var/hyperledger/orderer/tls/tlscacerts/orgdcms-tls-ca.pem
+kubectl get deployment orderer3 -n orgx -o yaml | grep -A5 tlscacerts
+cp /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem    /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/orgdcms-tls-ca.pem
+/home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/orgdcms-tls-ca.pem
+kubectl apply -f /home/asantopadre/orderer3-deployment.yaml -n orgx
+kubectl get pods -n orgx | grep orderer3
+kubectl logs -n orgx orderer3-75ccb58f68-dlvpr --previous
+kubectl get pods -n orgx | grep orderer3
+kubectl apply -f /home/asantopadre/orderer3-deployment.yaml -n orgx
+kubectl get pods -n orgx | grep orderer3
+kubectl port-forward -n orgx orderer3-6669998894-rknzr 7053:7053
+kubectl port-forward -n orgdcms orderer2-65ccbf97b8-8sn9s 7053:7053
+PS C:\Users\campus.uniurb.it> kubectl port-forward -n orgdcms svc/fabric-ca 7054:7054
+Forwarding from 127.0.0.1:7054 -> 7054
+
+PS C:\Users\campus.uniurb.it> kubectl port-forward -n orgx svc/fabric-ca 7054:7054
+kubectl port-forward -n orgx svc/fabric-ca 7054:7054
+kubectl port-forward -n orgdcms fabric-ca-b9848678-9k9b5 7054:7054
+kubectl port-forward -n orgx fabric-ca-b9848678-9ncpc 8054:7054
+ls /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts
+mv /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts/tls-localhost-7054.pem    /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts/orderer1-tls-ca.pem
+configtxgen -profile Canale1 -channelID canale1 -outputBlock ./channel-artifacts/canale1.block
+export FABRIC_CFG_PATH=/home/asantopadre/fabric-deploy/configtx
+configtxgen -profile Canale1 -channelID canale1 -outputBlock ./channel-artifacts/canale1.block
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file  /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key  /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file  /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/orderer1-tls-ca.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key  /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts/orderer1-tls-ca.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+ls -l /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+code $FABRIC_CFG_PATH/configtx.yaml
+export FABRIC_CFG_PATH=/home/asantopadre/fabric-deploy/configtx
+configtxgen   -profile Canale1   -channelID canale1   -outputBlock ./channel-artifacts/canale1.block
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+ls /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts
+openssl x509 -in /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts/orderer1-tls-ca.pem -noout -text | grep "CA:"
+export FABRIC_CFG_PATH=/home/asantopadre/fabric-deploy/configtx
+configtxgen -profile Canale1 -channelID canale1 -outputBlock ./channel-artifacts/canale1.block
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+openssl verify   -CAfile /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts/orderer1-tls-ca.pem   /home/asantopadre/fabric-deploy/orderer1-tls/signcerts/cert.pem
+openssl verify   -CAfile /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts/orderer2-tls-ca.pem   /home/asantopadre/fabric-deploy/orderer2-tls/signcerts/cert.pem
+openssl verify   -CAfile /home/asantopadre/fabric-deploy/orderer1-msp/tlscacerts/orderer3-tls-ca.pem   /home/asantopadre/fabric-deploy/orderer3-tls/signcerts/cert.pem
+kubectl get pods -n orgdcms | grep orderer
+kubectl get pods -n orgx    | grep orderer
+kubectl exec -n orgdcms orderer1-865f456f94-xgxsg -- ls -la /var/hyperledger/orderer/msp
+kubectl exec -n orgdcms orderer2-65ccbf97b8-8sn9s -- ls -la /var/hyperledger/orderer/msp
+kubectl exec -n orgx orderer3-94679fcb9-b9grx -- ls -la /var/hyperledger/orderer/msp
+ls -d /home/asantopadre/fabric-deploy/orderer-msps/orderer*-msp
+mkdir -p /home/asantopadre/fabric-deploy/orderer-msps
+kubectl cp -n orgdcms orderer1-865f456f94-xgxsg:/var/hyperledger/orderer/msp   /home/asantopadre/fabric-deploy/orderer-msps/orderer1-msp
+kubectl cp -n orgdcms orderer2-65ccbf97b8-8sn9s:/var/hyperledger/orderer/msp   /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp
+kubectl cp -n orgx orderer3-94679fcb9-b9grx:/var/hyperledger/orderer/msp   /home/asantopadre/fabric-deploy/orderer-msps/orderer3-msp
+ls -d /home/asantopadre/fabric-deploy/orderer-msps/orderer*-msp
+sha256sum /home/asantopadre/fabric-deploy/orderer-msps/orderer1-msp/signcerts/*.pem /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp/signcerts/*.pem /home/asantopadre/fabric-deploy/orderer-msps/orderer3-msp/signcerts/*.pem
+rm -rf /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp/*
+ls /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/fabric-deploy/ca-client
+fabric-ca-client enroll   -u https://orderer2:orderer2pw@localhost:7054   --csr.hosts orderer2.orgdcms.svc.cluster.local   --mspdir /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgdcms/tls-cert.pem
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/fabric-deploy/ca-client
+fabric-ca-client enroll   -u https://orderer2:orderer2pw@localhost:7054   --csr.hosts orderer2.orgdcms.svc.cluster.local   --mspdir /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp   --tls.certfiles /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem
+kubectl cp -n orgdcms fabric-ca-<pod>:/var/hyperledger/fabric-ca-server/tls-cert.pem /home/asantopadre/fabric-deploy/ca-orgdcms-tls.pem
+fabric-ca-client enroll -u https://orderer2:orderer2pw@localhost:7054 --csr.hosts orderer2.orgdcms.svc.cluster.local --mspdir /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgdcms-tls.pem
+kubectl get pods -n orgdcms | grep ca
+kubectl cp -n orgdcms fabric-ca-b9848678-9k9b5:/var/hyperledger/fabric-ca-server/tls-cert.pem   /home/asantopadre/fabric-deploy/ca-orgdcms-tls.pem
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- ls /var/hyperledger/fabric-ca-server
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- find / -name fabric-ca-server-config.yaml 2>/dev/null
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- grep -i certfile /etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 --
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- find /etc -name "*tls*.pem" 2>/dev/null
+kubectl cp -n orgdcms fabric-ca-b9848678-9k9b5:/etc/hyperledger/fabric-ca-server/tls-cert.pem /home/asantopadre/fabric-deploy/ca-orgdcms-tls.pem
+openssl x509 -in /home/asantopadre/fabric-deploy/ca-orgdcms-tls.pem -noout -subject
+fabric-ca-client enroll   -u https://orderer2:orderer2pw@localhost:7054   --csr.hosts orderer2.orgdcms.svc.cluster.local   --mspdir /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgdcms-tls.pem
+fabric-ca-client enroll   -u https://orderer2:orderer2pw@localhost:7054   --csr.hosts orderer2.orgdcms.svc.cluster.local   --mspdir /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgdcms-tls.pem
+sha256sum /home/asantopadre/fabric-deploy/orderer-msps/orderer1-msp/signcerts/cert.pem /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp/signcerts/cert.pem
+kubectl get pods -n orgx | grep ca
+fabric-ca-client enroll   -u https://orderer3:orderer3pw@localhost:8054   --csr.hosts orderer3.orgx.svc.cluster.local   --mspdir /home/asantopadre/fabric-deploy/orderer-msps/orderer3-msp   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+kubectl exec -n orgx fabric-ca-b9848678-9ncpc -- find / -name fabric-ca-server-config.yaml 2>/dev/null
+kubectl exec -n orgx fabric-ca-b9848678-9ncpc -- printenv | grep -i TLS
+kubectl get pod fabric-ca-b9848678-9ncpc -n orgx -o jsonpath='{.spec.containers[0].command}'
+kubectl get pod fabric-ca-b9848678-9ncpc -n orgx -o jsonpath='{.spec.containers[0].args}'
+kubectl exec -n orgx fabric-ca-b9848678-9ncpc -- find / -name "*.pem" 2>/dev/null
+kubectl cp -n orgx fabric-ca-b9848678-9ncpc:/etc/hyperledger/fabric-ca-server/tls-cert.pem /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+openssl x509 -in /home/asantopadre/fabric-deploy/ca-orgx-tls.pem -noout -subject
+fabric-ca-client enroll   -u https://orderer3:orderer3pw@localhost:8054   --csr.hosts orderer3.orgx.svc.cluster.local   --mspdir /home/asantopadre/fabric-deploy/orderer-msps/orderer3-msp   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+sha256sum /home/asantopadre/fabric-deploy/orderer-msps/orderer1-msp/signcerts/cert.pem /home/asantopadre/fabric-deploy/orderer-msps/orderer3-msp/signcerts/cert.pem
+export FABRIC_CFG_PATH=/home/asantopadre/fabric-deploy/configtx
+configtxgen -profile Canale1 -channelID canale1 -outputBlock ./channel-artifacts/canale1.block
+export FABRIC_CFG_PATH=/home/asantopadre/fabric-deploy/configtx
+configtxgen -profile Canale1 -channelID canale1 -outputBlock ./channel-artifacts/canale1.block
+export FABRIC_CFG_PATH=/home/asantopadre/fabric-deploy/configtx
+configtxgen -profile Canale1 -channelID canale1 -outputBlock ./channel-artifacts/canale1.block
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address localhost:7053   --ca-file /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+sudo nano /etc/hosts
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+openssl s_client -connect orderer2.orgdcms.svc.cluster.local:7053   -CAfile /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   -servername orderer2.orgdcms.svc.cluster.local
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+sudo nano /etc/hosts
+getent hosts orderer3.orgx.svc.cluster.local
+sudo nano /etc/hosts
+getent hosts orderer3.orgx.svc.cluster.local
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+openssl x509 -in /home/asantopadre/fabric-deploy/orderer3-tls/signcerts/cert.pem -noout -issuer
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/ca-orgx-tls.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/ca-orgx-tls.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/ca-orgx-tls.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+openssl verify   -CAfile /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   /home/asantopadre/fabric-deploy/orderer3-tls/signcerts/cert.pem
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+openssl s_client -connect orderer3.orgx.svc.cluster.local:7053   -CAfile /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   -servername orderer3.orgx.svc.cluster.local
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+cp /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem    /home/asantopadre/fabric-deploy/osnadmin-ca-orgx.pem
+openssl verify   -CAfile /home/asantopadre/fabric-deploy/osnadmin-ca-orgx.pem   /home/asantopadre/fabric-deploy/orderer3-tls/signcerts/cert.pem
+curl --cacert /home/asantopadre/fabric-deploy/osnadmin-ca-orgx.pem      --cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem      --key  /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk      https://orderer3.orgx.svc.cluster.local:7053/participation/v1/channels
+openssl x509 -in /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem -noout -issuer
+kubectl cp /home/asantopadre/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem orgx/orderer3-94679fcb9-b9grx:/var/hyperledger/orderer/tls/tlscacerts/orgdcms-tls-ca.pem
+kubectl rollout restart deployment orderer3 -n orgx
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-tls/msp/signcerts/cert.pem   --client-key  /home/asantopadre/osnadmin-tls/msp/keystore/c73b7eb510d72eb3cd50ca6f3f6c4dd71e5027342b822265d580debd50fe5845_sk
+kubectl cp -n orgx fabric-ca-b9848678-9ncpc:/etc/hyperledger/fabric-ca-server/tls-cert.pem /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/osnadmin-orgx
+fabric-ca-client enroll   -u https://osnadmin:osnadminpw@localhost:8054   --mspdir /home/asantopadre/osnadmin-orgx/msp   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+/home/asantopadre/ca-client-orgx/msp
+kubectl port-forward -n orgx pod/fabric-ca-b9848678-9ncpc 8054:7054
+kubectl port-forward -n orgdcms svc/ca-orgdcms 7054:7054
+kubectl get svc -n orgdcms
+kubectl port-forward -n orgdcms svc/fabric-ca 7054:7054
+ls /home/asantopadre/ca-client-orgx/msp
+ls /home/asantopadre/fabric-deploy/ca-client-orgx/msp
+ls /home/asantopadre/fabric-deploy/ca-client-orgx/msp/signcerts
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/fabric-deploy/ca-client-orgx
+fabric-ca-client register   --id.name osnadmin-orgx   --id.secret osnadminpw   --id.type admin   --id.attrs "hf.Registrar.Roles=*,hf.Registrar.Attributes=*"   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/fabric-deploy/ca-client-orgx
+fabric-ca-client register   --id.name osnadmin-orgx   --id.secret osnadminpw   --id.type admin   --id.attrs "hf.Registrar.Roles=*,hf.Registrar.Attributes=*"   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/osnadmin-orgx
+fabric-ca-client enroll   -u https://osnadmin-orgx:osnadminpw@localhost:8054   --mspdir /home/asantopadre/osnadmin-orgx/msp   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+fabric-ca-client register   --id.name osnadmin-orgx   --id.secret osnadminpw   --id.type admin   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+fabric-ca-client enroll   -u https://osnadmin-orgx:osnadminpw@localhost:8054   --mspdir /home/asantopadre/osnadmin-orgx/msp   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/fabric-deploy/ca-client-orgx
+s $FABRIC_CA_CLIENT_HOME/msp/signcerts/cert.pem
+ls $FABRIC_CA_CLIENT_HOME/msp/signcerts/cert.pem
+fabric-ca-client register   --id.name osnadmin-orgx   --id.secret osnadminpw   --id.type admin   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/fabric-deploy/ca-client-orgx
+fabric-ca-client register   -u https://localhost:8054   --id.name osnadmin-orgx   --id.secret osnadminpw   --id.type admin   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+osnadminpw
+fabric-ca-client identity list   -u https://localhost:8054   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/osnadmin-orgx
+fabric-ca-client enroll   -u https://osnadmin-orgx:osnadminpw@localhost:8054   --mspdir /home/asantopadre/osnadmin-orgx/msp   --tls.certfiles /home/asantopadre/fabric-deploy/ca-orgx-tls.pem
+ls /home/asantopadre/osnadmin-orgx/msp/signcerts/cert.pem
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address localhost:7053   --ca-file /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-orgx/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-orgx/msp/keystore/*_sk
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address localhost:7053   --ca-file /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-orgx/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-orgx/msp/keystore/0f1a77915f27c6edab0bfca758f83eeac8f5d7cae73ba59b630c6a29419d08ce_sk
+ls -lt /home/asantopadre/osnadmin-orgx/msp/keystore
+openssl x509 -noout -modulus   -in /home/asantopadre/osnadmin-orgx/msp/signcerts/cert.pem | openssl md5
+openssl rsa -noout -modulus   -in /home/asantopadre/osnadmin-orgx/msp/keystore/8d378ab639e855437ee57b3959c3693c40e2c31fb8c86ee76bad9479126ad2f7_sk | openssl md5
+openssl rsa -noout -modulus   -in /home/asantopadre/osnadmin-orgx/msp/keystore/09d6e71564d24db9e35328e69802ed4174b0607f52819fbbb7403da95d102cd5_sk | openssl md5
+openssl rsa -noout -modulus   -in /home/asantopadre/osnadmin-orgx/msp/keystore/ebb8433fe4427587e3fdd620a3ca0df3e7b2c026b456182aca3ac57d62300bcc_sk | openssl md5
+openssl rsa -noout -modulus   -in /home/asantopadre/osnadmin-orgx/msp/keystore/0f1a77915f27c6edab0bfca758f83eeac8f5d7cae73ba59b630c6a29419d08ce_sk | openssl md5
+openssl x509 -noout -modulus   -in /home/asantopadre/osnadmin-orgx/msp/signcerts/cert.pem | openssl md5
+openssl rsa -noout -modulus   -in /home/asantopadre/osnadmin-orgx/msp/keystore/8d378ab639e855437ee57b3959c3693c40e2c31fb8c86ee76bad9479126ad2f7_sk | openssl md5
+openssl x509 -noout -fingerprint -sha256   -in /home/asantopadre/osnadmin-orgx/msp/signcerts/cert.pem
+openssl pkey -in /home/asantopadre/osnadmin-orgx/msp/keystore/8d378ab639e855437ee57b3959c3693c40e2c31fb8c86ee76bad9479126ad2f7_sk   -pubout | openssl sha256
+openssl x509 -in /home/asantopadre/osnadmin-orgx/msp/signcerts/cert.pem   -pubkey -noout | openssl sha256
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address localhost:7053   --ca-file /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-orgx/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-orgx/msp/keystore/8d378ab639e855437ee57b3959c3693c40e2c31fb8c86ee76bad9479126ad2f7_sk
+sudo nano /etc/hosts
+osnadmin channel join   --channelID canale1   --config-block ./channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/osnadmin-orgx/msp/signcerts/cert.pem   --client-key /home/asantopadre/osnadmin-orgx/msp/keystore/8d378ab639e855437ee57b3959c3693c40e2c31fb8c86ee76bad9479126ad2f7_sk
+kubectl get pods -n orgdcms -o wide | egrep 'orderer1|orderer2'
+kubectl get pods -n orgx -o wide | egrep 'orderer3'
+kubectl logs -n orgdcms orderer1-865f456f94-xgxsg | grep -i leader
+kubectl logs -n orgdcms orderer1-865f456f94-xgxsg | grep -i raft
+kubectl logs -n orgdcms orderer2-65ccbf97b8-8sn9s | grep -i raft
+kubectl logs -n orgdcms orderer1-865f456f94-xgxsg | grep -i raft
+kubectl logs -n orgdcms orderer2-65ccbf97b8-8sn9s | grep -i raft
+kubectl logs -n orgx orderer3-6669998894-rknzr | grep -i raft
+kubectl logs -n orgdcms orderer1-865f456f94-xgxsg | grep -i raft
+ubectl scale deployment orderer2 -n orgdcms --replicas=0
+kubectl scale deployment orderer2 -n orgdcms --replicas=0
+kubectl logs -n orgdcms orderer1-865f456f94-xgxsg | grep -i leader
+kubectl logs -n orgdcms orderer1-865f456f94-xgxsg | grep -i etcdraft
+kubectl logs -n orgx orderer3-6669998894-rknzr | grep -i etcdraft
+kubectl logs -n orgdcms orderer1-865f456f94-xgxsg | grep -i etcdraft
+kubectl scale deployment orderer2 -n orgdcms --replicas=0
+kubectl logs -n orgx orderer3-6669998894-rknzr | grep -i etcdraft
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file <TLS-CA-orgDCMS.pem>   --client-cert <cert.pem>   --client-key <key.pem>
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file <TLS-CA-orgDCMS.pem>   --client-cert <cert.pem>   --client-key <key.pem>
+osnadmin channel list --orderer-address orderer1.orgdcms.svc.cluster.local:7053 --ca-file /percorso/tls-ca-orgdcms.pem --client-cert /percorso/cert.pem --client-key /percorso/key.pem
+ls ~/fabric-deploy/*tls*/tlscacerts
+osnadmin channel list --orderer-address orderer1.orgdcms.svc.cluster.local:7053 --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem --client-key ~/fabric-deploy/orderer1-tls/keystore/*_sk
+osnadmin channel list --orderer-address orderer1.orgdcms.svc.cluster.local:7053 --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem --client-key ~/fabric-deploy/orderer1-tls/keystore/202c55fb24dcd699201b0c8a35f5ed72971af73a4c7ebd9bbca97455187e28a0_sk
+openssl x509 -in ~/fabric-deploy/orderer1-tls/signcerts/cert.pem -pubkey -noout | openssl sha256
+ls -l ~/fabric-deploy/orderer1-tls/keystore
+openssl x509 -in ~/fabric-deploy/orderer1-tls/signcerts/cert.pem -pubkey -noout | openssl sha256
+openssl pkey -in ~/fabric-deploy/orderer1-tls/keystore/1fb9c9515b6030e2aa2792ec0f48cef22b1c4779469697b4c9a9c7e8b9beccbd_sk -pubout | openssl sha256
+openssl pkey -in ~/fabric-deploy/orderer1-tls/keystore/202c55fb24dcd699201b0c8a35f5ed72971af73a4c7ebd9bbca97455187e28a0_sk -pubout | openssl sha256
+openssl pkey -in ~/fabric-deploy/orderer1-tls/keystore/bada89dffa82c1c772548c82efea4b8b10c171b4c4042a21ae3e8629e9620d26_sk -pubout | openssl sha256
+osnadmin channel list --orderer-address orderer1.orgdcms.svc.cluster.local:7053 --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem --client-key ~/fabric-deploy/orderer1-tls/keystore/bada89dffa82c1c772548c82efea4b8b10c171b4c4042a21ae3e8629e9620d26_sk
+openssl x509 -in ~/fabric-deploy/orderer1-tls/signcerts/cert.pem -noout -text | grep -A2 "Subject Alternative Name"
+fabric-ca-client enroll   -u https://orderer1:orderer1pw@ca-orgdcms:7054   --enrollment.profile tls   --csr.hosts orderer1   --csr.hosts orderer1.orgdcms.svc.cluster.local   --tls.certfiles /etc/hyperledger/fabric-ca-server-config/ca-cert.pem   -M ~/fabric-deploy/orderer1-tls-new
+ls ~/fabric-deploy/*ca*/*/ca-cert.pem
+find ~ -name ca-cert.pem | grep ca
+find ~/fabric-deploy -type f -name "*.pem"
+fabric-ca-client enroll -u https://orderer1:orderer1pw@ca-orgdcms:7054 --enrollment.profile tls --csr.hosts orderer1 --csr.hosts orderer1.orgdcms.svc.cluster.local --tls.certfiles ~/fabric-deploy/ca-orgdcms-tls.pem -M ~/fabric-deploy/orderer1-tls-new
+fabric-ca-client enroll -u https://orderer1:orderer1pw@localhost:7054 --enrollment.profile tls --csr.hosts orderer1 --csr.hosts orderer1.orgdcms.svc.cluster.local --tls.certfiles ~/fabric-deploy/ca-orgdcms-tls.pem -M ~/fabric-deploy/orderer1-tls-new
+kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client identity list --id admin --secret <ADMIN_PW>
+kubectl get deploy fabric-ca -n orgdcms -o yaml | grep ADMINPW
+kubectl get deploy fabric-ca-pv -n orgdcms -o yaml | grep ADMIN
+kubectl get pods -n orgdcms | grep ca
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- printenv | grep FABRIC_CA_SERVER_CA_ADMIN
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- cat /etc/hyperledger/fabric-ca-server-config/fabric-ca-server-config.yaml | grep -A3 "identities:"
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- find / -name fabric-ca-server-config.yaml 2>/dev/null
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- grep -A5 "identities:" /etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+fabric-ca-client register -u https://admin:adminpw@localhost:7054 --id.name orderer1 --id.secret orderer1pw --id.type orderer
+fabric-ca-client register   -u https://admin:adminpw@localhost:7054   --id.name orderer1   --id.secret orderer1pw   --id.type orderer   --tls.certfiles ~/fabric-deploy/ca-orgdcms-tls.pem
+fabric-ca-client enroll   -u https://admin:adminpw@localhost:7054   --tls.certfiles ~/fabric-deploy/ca-orgdcms-tls.pem   -M ~/fabric-deploy/ca-admin
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-admin
+fabric-ca-client register   --id.name orderer1   --id.secret orderer1pw   --id.type orderer   --tls.certfiles ~/fabric-deploy/ca-orgdcms-tls.pem
+fabric-ca-client enroll -u https://admin:adminpw@localhost:7054 --tls.certfiles ~/fabric-deploy/ca-orgdcms-tls.pem -M ~/fabric-deploy/ca-admin
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-admin
+fabric-ca-client register   --id.name orderer1   --id.secret orderer1pw   --id.type orderer   --tls.certfiles ~/fabric-deploy/ca-orgdcms-tls.pem
+fabric-ca-client enroll   -u https://orderer1:orderer1pw@localhost:7054   --enrollment.profile tls   --csr.hosts orderer1   --csr.hosts orderer1.orgdcms.svc.cluster.local   --tls.certfiles ~/fabric-deploy/ca-orgdcms-tls.pem   -M ~/fabric-deploy/orderer1-tls-new
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- fabric-ca-client identity list --id admin --secret adminpw
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-admin
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- fabric-ca-client identity list
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- fabric-ca-client identity list --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem
+kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- fabric-ca-client identity list -u https://admin:adminpw@localhost:7054 --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem
+fabric-ca-client enroll   -u https://orderer1-tls-v2:<SECRET_CORRETTO>@localhost:7054   --enrollment.profile tls   --csr.hosts orderer1   --csr.hosts orderer1.orgdcms.svc.cluster.local   --tls.certfiles ~/fabric-deploy/ca-orgdcms-tls.pem   -M ~/fabric-deploy/orderer1-tls-tmp
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/ca-admin
+fabric-ca-client register   --id.name orderer1-tls   --id.secret orderer1tlspw   --id.type orderer   --tls.certfiles ~/fabric-deploy/ca-orgdcms-tls.pem
+fabric-ca-client enroll   -u https://orderer1-tls:orderer1tlspw@localhost:7054   --enrollment.profile tls   --csr.hosts orderer1   --csr.hosts orderer1.orgdcms.svc.cluster.local   --tls.certfiles ~/fabric-deploy/ca-orgdcms-tls.pem   -M ~/fabric-deploy/orderer1-tls-new
+openssl x509 -in ~/fabric-deploy/orderer1-tls-new/signcerts/cert.pem -noout -text | grep -A2 "Subject Alternative Name"
+mv ~/fabric-deploy/orderer1-tls ~/fabric-deploy/orderer1-tls.old
+mv ~/fabric-deploy/orderer1-tls-new ~/fabric-deploy/orderer1-tls
+kubectl rollout restart deploy/orderer1 -n orgdcms
+kubectl get pods -n orgdcms | grep orderer1
+kubectl logs -n orgdcms orderer1-f4876df6d-sk9vk
+ls ~/fabric-deploy/orderer1-tls/keystore
+kubectl edit deploy orderer1 -n orgdcms
+kubectl rollout restart deploy/orderer1 -n orgdcms
+kubectl get pods -n orgdcms | grep orderer1
+osnadmin channel list --orderer-address orderer1.orgdcms.svc.cluster.local:7053 --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/ca-orgdcms-tls.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+kubectl exec -n orgdcms orderer1-54c59c8798-w8wcl -- ls /var/hyperledger/orderer/tls/signcerts
+kubectl exec -n orgdcms orderer1-54c59c8798-w8wcl -- openssl x509 -in /var/hyperledger/orderer/tls/signcerts/cert.pem -noout -text | grep -A2 "Subject Alternative Name"
+kubectl exec -n orgdcms orderer1-54c59c8798-w8wcl -- strings /var/hyperledger/orderer/tls/signcerts/cert.pem | grep org
+kubectl cp orgdcms/orderer1-54c59c8798-w8wcl:/var/hyperledger/orderer/tls/signcerts/cert.pem /tmp/orderer1-mounted-cert.pem
+openssl x509 -in /tmp/orderer1-mounted-cert.pem -noout -text | grep -A2 "Subject Alternative Name"
+export OSNADMIN_TLS_CA_FILE=~/fabric-deploy/ca-orgdcms-tls.pem
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file $OSNADMIN_TLS_CA_FILE   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+kubectl get svc orderer1 -n orgdcms -o yaml
+kubectl get endpoints orderer1 -n orgdcms -o yaml
+env | grep -i orderer
+env | grep -i osn
+kubectl describe deploy orderer1 -n orgdcms | grep -A5 -i tls
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/ca-orgdcms-tls.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin channel list   --orderer-address localhost:7053   --ca-file ~/fabric-deploy/ca-orgdcms-tls.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --override-address localhost   --ca-file ~/fabric-deploy/ca-orgdcms-tls.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin channel list   --orderer-address localhost:7053   --override-addr orderer1.orgdcms.svc.cluster.local   --ca-file ~/fabric-deploy/ca-orgdcms-tls.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+sudo sh -c 'echo "127.0.0.1 orderer1.orgdcms.svc.cluster.local" >> /etc/hosts'
+Maurizio
+sudo sh -c 'echo "127.0.0.1 orderer1.orgdcms.svc.cluster.local" >> /etc/hosts'
+Maurizio
+sudo sh -c 'echo "127.0.0.1 orderer1.orgdcms.svc.cluster.local" >> /etc/hosts'
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/ca-orgdcms-tls.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin channel list --orderer-address orderer1.orgdcms.svc.cluster.local:7053 --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+kubectl get pods -n orgdcms | grep orderer2
+kubectl get pods -n orgdcms
+kubectl scale deploy orderer2 -n orgdcms --replicas=1
+kubectl get pods -n orgdcms
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/*_sk
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/7d54c7090da8245c90cf1ecd6d13c2dfc80c21f57b1fd93f8f253b7a66016791_sk
+kubectl get pods -n orgx | grep orderer3
+osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/*_sk
+kubectl port-forward -n orgx orderer3-6669998894-rknzr 7053:7053
+ps aux | grep port-forward
+kubectl port-forward -n orgdcms svc/orderer1 7053:7053
+kubectl port-forward -n orgdcms svc/orderer2 7053:7053
+kubectl port-forward -n orgx svc/orderer3 7053:7053
+kubectl port-forward -n orgdcms svc/orderer1 7053:7053
+kubectl port-forward -n orgdcms svc/orderer2 8053:7053
+kubectl port-forward -n orgdcms svc/orderer2 7053:7053
+kubectl port-forward -n orgx svc/orderer3 7053:7053
+configtxgen -profile Canale1 -channelID canale1 -outputBlock canale1.block
+cd fabric-deploy
+configtxgen -profile Canale1 -channelID canale1 -outputBlock canale1.block
+ls ~/fabric-samples/bin
+export PATH=$PATH:~/fabric-samples/bin
+configtxgen -profile Canale1 -channelID canale1 -outputBlock canale1.block
+configtxgen   -profile Canale1   -channelID canale1   -outputBlock ./channel-artifacts/canale1.block
+cd ~/fabric-deploy/configtx
+export FABRIC_CFG_PATH=$(pwd)
+configtxgen -profile Canale1 -channelID canale1 -outputBlock ./channel-artifacts/canale1.block
+osnadmin channel join   --channelID canale1   --config-block ~/fabric-deploy/configtx/channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin channel join   --channelID canale1   --config-block ~/fabric-deploy/configtx/channel-artifacts/canale1.block   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/*_sk
+osnadmin channel join   --channelID canale1   --config-block ~/fabric-deploy/configtx/channel-artifacts/canale1.block   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/7d54c7090da8245c90cf1ecd6d13c2dfc80c21f57b1fd93f8f253b7a66016791_sk
+osnadmin channel join   --channelID canale1   --config-block ~/fabric-deploy/configtx/channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/*_sk
+osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/*_sk
+kubectl scale deploy orderer3 -n orgx --replicas=0
+rm -rf ~/fabric-deploy/orderer3-data/*
+kubectl scale deploy orderer3 -n orgx --replicas=1
+kubectl port-forward -n orgx svc/orderer3 7053:7053
+osnadmin channel list --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/*_sk
+osnadmin channel join   --channelID canale1   --config-block ~/fabric-deploy/configtx/channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/*_sk
+kubectl logs -n orgdcms deploy/orderer1 | grep -i leader
+kubectl logs -n orgdcms deploy/orderer2 | grep -i leader
+kubectl logs -n orgx deploy/orderer3 | grep -i leader
+kubectl logs -n orgdcms deploy/orderer1 | grep -i leader
+kubectl logs -n orgdcms deploy/orderer2 | grep -i leader
+kubectl logs -n orgx deploy/orderer3 | grep -i leader
+kubectl scale deploy orderer1 -n orgdcms --replicas=0
+kubectl logs -n orgdcms deploy/orderer2 | grep -i leader
+kubectl logs -n orgx deploy/orderer3 | grep -i leader
+kubectl scale deploy orderer1 -n orgdcms --replicas=1
+kubectl logs -n orgdcms deploy/orderer1 | grep -i leader
+kubectl logs -n orgdcms deploy/orderer2 | grep -i leader
+kubectl logs -n orgx deploy/orderer3 | grep -i leader
+kubectl scale deploy orderer2 -n orgdcms --replicas=1
+kubectl logs -n orgx deploy/orderer3 | grep -i leader
+kubectl logs -n orgdcms deploy/orderer1 | grep -i leader
+kubectl logs -n orgdcms deploy/orderer2 | grep -i leader
+kubectl scale deploy orderer2 -n orgdcms --replicas=1
+kubectl logs -n orgx deploy/orderer3 | grep -i raft
+kubectl logs -n orgx deploy/orderer3 | grep -i "leader"
+kubectl scale deploy orderer1 -n orgdcms --replicas=0
+osnadmin channel list --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/*_sk
+kubectl scale deploy orderer1 -n orgdcms --replicas=1
+osnadmin channel list --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/*_sk
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/7d54c7090da8245c90cf1ecd6d13c2dfc80c21f57b1fd93f8f253b7a66016791_sk
+kubectl scale deploy orderer1 -n orgdcms --replicas=1
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/7d54c7090da8245c90cf1ecd6d13c2dfc80c21f57b1fd93f8f253b7a66016791_sk
+kubectl get pods -n orgdcms
+kubectl get pods -n orgx
+kubectl logs -n orgdcms deploy/orderer1 | grep -i etcdraft
+kubectl logs -n orgdcms deploy/orderer2 | grep -i etcdraft
+kubectl logs -n orgx deploy/orderer3 | grep -i etcdraft
+kubectl port-forward -n orgdcms svc/orderer1 7053:7053
+kubectl port-forward -n orgdcms svc/orderer2 8053:7053
+kubectl port-forward -n orgx svc/orderer3 9053:7053
+kubectl port-forward -n orgx svc/orderer3 7053:7053
+kubectl port-forward -n orgx svc/orderer3 9053:7053
+kubectl port-forward -n orgdcms svc/orderer1 7053:7053

@@ -1,33 +1,52 @@
 Organizations:
+
+  # --- Application orgs ---
   - &OrgDCMS
     Name: OrgDCMS
     ID: OrgDCMSMSP
     MSPDir: /home/asantopadre/fabric-deploy/orgdcms-msp
     Policies:
-      Readers:
-        Type: Signature
-        Rule: "OR('OrgDCMSMSP.member')"
-      Writers:
-        Type: Signature
-        Rule: "OR('OrgDCMSMSP.member')"
-      Admins:
-        Type: Signature
-        Rule: "OR('OrgDCMSMSP.admin')"
+      Readers: { Type: Signature, Rule: "OR('OrgDCMSMSP.member')" }
+      Writers: { Type: Signature, Rule: "OR('OrgDCMSMSP.member')" }
+      Admins:  { Type: Signature, Rule: "OR('OrgDCMSMSP.admin')" }
 
   - &OrgX
     Name: OrgX
     ID: OrgXMSP
     MSPDir: /home/asantopadre/fabric-deploy/ca-client-orgx/msp
     Policies:
-      Readers:
-        Type: Signature
-        Rule: "OR('OrgXMSP.member')"
-      Writers:
-        Type: Signature
-        Rule: "OR('OrgXMSP.member')"
-      Admins:
-        Type: Signature
-        Rule: "OR('OrgXMSP.admin')"
+      Readers: { Type: Signature, Rule: "OR('OrgXMSP.member')" }
+      Writers: { Type: Signature, Rule: "OR('OrgXMSP.member')" }
+      Admins:  { Type: Signature, Rule: "OR('OrgXMSP.admin')" }
+
+  # --- Orderer orgs ---
+  - &Orderer1Org
+    Name: Orderer1Org
+    ID: Orderer1MSP
+    MSPDir: /home/asantopadre/fabric-deploy/orderer-msps/orderer1-msp
+    Policies:
+      Readers: { Type: Signature, Rule: "OR('Orderer1MSP.member')" }
+      Writers: { Type: Signature, Rule: "OR('Orderer1MSP.member')" }
+      Admins:  { Type: Signature, Rule: "OR('Orderer1MSP.admin')" }
+
+  - &Orderer2Org
+    Name: Orderer2Org
+    ID: Orderer2MSP
+    MSPDir: /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp
+    Policies:
+      Readers: { Type: Signature, Rule: "OR('Orderer2MSP.member')" }
+      Writers: { Type: Signature, Rule: "OR('Orderer2MSP.member')" }
+      Admins:  { Type: Signature, Rule: "OR('Orderer2MSP.admin')" }
+
+  - &Orderer3Org
+    Name: Orderer3Org
+    ID: Orderer3MSP
+    MSPDir: /home/asantopadre/fabric-deploy/orderer-msps/orderer3-msp
+    Policies:
+      Readers: { Type: Signature, Rule: "OR('Orderer3MSP.member')" }
+      Writers: { Type: Signature, Rule: "OR('Orderer3MSP.member')" }
+      Admins:  { Type: Signature, Rule: "OR('Orderer3MSP.admin')" }
+
 
 Orderer: &Orderer
   OrdererType: etcdraft
@@ -35,6 +54,10 @@ Orderer: &Orderer
     - orderer1.orgdcms.svc.cluster.local:7050
     - orderer2.orgdcms.svc.cluster.local:7050
     - orderer3.orgx.svc.cluster.local:7050
+  Organizations:
+    - *Orderer1Org
+    - *Orderer2Org
+    - *Orderer3Org
   Policies:
     Readers:
       Type: ImplicitMeta
