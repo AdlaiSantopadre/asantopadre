@@ -1,69 +1,3 @@
-sudo apt update && sudo apt install -y docker.io && sudo systemctl enable --now docker
-docker version
-curl -sfL https://get.k3s.io | sh -
-sudo kubectl get nodes
-9
-sudo aptinstall -y docker compose git
-sudo apt install -y docker compose git
-sudo apt install -y docker-compose git
-git clone https://github.com/hyperledger/fabric-samples.git
-dir
-cd fabric-samples
-cd test-network
-./network.sh up createChannel -ca
-sudo systemctl restart docker
-docker ps
-sudo usermod -aG asantopadre
-logout/
-sudo usermod -aG asantopadre
-logout
-docker ps
-sudo usermod -aG asantopadre
-logout
-docker ps
-newgrp docker
-Maurizio
-newgrp docker
-exit
-groups
-newgrp docker
-sudo usermod -aG asantopadre
-sudo usermod -aG LOGIN
-sudo usermod -a -G asantopadre
-groups
-WHOAMI
-whoami
-sudo /usr/sbin/usermod -aG asantopadre
-reboot
-groups
-getent group docker
-sudo gpassw -a asantopadre docker
-sudo gpasswd -a asantopadre docker
-groups
-sudo gpasswd -a asantopadre docker
-sudo reboot
-sudo cat /etc/rancher/k3s/k3s.yaml
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts && helm repo update && kubectl create ns monitoring && helm install kps prometheus-community/kube-prometheus-stack -n monitoring
-sudo kubectl create ns monitoring
-sudo helm install kps prometheus-community/kube-prometheus-stack -n monitoring
-sudo helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-sudo helm repo update
-sudo helm install kps prometheus-community/kube-prometheus-stack -n monitoring
-sudo cp /etc/rancher/k3s/k3s.yaml /root/.kube/config
-sudo chmod 600 /root/.kube/config
-sudo helm install kps prometheus-community/kube-prometheus-stack -n monitoring
-kubectl get secret --namespace monitoring -l app.kubernetes.io/component=admin-secret -o jsonpath="{.items[0].data.admin-password}" | base64 --decode ; echo
-sudo kubectl get secret --namespace monitoring -l app.kubernetes.io/component=admin-secret -o jsonpath="{.items[0].data.admin-password}" | base64 --decode ; echo
-sudo kubectl -n monitoring port-forward svc/kps-grafana 3000:80
-sudo kubectl -n monitoring port-forward svc/kps-grafana 3000:80
-shutdown
-logout
-groups
-docker ps
-docker risponde ma senza nessun container attivo
-cd fabric-samples
-cd test-network
-./network.sh up createChannel -ca
 cd fabric-samples
 cd ..
 ./scripts/bootstrap.sh
@@ -1998,3 +1932,69 @@ kubectl port-forward -n orgx svc/orderer3 9053:7053
 kubectl port-forward -n orgx svc/orderer3 7053:7053
 kubectl port-forward -n orgx svc/orderer3 9053:7053
 kubectl port-forward -n orgdcms svc/orderer1 7053:7053
+kubectl scale deploy orderer2 -n orgdcms --replicas=1
+sleep 10
+kubectl port-forward -n orgdcms svc/orderer2 8053:7053
+kubectl scale deploy orderer3 -n orgx --replicas=1
+sleep 10
+kubectl port-forward -n orgx svc/orderer3 9053:7053
+kubectl get pods -n orgdcms
+kubectl get pods -n orgx
+osnadmin channel list --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/*_sk
+kubectl logs -n orgdcms deploy/orderer1 | grep -i leader
+osnadmin channel list --orderer-address orderer1.orgdcms.svc.cluster.local:7053 --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+kubectl logs -n orgdcms deploy/orderer1 | grep -i etcdraft
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:8053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/*_sk
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:8053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/*_sk7d54c7090da8245c90cf1ecd6d13c2dfc80c21f57b1fd93f8f253b7a66016791_sk
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:8053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/sk7d54c7090da8245c90cf1ecd6d13c2dfc80c21f57b1fd93f8f253b7a66016791_sk
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:8053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/*_sk
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:8053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/7d54c7090da8245c90cf1ecd6d13c2dfc80c21f57b1fd93f8f253b7a66016791_sk
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:8053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/sk7d54c7090da8245c90cf1ecd6d13c2dfc80c21f57b1fd93f8f253b7a66016791_sk
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:8053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/7d54c7090da8245c90cf1ecd6d13c2dfc80c21f57b1fd93f8f253b7a66016791_sk
+osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:9053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/*_sk
+osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:9053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/40e258b3d7d383188dca26a08010ee89603ffd14c99e63f23fcb0d18d7a27042_sk
+osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/40e258b3d7d383188dca26a08010ee89603ffd14c99e63f23fcb0d18d7a27042_sk
+osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:9053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/40e258b3d7d383188dca26a08010ee89603ffd14c99e63f23fcb0d18d7a27042_sk
+kubectl rollout restart deploy/orderer1 -n orgdcms
+kubectl get pods -n orgx
+kubectl get pods -n orgdcms
+kubectl rollout restart deploy/orderer3 -n orgx
+kubectl get pods -n orgx
+osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:9053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/40e258b3d7d383188dca26a08010ee89603ffd14c99e63f23fcb0d18d7a27042_sk
+kubectl get pods -n orgdcms
+osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:9053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/40e258b3d7d383188dca26a08010ee89603ffd14c99e63f23fcb0d18d7a27042_sk
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+kubectl logs -n orgdcms deploy/orderer1 | grep -i raft
+kubectl logs -n orgx deploy/orderer3 | grep -i raft
+kubectl get pods -n orgdcmscomandi
+kubectl scale deploy orderer1 -n orgdcms --replicas=0
+kubectl scale deploy orderer2 -n orgdcms --replicas=0
+kubectl scale deploy orderer3 -n orgx --replicas=0
+kubectl get pods -n orgdcms
+kubectl get pods -n orgx
+ls ~/fabric-deploy/orderer1-data/
+ls ~/fabric-deploy/orderer2-data/
+ls ~/fabric-deploy/orderer3-data/
+kubectl describe deploy orderer1 -n orgdcms | grep -i FILELEDGER -A2
+kubectl describe deploy orderer1 -n orgdcms | grep -i production -A2
+kubectl describe deploy orderer1 -n orgdcms | grep -i FILELEDGER -A2
+kubectl describe deploy orderer1 -n orgdcms | grep -i production -A2
+kubectl describe deploy orderer1 -n orgdcms | grep -A5 Mounts
+kubectl scale deploy orderer1 -n orgdcms --replicas=1
+sleep 10
+kubectl get pods -n orgdcms
+osnadmin channel join --channelID canale1 --config-block ~/fabric-deploy/configtx/channel-artifacts/canale1.block --orderer-address orderer1.orgdcms.svc.cluster.local:7053 --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin channel join --channelID canale1 --config-block ~/fabric-deploy/configtx/channel-artifacts/canale1.block --orderer-address orderer2.orgdcms.svc.cluster.local:8053 --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem --client-key ~/fabric-deploy/orderer2-tls/keystore/7d54c7090da8245c90cf1ecd6d13c2dfc80c21f57b1fd93f8f253b7a66016791_sk
+kubectl port-forward -n orgx svc/orderer3 9053:7053
+osnadmin channel join --channelID canale1 --config-block ~/fabric-deploy/configtx/channel-artifacts/canale1.block --orderer-address orderer3.orgx.svc.cluster.local:9053 --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem --client-key ~/fabric-deploy/orderer3-tls/keystore/40e258b3d7d383188dca26a08010ee89603ffd14c99e63f23fcb0d18d7a27042_sk
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:9053   --ca-file ~/fabric-deploy/orderer3-tls/tlscacerts/tls-localhost-8054.pem   --client-cert ~/fabric-deploy/orderer3-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer3-tls/keystore/40e258b3d7d383188dca26a08010ee89603ffd14c99e63f23fcb0d18d7a27042_sk
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:8053   --ca-file ~/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer2-tls/keystore/7d54c7090da8245c90cf1ecd6d13c2dfc80c21f57b1fd93f8f253b7a66016791_sk
+osnadmin channel info   --channelID canale1   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin --help
+kubectl get pods -n orgx
+osnadmin channel info   --channelID canale1   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
+find /home/asantopadre/fabric-deploy -maxdepth 3 -type d | grep ca
+sudo nano /etc/hosts
