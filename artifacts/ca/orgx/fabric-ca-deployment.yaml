@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fabric-ca
+  namespace: orgx
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: fabric-ca } }
+  template:
+    metadata: { labels: { app: fabric-ca } }
+    spec:
+      containers:
+      - name: fabric-ca
+        image: hyperledger/fabric-ca:1.5
+        env:
+        - { name: FABRIC_CA_HOME, value: /etc/hyperledger/fabric-ca-server }
+        - { name: FABRIC_CA_SERVER_CA_NAME, value: ca-orgx }
+        - { name: FABRIC_CA_SERVER_PORT, value: "7054" }
+        - { name: FABRIC_CA_SERVER_TLS_ENABLED, value: "true" }
+        ports: [{ containerPort: 7054 }]
+        volumeMounts:
+        - { name: ca-data, mountPath: /etc/hyperledger/fabric-ca-server }
+      volumes:
+      - name: ca-data
+        persistentVolumeClaim: { claimName: fabric-ca-pvc }

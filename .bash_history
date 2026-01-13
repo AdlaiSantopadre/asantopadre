@@ -1,1056 +1,3 @@
-cd fabric-samples
-cd ..
-./scripts/bootstrap.sh
-dir
-./scripts/bootstrap.sh
-./install-fabric.sh
-curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.5.9 1.5.13
-cd test-network
-./network.sh up createChannel -ca
-sudo apt install -y jq
-./network.sh up createChannel -ca
-./network.sh down -v
-./network.sh down 
-docker system prune -af --volumes
-./network.sh up createChannel -ca
-sudo systemctl status ssh
-ip a
-~ip -4 addr show enp1s0
-ifconfig enp1s0
-/sbin/ip -4 addr show enp1s0
-curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-SHUTDOWN
-shutdown
-sudo nano /etc/netplan/01-static.yaml
-sudo nano netplan apply
-sudo netplan apply
-sudo chmod 600 /etc/netplan/01-static.yaml
-sudo nano /etc/netplan/01-static.yaml
-sudo netplan apply
-sudo nano /etc/netplan/01-static.yaml
-sudo netplan apply
-sudo nano /etc/netplan/01-static.yaml
-sudo netplan apply
-sudo nano /etc/netplan/01-static.yaml
-sudo netplan apply
-/sbin/ip -4 addr show enp1s0
-sudo systemctl restart systemd-networkd
-/sbin/ip -4 addr show enp1s0
-sudo nano /etc/netplan/01-static.yaml
-sudo netplan apply
-/sbin/ip -4 addr show enp1s0
-sudo systemctl restart systemd-networkd
-/sbin/ip -4 addr show enp1s0
-logout
-apt list --upgradable
-/sbin/ip -4 addr show enp1s0
-kubectl create ns orderer
-sudo kubectl create ns orderer
-sudo kubectl create ns orgdcms
-sudo kubectl create ns orgx
-sudo kubectl create ns fabric-tools
-sudo kubectl get ns
-cd ~/fabric-samples/test-network
-./network.sh down
-./network.sh down || true
-docker system prune -af --volumes
-docker ps -a
-docker volume ls
-docker system prune -af --volumes
-docker volume ls
-docker volume rm compose_orderer.example.com compose_peer0.org1.example.com compose_peer0.org2.example.com
-docker volume ls
-docker ps -a
-sudo kubectl get pods -A | grep fabric
-sudo kubectl get svc -A | grep fabric
-cd..
-cd ..
-sudo kubectl get svc -A | grep fabric
-sudo kubectl get pods -A | grep fabric
-ls ~/fabric-samples
-cd ..
-sudo kubectl -n orgdcms create secret generic ca-admin --from-literal=CA_ADMIN=admin --from-literal=CA_PASS=adminpw
-sudo kubectl -n orgx    create secret generic ca-admin --from-literal=CA_ADMIN=admin --from-literal=CA_PASS=adminpw
-cat <<'YAML' | sudo kubectl apply -f -
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata: { name: fabric-ca-pvc, namespace: orgdcms }
-spec:
-  accessModes: ["ReadWriteOnce"]
-  resources: { requests: { storage: 2Gi } }
----
-apiVersion: apps/v1
-kind: Deployment
-metadata: { name: fabric-ca, namespace: orgdcms }
-spec:
-  replicas: 1
-  selector: { matchLabels: { app: fabric-ca } }
-  template:
-    metadata: { labels: { app: fabric-ca } }
-    spec:
-      containers:
-        - name: ca
-          image: hyperledger/fabric-ca:1.5.13
-          env:
-            - { name: FABRIC_CA_HOME, value: /etc/hyperledger/fabric-ca-server }
-            - { name: FABRIC_CA_SERVER_CA_NAME, value: ca-orgdcms }
-            - { name: FABRIC_CA_SERVER_TLS_ENABLED, value: "true" }
-            - name: FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS
-              valueFrom: { secretKeyRef: { name: ca-admin, key: CA_ADMIN } }
-            - name: CA_PASS
-              valueFrom: { secretKeyRef: { name: ca-admin, key: CA_PASS } }
-          command: ["/bin/sh","-lc"]
-          args:
-            - >
-              export FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS="${FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS}:${CA_PASS}";
-              fabric-ca-server start -b "${FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS}" -p 7054
-          ports: [{ containerPort: 7054 }]
-          volumeMounts: [{ name: data, mountPath: /etc/hyperledger/fabric-ca-server }]
-      volumes: [{ name: data, persistentVolumeClaim: { claimName: fabric-ca-pvc } }]
----
-apiVersion: v1
-kind: Service
-metadata: { name: fabric-ca, namespace: orgdcms }
-spec:
-  selector: { app: fabric-ca }
-  ports: [{ name: https, port: 7054, targetPort: 7054 }]
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata: { name: fabric-ca-pvc, namespace: orgx }
-spec:
-  accessModes: ["ReadWriteOnce"]
-  resources: { requests: { storage: 2Gi } }
----
-apiVersion: apps/v1
-kind: Deployment
-metadata: { name: fabric-ca, namespace: orgx }
-spec:
-  replicas: 1
-  selector: { matchLabels: { app: fabric-ca } }
-  template:
-    metadata: { labels: { app: fabric-ca } }
-    spec:
-      containers:
-        - name: ca
-          image: hyperledger/fabric-ca:1.5.13
-          env:
-            - { name: FABRIC_CA_HOME, value: /etc/hyperledger/fabric-ca-server }
-            - { name: FABRIC_CA_SERVER_CA_NAME, value: ca-orgx }
-            - { name: FABRIC_CA_SERVER_TLS_ENABLED, value: "true" }
-            - name: FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS
-              valueFrom: { secretKeyRef: { name: ca-admin, key: CA_ADMIN } }
-            - name: CA_PASS
-              valueFrom: { secretKeyRef: { name: ca-admin, key: CA_PASS } }
-          command: ["/bin/sh","-lc"]
-          args:
-            - >
-              export FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS="${FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS}:${CA_PASS}";
-              fabric-ca-server start -b "${FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS}" -p 7054
-          ports: [{ containerPort: 7054 }]
-          volumeMounts: [{ name: data, mountPath: /etc/hyperledger/fabric-ca-server }]
-      volumes: [{ name: data, persistentVolumeClaim: { claimName: fabric-ca-pvc } }]
----
-apiVersion: v1
-kind: Service
-metadata: { name: fabric-ca, namespace: orgx }
-spec:
-  selector: { app: fabric-ca }
-  ports: [{ name: https, port: 7054, targetPort: 7054 }]
-YAML
-
-sudo kubectl -n orgdcms get pods,svc
-sudo kubectl -n orgx get pods,svc
-sudo kubectl get sc
-sudo kubectl -n orgdcms describe pod fabric-ca-6cddb5d85c-jnq8q
-sudo kubectl -n orgdcms get pods
-sudo kubectl -n orgdcms describe pod fabric-ca-5969cf9964-tzs82
-sudo kubectl -n orgdcms edit deployment fabric-ca
-sudo kubectl -n orgdcms edit deployment fabric-casudo kubectl -n orgdcms get deployment fabric-ca -o yaml | nano
-export EDITOR=nano
-sudo kubectl -n orgdcms edit deployment fabric-ca
-
-sudo kubectl -n orgdcms patch deployment fabric-ca --type='json' -p='[
-  {"op":"add","path":"/spec/template/spec/tolerations","value":[
-    {"key":"node-role.kubernetes.io/control-plane","operator":"Exists","effect":"NoSchedule"}
-  ]}
-]'
-sudo kubectl -n orgdcms get pods
-sudo kubectl taint nodes --all node-role.kubernetes.io/control-plane-
-sudo kubectl describe node beelink-fabric | grep -i taint
-sudo kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
-sudo kubectl patch deployment fabric-ca -n orgdcms --type='merge' -p '{
-  "spec": {
-    "template": {
-      "spec": {
-        "nodeSelector": {
-          "kubernetes.io/hostname": "beelink-fabric"
-        }
-      }
-    }
-  }
-}'
-sudo kubectl -n orgdcms get pods
-sudo kubectl -n orgdcms delete deployment fabric-ca
-sudo kubectl -n orgdcms delete pvc fabric-ca-pvc
-cat <<'YAML' | sudo kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: fabric-ca
-  namespace: orgdcms
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: fabric-ca
-  template:
-    metadata:
-      labels:
-        app: fabric-ca
-    spec:
-      containers:
-        - name: ca
-          image: hyperledger/fabric-ca:1.5.13
-          env:
-            - name: FABRIC_CA_HOME
-              value: /etc/hyperledger/fabric-ca-server
-            - name: FABRIC_CA_SERVER_CA_NAME
-              value: ca-orgdcms
-            - name: FABRIC_CA_SERVER_TLS_ENABLED
-              value: "true"
-            - name: FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: ca-admin
-                  key: CA_ADMIN
-            - name: CA_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: ca-admin
-                  key: CA_PASS
-          command: ["/bin/sh","-lc"]
-          args:
-            - >
-              export FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS="${FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS}:${CA_PASS}";
-              fabric-ca-server start -b "${FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS}" -p 7054
-          ports:
-            - containerPort: 7054
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: fabric-ca
-  namespace: orgdcms
-spec:
-  selector:
-    app: fabric-ca
-  ports:
-    - port: 7054
-      targetPort: 7054
-YAML
-
-sudo kubectl -n orgdcms get pods
-cat <<'YAML' | sudo kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: fabric-ca
-  namespace: orgx
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: fabric-ca
-  template:
-    metadata:
-      labels:
-        app: fabric-ca
-    spec:
-      containers:
-        - name: ca
-          image: hyperledger/fabric-ca:1.5.13
-          env:
-            - name: FABRIC_CA_HOME
-              value: /etc/hyperledger/fabric-ca-server
-            - name: FABRIC_CA_SERVER_CA_NAME
-              value: ca-orgx
-            - name: FABRIC_CA_SERVER_TLS_ENABLED
-              value: "true"
-            - name: FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: ca-admin
-                  key: CA_ADMIN
-            - name: CA_PASS
-              valueFrom:
-                secretKeyRef:
-                  name: ca-admin
-                  key: CA_PASS
-          command: ["/bin/sh","-lc"]
-          args:
-            - >
-              export FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS="${FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS}:${CA_PASS}";
-              fabric-ca-server start -b "${FABRIC_CA_SERVER_BOOTSTRAP_USER_PASS}" -p 7054
-          ports:
-            - containerPort: 7054
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: fabric-ca
-  namespace: orgx
-spec:
-  selector:
-    app: fabric-ca
-  ports:
-    - port: 7054
-      targetPort: 7054
-YAML
-
-sudo kubectl -n orgx get pods
-sudo kubectl -n fabric-tools run fabric-tools --image=hyperledger/fabric-tools:2.5 --restart=Never -- sleep infinity
-sudo kubectl -n fabric-tools get pods
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-sudo kubectl -n fabric-tools run ca-client   --image=hyperledger/fabric-ca:1.5.13   --restart=Never -- sleep infinity
-sudo kubectl -n fabric-tools get pods
-sudo kubectl -n fabric-tools exec -it ca-client -- bash
-sudo kubectl -n orgdcms get svc fabric-ca
-sudo kubectl -n fabric-tools exec -it ca-client -- bash
-sudo kubectl -n orgdcms get svc fabric-ca
-sudo kubectl -n fabric-tools exec -it ca-client -- bash
-sudo kubectl -n orgdcms edit deployment fabric-ca
-sudo kubectl -n orgdcms get pods
-sudo kubectl -n fabric-tools exec -it ca-client -- bash
-export FABRIC_CA_CLIENT_HOME=/work/orgdcms
-fabric-ca-client register --id.name orderer1 --id.secret orderer1pw --id.type orderer -u http://10.43.76.126:7054
-fabric-ca-client enroll -u http://orderer1:orderer1pw@10.43.76.126:7054 -M /work/orgdcms/orderers/orderer1/msp
-ls /work/orgdcms/orderers/orderer1/msp/signcerts
-export FABRIC_CA_CLIENT_HOME=/work/orgdcms
-fabric-ca-client register --id.name orderer1 --id.secret orderer1pw --id.type orderer -u http://10.43.76.126:7054
-sudo kubectl -n fabric-tools exec -it ca-client -- bash
-sudo kubectl -n orgx get svc fabric-ca
-sudo kubectl -n fabric-tools exec -it ca-client -- bash
-sudo kubectl -n orgx edit deployment fabric-ca
-sudo kubectl -n fabric-tools exec -it ca-client -- bash
-mkdir -p ~/fabric-deploy/orderer
-cd ~/fabric-deploy/orderer
-cat <<'YAML' > orderer0-orgdcms.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: orderer0-orgdcms
-  namespace: orderer
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: orderer0-orgdcms
-  template:
-    metadata:
-      labels:
-        app: orderer0-orgdcms
-    spec:
-      containers:
-        - name: orderer
-          image: hyperledger/fabric-orderer:2.5
-          env:
-            - name: ORDERER_GENERAL_LISTENADDRESS
-              value: "0.0.0.0"
-            - name: ORDERER_GENERAL_LISTENPORT
-              value: "7050"
-            - name: ORDERER_GENERAL_LOCALMSPID
-              value: "OrdererOrgDCMS"
-            - name: ORDERER_GENERAL_LOCALMSPDIR
-              value: /var/hyperledger/orderer/msp
-            - name: ORDERER_GENERAL_TLS_ENABLED
-              value: "true"
-            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
-              value: /var/hyperledger/orderer/tls/keystore
-            - name: ORDERER_GENERAL_TLS_CERTIFICATE
-              value: /var/hyperledger/orderer/tls/signcerts
-            - name: ORDERER_GENERAL_TLS_ROOTCAS
-              value: /var/hyperledger/orderer/tls/tlscacerts
-            - name: ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE
-              value: /var/hyperledger/orderer/tls/signcerts
-            - name: ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY
-              value: /var/hyperledger/orderer/tls/keystore
-            - name: ORDERER_GENERAL_CLUSTER_ROOTCAS
-              value: /var/hyperledger/orderer/tls/tlscacerts
-          volumeMounts:
-            - name: msp
-              mountPath: /var/hyperledger/orderer/msp
-            - name: tls
-              mountPath: /var/hyperledger/orderer/tls
-      volumes:
-        - name: msp
-          hostPath:
-            path: /work/orgdcms/orderers/orderer0/msp
-        - name: tls
-          hostPath:
-            path: /work/orgdcms/orderers/orderer0/tls
-YAML
-
-cat <<'YAML' > orderer0-orgdcms-svc.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: orderer0-orgdcms
-  namespace: orderer
-spec:
-  selector:
-    app: orderer0-orgdcms
-  ports:
-    - port: 7050
-      targetPort: 7050
-YAML
-
-ls -l ~/fabric-deploy/orderer
-cat <<'YAML' > ~/fabric-deploy/orderer/orderer1-orgdcms.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: orderer1-orgdcms
-  namespace: orderer
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: orderer1-orgdcms
-  template:
-    metadata:
-      labels:
-        app: orderer1-orgdcms
-    spec:
-      containers:
-        - name: orderer
-          image: hyperledger/fabric-orderer:2.5
-          env:
-            - name: ORDERER_GENERAL_LISTENADDRESS
-              value: "0.0.0.0"
-            - name: ORDERER_GENERAL_LISTENPORT
-              value: "8050"
-            - name: ORDERER_GENERAL_LOCALMSPID
-              value: "OrdererOrgDCMS"
-            - name: ORDERER_GENERAL_LOCALMSPDIR
-              value: /var/hyperledger/orderer/msp
-            - name: ORDERER_GENERAL_TLS_ENABLED
-              value: "true"
-            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
-              value: /var/hyperledger/orderer/tls/keystore
-            - name: ORDERER_GENERAL_TLS_CERTIFICATE
-              value: /var/hyperledger/orderer/tls/signcerts
-            - name: ORDERER_GENERAL_TLS_ROOTCAS
-              value: /var/hyperledger/orderer/tls/tlscacerts
-            - name: ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE
-              value: /var/hyperledger/orderer/tls/signcerts
-            - name: ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY
-              value: /var/hyperledger/orderer/tls/keystore
-            - name: ORDERER_GENERAL_CLUSTER_ROOTCAS
-              value: /var/hyperledger/orderer/tls/tlscacerts
-          volumeMounts:
-            - name: msp
-              mountPath: /var/hyperledger/orderer/msp
-            - name: tls
-              mountPath: /var/hyperledger/orderer/tls
-      volumes:
-        - name: msp
-          hostPath:
-            path: /work/orgdcms/orderers/orderer1/msp
-        - name: tls
-          hostPath:
-            path: /work/orgdcms/orderers/orderer1/tls
-YAML
-
-cat <<'YAML' > ~/fabric-deploy/orderer/orderer1-orgdcms-svc.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: orderer1-orgdcms
-  namespace: orderer
-spec:
-  selector:
-    app: orderer1-orgdcms
-  ports:
-    - port: 8050
-      targetPort: 8050
-YAML
-
-cat <<'YAML' > ~/fabric-deploy/orderer/orderer0-orgx.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: orderer0-orgx
-  namespace: orderer
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: orderer0-orgx
-  template:
-    metadata:
-      labels:
-        app: orderer0-orgx
-    spec:
-      containers:
-        - name: orderer
-          image: hyperledger/fabric-orderer:2.5
-          env:
-            - name: ORDERER_GENERAL_LISTENADDRESS
-              value: "0.0.0.0"
-            - name: ORDERER_GENERAL_LISTENPORT
-              value: "9050"
-            - name: ORDERER_GENERAL_LOCALMSPID
-              value: "OrdererOrgX"
-            - name: ORDERER_GENERAL_LOCALMSPDIR
-              value: /var/hyperledger/orderer/msp
-            - name: ORDERER_GENERAL_TLS_ENABLED
-              value: "true"
-            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
-              value: /var/hyperledger/orderer/tls/keystore
-            - name: ORDERER_GENERAL_TLS_CERTIFICATE
-              value: /var/hyperledger/orderer/tls/signcerts
-            - name: ORDERER_GENERAL_TLS_ROOTCAS
-              value: /var/hyperledger/orderer/tls/tlscacerts
-            - name: ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE
-              value: /var/hyperledger/orderer/tls/signcerts
-            - name: ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY
-              value: /var/hyperledger/orderer/tls/keystore
-            - name: ORDERER_GENERAL_CLUSTER_ROOTCAS
-              value: /var/hyperledger/orderer/tls/tlscacerts
-          volumeMounts:
-            - name: msp
-              mountPath: /var/hyperledger/orderer/msp
-            - name: tls
-              mountPath: /var/hyperledger/orderer/tls
-      volumes:
-        - name: msp
-          hostPath:
-            path: /work/orgx/orderers/orderer0/msp
-        - name: tls
-          hostPath:
-            path: /work/orgx/orderers/orderer0/tls
-YAML
-
-cat <<'YAML' > ~/fabric-deploy/orderer/orderer0-orgx-svc.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: orderer0-orgx
-  namespace: orderer
-spec:
-  selector:
-    app: orderer0-orgx
-  ports:
-    - port: 9050
-      targetPort: 9050
-YAML
-
-ls -l ~/fabric-deploy/orderer
-cd ..
-sudo kubectl apply -f ~/fabric-deploy/orderer/
-sudo kubectl -n orderer get pods
-sudo kubectl -n orderer get svc
-sudo kubectl -n orderer get pods
-mkdir -p ~/fabric-deploy/channel
-cat <<'YAML' > ~/fabric-deploy/channel/configtx.yaml
-Organizations:
-  - &OrdererOrgDCMS
-    Name: OrdererOrgDCMS
-    ID: OrdererOrgDCMS
-    MSPDir: /work/orgdcms/orderers/orderer0/msp
-    Policies:
-      Readers: { Type: Signature, Rule: "OR('OrdererOrgDCMS.member')" }
-      Writers: { Type: Signature, Rule: "OR('OrdererOrgDCMS.member')" }
-      Admins:  { Type: Signature, Rule: "OR('OrdererOrgDCMS.admin')" }
-
-  - &OrdererOrgX
-    Name: OrdererOrgX
-    ID: OrdererOrgX
-    MSPDir: /work/orgx/orderers/orderer0/msp
-    Policies:
-      Readers: { Type: Signature, Rule: "OR('OrdererOrgX.member')" }
-      Writers: { Type: Signature, Rule: "OR('OrdererOrgX.member')" }
-      Admins:  { Type: Signature, Rule: "OR('OrdererOrgX.admin')" }
-
-Capabilities:
-  Channel: &ChannelCapabilities
-    V2_0: true
-  Orderer: &OrdererCapabilities
-    V2_0: true
-
-Application: &ApplicationDefaults
-  Policies:
-    Readers: { Type: ImplicitMeta, Rule: "ANY Readers" }
-    Writers: { Type: ImplicitMeta, Rule: "ANY Writers" }
-    Admins:  { Type: ImplicitMeta, Rule: "MAJORITY Admins" }
-  Capabilities: *ChannelCapabilities
-
-Orderer: &OrdererDefaults
-  OrdererType: etcdraft
-  Addresses:
-    - orderer0-orgdcms.orderer:7050
-    - orderer1-orgdcms.orderer:8050
-    - orderer0-orgx.orderer:9050
-  EtcdRaft:
-    Consenters:
-      - Host: orderer0-orgdcms.orderer
-        Port: 7050
-        ClientTLSCert: /work/orgdcms/orderers/orderer0/tls/signcerts/cert.pem
-        ServerTLSCert: /work/orgdcms/orderers/orderer0/tls/signcerts/cert.pem
-      - Host: orderer1-orgdcms.orderer
-        Port: 8050
-        ClientTLSCert: /work/orgdcms/orderers/orderer1/tls/signcerts/cert.pem
-        ServerTLSCert: /work/orgdcms/orderers/orderer1/tls/signcerts/cert.pem
-      - Host: orderer0-orgx.orderer
-        Port: 9050
-        ClientTLSCert: /work/orgx/orderers/orderer0/tls/signcerts/cert.pem
-        ServerTLSCert: /work/orgx/orderers/orderer0/tls/signcerts/cert.pem
-  Organizations:
-    - *OrdererOrgDCMS
-    - *OrdererOrgX
-  Capabilities: *OrdererCapabilities
-  Policies:
-    Readers: { Type: ImplicitMeta, Rule: "ANY Readers" }
-    Writers: { Type: ImplicitMeta, Rule: "ANY Writers" }
-    Admins:  { Type: ImplicitMeta, Rule: "MAJORITY Admins" }
-
-Profiles:
-  SystemGenesis:
-    Orderer:
-      <<: *OrdererDefaults
-    Consortiums:
-      SampleConsortium:
-        Organizations:
-          - *OrdererOrgDCMS
-          - *OrdererOrgX
-YAML
-
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-sudo kubectl -n fabric-tools cp ~/fabric-deploy/channel/configtx.yaml fabric-tools:/work/channel/configtx.yaml
-dir
-cd fabric-deplot
-cd fabric-deploy
-dir
-md channel
-cd channel
-dir
-sudo kubectl -n fabric-tools exec fabric-tools -- mkdir -p /work/channel
-cd..
-..
-.
-cd.
-cd ./
-cd ~
-dir
-sudo kubectl -n fabric-tools cp ~/fabric-deploy/channel/configtx.yaml fabric-tools:/work/channel/configtx.yaml
-sudo kubectl -n fabric-tools exec fabric-tools -- ls /work/channel
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-dir
-cd fabric deploy
-dir
-nano ~/fabric-deploy/channel/configtx.yaml
-fg
-nano ~/fabric-deploy/channel/configtx.yaml
-sudo kubectl -n fabric-tools cp ~/fabric-deploy/channel/configtx.yaml fabric-tools:/work/channel/configtx.yaml
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-nano ~/fabric-deploy/channel/configtx.yaml
-sudo kubectl -n fabric-tools cp   ~/fabric-deploy/channel/configtx.yaml   fabric-tools:/work/channel/configtx.yaml
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-nano ~/fabric-deploy/channel/configtx.yaml
-sudo kubectl -n fabric-tools cp   ~/fabric-deploy/channel/configtx.yaml   fabric-tools:/work/channel/configtx.yaml
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-sudo kubectl -n fabric-tools cp   ~/fabric-deploy/channel/configtx.yaml   fabric-tools:/work/channel/configtx.yaml
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-export FABRIC_CFG_PATH=/work/channel
-configtxgen -profile SystemGenesis -channelID system-channel -outputBlock /work/channel-artifacts/genesis.block
-ls /work/channel-artifacts
-sudo kubectl -n fabric-tools exec fabric-tools -- ls /work/channel
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-cd ~/fabric-deploy
-export CORE_PEER_LOCALMSPID=OrgDCMSMSP
-export CORE_PEER_MSPCONFIGPATH=~/fabric-deploy/peer0-msp
-export CORE_PEER_TLS_ENABLED=true
-export CORE_PEER_TLS_ROOTCERT_FILE=~/fabric-deploy/peer0-tls/tlscacerts/tls-localhost-7054.pem
-export CORE_PEER_ADDRESS=localhost:7051
-peer channel create   -o localhost:7050   -c dcmschannel   --outputBlock dcmschannel.block   --tls   --cafile ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem
-which peer
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-kubectl cp ~/fabric-deploy/peer0-msp fabric-tools/fabric-tools:/work/peer0-msp
-kubectl cp ~/fabric-deploy/peer0-tls fabric-tools/fabric-tools:/work/peer0-tls
-kubectl cp ~/fabric-deploy/orderer1-tls fabric-tools/fabric-tools:/work/orderer1-tls
-kubectl exec -it -n fabric-tools fabric-tools -- ls /work
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-cd /work
-export CORE_PEER_LOCALMSPID=OrgDCMSMSP
-export CORE_PEER_MSPCONFIGPATH=/work/peer0-msp
-export CORE_PEER_TLS_ENABLED=true
-export CORE_PEER_TLS_ROOTCERT_FILE=/work/peer0-tls/tlscacerts/tls-localhost-7054.pem
-export CORE_PEER_ADDRESS=peer0.orgdcms:7051
-cd orderer
-ls
-nano ~/fabric-deploy/orderer/orderer1-dcms-svc.yaml
-kubectl apply -f orderer/orderer1-orgdcms-svc.yaml
-exit
-cd ~/fabric-deploy
-cd orderer
-kubectl apply -f orderer/orderer1-orgdcms-svc.yaml
-ls
-kubectl apply -f orderer1-orgdcms-svc.yaml
-kubectl get svc -n orgdcms
-kubectl apply -f orderer/orderer1-orgdcms-svc.yaml
-kubectl apply -f orderer1-orgdcms-svc.yaml
-peer channel create   -o orderer1-orgdcms:7050   -c dcmschannel   --outputBlock dcmschannel.block   --tls   --cafile /work/orderer1-tls/tlscacerts/tls-localhost-7054.pem
-exit
-kubectl -n orgdcms get pods -l app=orderer1
-kubectl -n orgdcms logs orderer1-6986fd6cc6-rj6mb
-ls ~/fabric-deploy/orderer1-tls/keystore
-ls -lt ~/fabric-deploy/orderer1-tls/keystore
-kubectl -n orgdcms patch deploy orderer1 --type='json' -p='[
-{"op":"replace","path":"/spec/template/spec/containers/0/env/5/value","value":"/var/hyperledger/orderer/tls/keystore/5a22b8c606d012f8e843a320d3ace8e602b786a1d21316c0e35e86535aff2975_sk"}
-]'
-kubectl -n orgdcms rollout restart deploy/orderer1
-kubectl -n orgdcms rollout status deploy/orderer1
-kubectl -n orgdcms get pods -l app=orderer1
-kubectl -n orgdcms logs orderer1-7c9b97f9b8-tbvck --previous
-kubectl -n orgdcms patch deploy orderer1 --type='json' -p='[
-{"op":"replace","path":"/spec/template/spec/containers/0/env/5/value","value":"true"}
-]'
-kubectl -n orgdcms patch deploy orderer1 --type='json' -p='[
-{"op":"replace","path":"/spec/template/spec/containers/0/env/6/value","value":"/var/hyperledger/orderer/tls/keystore/5a22b8c606d012f8e843a320d3ace8e602b786a1d21316c0e35e86535aff2975_sk"}
-]'
-kubectl -n orgdcms get pods -l app=orderer1
-kubectl -n orgdcms exec -it peer0-8578465b4b-tqq2j -- bash -lc 'peer channel fetch config /tmp/test.pb -o orderer1:7050 -c mychannel \
- --tls --cafile /var/hyperledger/peer/tls/tlscacerts/tls-localhost-7054.pem'
-kubectl -n orgdcms get svc
-kubectl -n orgdcms exec -it peer0-8578465b4b-tqq2j -- bash -lc 'peer channel fetch config /tmp/test.pb \
- -o orderer1.orgdcms.svc.cluster.local:7050 \
- -c mychannel \
- --tls \
- --cafile /var/hyperledger/peer/tls/tlscacerts/tls-localhost-7054.pem'
-kubectl -n orgdcms run dns-test --image=busybox:1.36 --rm -it --restart=Never -- sh
-nano ~/fabric-deploy/channel/configtx.yaml
-sudo kubectl -n fabric-tools cp   ~/fabric-deploy/channel/configtx.yaml   fabric-tools:/work/channel/configtx.yaml
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-sudo kubectl -n fabric-tools exec fabric-tools -- mkdir -p /work/channel
-sudo kubectl -n fabric-tools cp   ~/fabric-deploy/channel/configtx.yaml   fabric-tools:/work/channel/configtx.yaml
-nano ~/fabric-deploy/channel/configtx.yaml
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-nano ~/fabric-deploy/channel/configtx.yaml
-sudo kubectl -n fabric-tools cp   ~/fabric-deploy/channel/configtx.yaml   fabric-tools:/work/channel/configtx.yaml
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-nano ~/fabric-deploy/channel/configtx.yaml
-sudo kubectl -n fabric-tools cp   ~/fabric-deploy/channel/configtx.yaml   fabric-tools:/work/channel/configtx.yaml
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-sudo kubectl -n orgdcms get pods
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-sudo kubectl -n orgdcms get pods
-sudo kubectl -n orgdcms exec -it fabric-ca-bc5cc48cd-rx94q -- bash
-nano ~/fabric-deploy/channel/configtx.yaml
-sudo kubectl -n fabric-tools cp   ~/fabric-deploy/channel/configtx.yaml   fabric-tools:/work/channel/configtx.yaml
-sudo kubectl -n fabric-tools exec -it fabric-tools -- bash
-cd ~
-ls
-cd fabric-deploy
-git init
-git branch -m main
-ls
-mkdir k8s
-cat <<EOF > .gitignore
-/work/
-/*.block
-*.pem
-*.key
-*.crt
-EOF
-
-git add .
-git commit -m "Initial Fabric k3s deploy (CA, configtx)"
-git status
-git commit -m "Bootstrap Fabric deploy (CA, orderer, configtx)"
-git branch -M main
-git remote add origin https://github.com/AdlaiSantopadre/fabric-deploy.git
-git push -u origin main
-git remote add origin https://github.com/AdlaiSantopadre/beelink-fabrik.git
-git branch -M main
-git remote add origin https://github.com/AdlaiSantopadre/beelink-fabrik.git
-git push -u origin main
-git remote -v
-git remote set-url origin https://github.com/AdlaiSantopadre/beelink-fabrik.git
-git commit -m "Bootstrap Fabric on k3s: CA, configtx, orderers"
-git branch -M main
-git push -u origin main
-Git config –global user.name “Adlai Santopadre”
-git config –global user.name “Adlai Santopadre”
-git config –global user.email “tua.email@example.com"
-git config --global --list
-git commit -m "Bootstrap Fabric on k3s: CA, configtx, orderers"
-git push -u origin main
-
-exit
-git config --global --list
-git config --global user.mail "126016337+AdlaiSantopadre@users.noreply.github.com"
-git config --global --list
-git commit -m "Bootstrap Fabric on k3s: CA, configtx, orderers"
-git push -u origin main
-git config --global --list
-git config --global user.name "AdlaiSantopadre"
-git config --global --list
-git commit -m "Bootstrap Fabric on k3s: CA, configtx, orderers"
-git config --global user.name "AdlaiSantopadre"
-git config --global user.mail "AdlaiSantopadre@users.noreply.github.com"
-git config --global user.name "AdlaiSantopadre"
-git config --global --list
-git commit -m "Bootstrap Fabric on k3s: CA, configtx, orderers"
-git push -u origin main
-git config --global --list
-git config --global user.email "AdlaiSantopadre@users.noreply.github.com"
-git add .
-git commit -m "Bootstrap Fabric on k3s: CA, configtx, orderers"
-git branch -M main
-git push -u origin main
-ls ~/.ssh
-ssh-keygen -t ed25519 -C "AdlaiSantopadre@github"
-cat ~/.ssh/id_ed25519.pub
-ssh -T git@github.com
-git push -u origin main
-git remote -v
-origin  https://github.com/AdlaiSantopadre/beelink-fabrik.git (fetch)
-origin  https://github.com/AdlaiSantopadre/beelink-fabrik.git (push)
-git remote set-url origin git@github.com:AdlaiSantopadre/beelink-fabrik.git
-git remote -v
-git config --global --unset credential.helper
-git push -u origin main
-git pull --rebase origin main
-git push origin main
-kubectl apply -n orgdcms -f fabric-ca-pvc.yaml
-kubectl delete deployment fabric-ca -n orgdcms --ignore-not-found
-kubectl apply -n orgdcms -f fabric-ca-deployment-tls.yaml
-kubectl apply -n orgdcms -f fabric-ca-pvc.yaml
-cd..
-cd ..
-kubectl apply -n orgdcms -f fabric-ca-pvc.yaml
-sudo chmod 644 /etc/rancher/k3s/k3s.yaml
-export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-kubectl apply -n orgdcms -f fabric-ca-pvc.yaml
-cd fabric-deploy
-dir
-nano fabric-ca.yaml
-kubectl apply -f fabric-ca.yaml
-kubectl get pvc -n orgdcms
-kubectl get pods -n orgdcms
-kubectl logs -n orgdcms deploy/fabric-ca --tail=80
-kubectl delete pod -n orgdcms fabric-ca-bc5cc48cd-rx94q
-kubectl describe pvc -n orgdcms fabric-ca-pvc
-kubectl get sc
-kubectl -n kube-system get pods | grep local-path
-kubectl -n kube-system rollout restart deployment local-path-provisioner
-kubectl delete pod -n orgdcms fabric-ca-b9848678-rgxd4
-kubectl get pvc -n orgdcms
-kubectl get pods -n orgdcms
-kubectl scale deployment fabric-ca -n orgdcms --replicas=0
-kubectl get pods -n orgdcms
-kubectl scale deployment fabric-ca -n orgdcms --replicas=1
-kubectl get pvc -n orgdcms
-kubectl get pods -n orgdcms
-kubectl scale deployment fabric-ca -n orgdcms --replicas=0
-kubectl get pods -n orgdcms
-kubectl -n kube-system get pods | grep local-path
-kubectl -n kube-system rollout restart deployment local-path-provisioner
-kubectl scale deployment fabric-ca -n orgdcms --replicas=1
-kubectl get pvc -n orgdcms
-kubectl get pods -n orgdcms
-kubectl get pvc -n orgdcms
-kubectl get pods -n orgdcms
-kubectl scale deployment fabric-ca -n orgdcms --replicas=0
-kubectl get pods -n orgdcms
-kubectl get pvc -n orgdcms
-sudo mkdir -p /opt/local-path-provisioner/fabric-ca
-sudo chmod 777 /opt/local-path-provisioner/fabric-ca
-nano fabric-ca-pv.yaml
-kubectl apply -f fabric-ca-pv.yaml
-kubectl get pv
-kubectl get pvc -n orgdcms
-kubectl delete pvc -n orgdcms fabric-ca-pvc
-kubectl apply -f fabric-ca.yaml
-kubectl get pv
-kubectl get pvc -n orgdcms
-kubectl get pods -n orgdcms
-kubectl logs -n orgdcms deploy/fabric-ca --tail=50
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client register   --id.name orderer1   --id.secret ordererpw   --id.type orderer   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client enroll   -u https://admin:adminpw@fabric-ca.orgdcms:7054   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client enroll   -u https://admin:adminpw@fabric-ca:7054   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client enroll   -u https://admin:adminpw@localhost:7054   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client register   --id.name orderer1   --id.secret ordererpw   --id.type orderer   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client register   -u https://localhost:7054   --id.name orderer1   --id.secret ordererpw   --id.type orderer   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client enroll   -u https://orderer1:ordererpw@localhost:7054   --enrollment.profile tls   --csr.hosts orderer1,localhost   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem   -M /etc/hyperledger/fabric-ca-server/orderer1/tls
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client enroll   -u https://orderer1:ordererpw@localhost:7054   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem   -M /etc/hyperledger/fabric-ca-server/orderer1/msp
-cd ~/fabric-deploy
-nano configtx.yaml
-export FABRIC_CFG_PATH=~/fabric-deploy
-configtxgen -profile Genesis -channelID system-channel -outputBlock genesis.block
-kubectl run fabric-tools   --rm -it   --restart=Never   -n fabric-tools   --image=hyperledger/fabric-tools:2.5   -- bash
-kubectl get pods -n fabric-tools
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-kubectl cp orgdcms/fabric-ca:/etc/hyperledger/fabric-ca-server/orderer1/tls   ~/fabric-deploy/orderer1-tls
-dir
-kubectl get pods -n orgdcms
-kubectl cp orgdcms/fabric-ca-b9848678-9k9b5/etc/hyperledger/fabric-ca-server/orderer1/tls   ~/fabric-deploy/orderer1-tls
-kubectl get pods -n orgdcms
-kubectl cp orgdcms/fabric-ca-b9848678-9k9b5/etc/hyperledger/fabric-ca-server/orderer1/tls ~/fabric-deploy/orderer1-tls
-kubectl cp orgdcms/fabric-ca-b9848678-9k9b5:/etc/hyperledger/fabric-ca-server/orderer1/tls ~/fabric-deploy/orderer1-tls
-ls ~/fabric-deploy/orderer1-tls
-kubectl cp ~/fabric-deploy/orderer1-tls fabric-tools/fabric-tools:/work/orderer1-tls
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-kubectl cp orgdcms/fabric-ca-b9848678-9k9b5:/etc/hyperledger/fabric-ca-server/orderer1/msp   ~/fabric-deploy/orderer1-msp
-ls ~/fabric-deploy/orderer1-msp/cacerts
-kubectl cp orgdcms/fabric-ca-b9848678-9k9b5:/etc/hyperledger/fabric-ca-server/orderer1/msp
-ls ~/fabric-deploy/orderer1-msp
-ls ~/fabric-deploy/orderer1-msp/cacerts
-kubectl cp ~/fabric-deploy/orderer1-msp fabric-tools/fabric-tools:/work/orderer1-msp
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp orgdcms/fabric-ca-b9848678-9k9b5:/etc/hyperledger/fabric-ca-server/orderer1/msp
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-kubectl cp orgdcms/<POD_CA>:/etc/hyperledger/fabric-ca-server/orgdcms/msp   ~/fabric-deploy/orgdcms-msp
-ls ~/fabric-deploy/orgdcms-msp/cacerts
-kubectl get pods -n orgdcms
-kubectl cp orgdcms/fabric-ca-b9848678-9k9b5:/etc/hyperledger/fabric-ca-server/orgdcms/msp   ~/fabric-deploy/orgdcms-msp
-ls ~/fabric-deploy/orgdcms-msp/cacerts
-ls
-kubectl cp orgdcms/<POD_CA>:/etc/hyperledger/fabric-ca-server/orgdcms/msp   ~/fabric-deploy/orgdcms-msp
-kubectl cp orgdcms/fabric-ca-b9848678-9k9b5:/etc/hyperledger/fabric-ca-server/orgdcms/msp   ~/fabric-deploy/orgdcms-msp
-ls ~/fabric-deploy/orgdcms-msp
-kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- fabric-ca-client enroll   -u https://admin:adminpw@localhost:7054   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem   -M /etc/hyperledger/fabric-ca-server/orgdcms/msp
-kubectl exec -n orgdcms fabric-ca-b9848678-9k9b5 -- ls /etc/hyperledger/fabric-ca-server/orgdcms/msp/cacerts
-kubectl cp orgdcms/fabric-ca-b9848678-9k9b5:/etc/hyperledger/fabric-ca-server/orgdcms/msp   ~/fabric-deploy/orgdcms-msp
-kubectl cp ~/fabric-deploy/orgdcms-msp fabric-tools/fabric-tools:/work/orgdcms-msp
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/configtx.yaml
-kubectl cp ~/fabric-deploy/configtx.yaml fabric-tools/fabric-tools:/work/configtx.yaml
-kubectl exec -it -n fabric-tools fabric-tools -- bash
-nano ~/fabric-deploy/orderer-deployment.yaml
-kubectl apply -f orderer-deployment.yaml
-kubectl get pods -n orgdcms
-kubectl logs -n orgdcms pod/orderer1-67bb4cdb8d-ptht7
-mkdir -p ~/fabric-deploy/orderer1-msp/admincerts
-cp ~/fabric-deploy/orderer1-msp/signcerts/*.pem    ~/fabric-deploy/orderer1-msp/admincerts/
-ls ~/fabric-deploy/orderer1-msp/admincerts
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl get pods -n orgdcms
-kubectl logs -n orgdcms deploy/orderer1 --tail=50
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl get pods -n orgdcms
-ls ~/fabric-deploy/orderer1-msp
-kubectl get pods -n orgdcms
-nano ~/fabric-deploy/orderer1-msp/config.yaml
-rm -rf ~/fabric-deploy/orderer1-msp/admincerts
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl get pods -n orgdcms
-kubectl logs -n orgdcms deploy/orderer1 --tail=50
-ls ~/fabric-deploy/orderer1-tls/keystore
-nano ~/fabric-deploy/orderer-deployment.yaml
-kubectl apply -f orderer-deployment.yaml
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl get pods -n orgdcms
-kubectl logs -n orgdcms deploy/orderer1 --tail=30
-nano ~/fabric-deploy/orderer-deployment.yaml
-kubectl scale deployment orderer1 -n orgdcms --replicas=0
-kubectl get pods -n orgdcms
-kubectl apply -f orderer-deployment.yaml
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl get pods -n orgdcms
-kubectl logs -n orgdcms deploy/orderer1 --tail=30
-kubectl get pods -n orgdcms
-kubectl logs -n orgdcms deploy/orderer1 --tail=30
-ls
-del channel
-rd channel
-rm -rf channel
-rm -f configtx.yaml
-rm -rf k8s
-ls
-cd orderer
-ls
-rm orderer/orderer0-orgdcms.yaml
-rm orderer/orderer0-orgdcms-svc.yaml
-rm orderer/orderer0-orgx.yaml
-rm orderer/orderer0-orgx-svc.yaml
-rm orderer/orderer1-orgx-svc.yaml
-cd..
-rm orderer/orderer0-orgdcms.yaml
-rm orderer/orderer0-orgdcms-svc.yaml
-rm orderer/orderer0-orgx.yaml
-rm orderer/orderer0-orgx-svc.yaml
-rm orderer/orderer1-orgx-svc.yaml
-cd fabric-deploy
-cd ~/fabric/deploy
-cd ~/fabric-deploy
-rm orderer/orderer0-orgdcms.yaml
-rm orderer/orderer0-orgdcms-svc.yaml
-rm orderer/orderer0-orgx.yaml
-rm orderer/orderer0-orgx-svc.yaml
-rm orderer/orderer1-orgx-svc.yaml
-ls
-git status
-git add fabric-ca.yaml fabric-ca-pv.yaml orderer-deployment.yaml orderer/ orderer1-msp orderer1-tls README.md
-git commit -m "Fabric 2.5: CA TLS + Orderer channel participation (no system channel)"
-git push origin main
-# Enroll peer0 (MSP + TLS) dal CA OrgDCMS
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client register --id.name peer0 --id.secret peer0pw --id.type peer --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client enroll -u https://peer0:peer0pw@localhost:7054 --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem -M /etc/hyperledger/fabric-ca-server/peer0/msp
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client enroll -u https://peer0:peer0pw@localhost:7054 --enrollment.profile tls --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem -M /etc/hyperledger/fabric-ca-server/peer0/tls
-# Enroll peer0 (MSP + TLS) dal CA OrgDCMS
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client register --id.name peer0 --id.secret peer0pw --id.type peer --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client register   --id.name peer0   --id.secret peer0pw   --id.type peer   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem   -u https://localhost:7054
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client enroll   -u https://peer0:peer0pw@localhost:7054   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem   -M /etc/hyperledger/fabric-ca-server/peer0/msp
-kubectl exec -n orgdcms deploy/fabric-ca -- fabric-ca-client enroll   -u https://peer0:peer0pw@localhost:7054   --enrollment.profile tls   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem   -M /etc/hyperledger/fabric-ca-server/peer0/tls
-kubectl exec -n orgdcms deploy/fabric-ca -- ls /etc/hyperledger/fabric-ca-server/peer0
-kubectl cp orgdcms/<POD_CA>:/etc/hyperledger/fabric-ca-server/peer0/msp ~/fabric-deploy/peer0-msp
-kubectl cp orgdcms/fabric-ca-b9848678-9k9b5:/etc/hyperledger/fabric-ca-server/peer0/msp ~/fabric-deploy/peer0-msp
-kubectl cp orgdcms/fabric-ca-b9848678-9k9b5:/etc/hyperledger/fabric-ca-server/peer0/tls ~/fabric-deploy/peer0-tls
 nano ~/fabric-deploy/peer0-msp/config.yaml
 nano ~/fabric-deploy/peer0-orgdcms.yaml
 kubectl apply -f peer0-orgdcms.yaml
@@ -1998,3 +945,1056 @@ osnadmin channel info   --channelID canale1   --orderer-address orderer1.orgdcms
 osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/fabric-deploy/orderer1-tls/tlscacerts/tls-localhost-7054.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
 find /home/asantopadre/fabric-deploy -maxdepth 3 -type d | grep ca
 sudo nano /etc/hosts
+kubectl port-forward -n orgdcms svc/fabric-tls-ca 7052:7052
+kubectl port-forward -n orgx svc/fabric-tls-ca 8052:7052
+kubectl port-forward -n orgdcms svc/fabric-tls-ca 7052:7052
+kubectl port-forward -n orgdcms pod/orderer2-56bc4c565f-qg7bc 7053:7053
+kubectl port-forward -n orgdcms svc/fabric-ca 7054:7054
+kubectl port-forward -n orgx svc/fabric-ca 8054:7054
+kubectl port-forward -n orgdcms svc/fabric-ca 7054:7054
+kubectl get ns
+kubectl get all,pvc,pv,cm,secret -A -o wide
+helm list -A
+kubectl describe
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+helm list -A
+kubectl get statefulset,deploy -A
+kubectl get svc -A
+kubectl describe deployment fabric-ca orderer1 orderer2 peer0 -n orgdcms
+kubectl get deployment fabric-ca orderer1 orderer2 peer0 -n orgdcms -o yaml
+kubectl get all,pvc,pv,cm,secret -A -o yaml > snapshot-cluster.yaml
+kubectl get deploy,statefulset,svc -A -o yaml > snapshot-workloads.yaml
+tar czf fabric-deploy-backup.tgz /home/asantopadre/fabric-deploy
+kubectl delete ns orderer
+kubectl get rs -n orgdcms
+kubectl delete rs fabric-ca-6dfc9c6677 fabric-ca-bc5cc48cd orderer1-54c59c8798 orderer1-6b66657bf8 orderer1-6d5c44fbcb orderer1-7465b988fb orderer1-7c9b97f9b8 orderer1-865f456f94 orderer1-894cd5db9 orderer1-8cbff6cd5 orderer1-f4876df6d orderer1-f4c96969b peer0-58c966c499 peer0-5cc84d8b88 peer0-5f76d8c65c peer0-68558bf64c peer0-9bc7f47c7 peer0-b6b8c8796 -n orgdcms
+kubectl get rs -n orgdcms
+asantopadre@beelink-fabric:~$ kubectl get rs -n orgdcms
+NAME                  DESIRED   CURRENT   READY   AGE
+fabric-ca-b9848678    1         1         1       7d20h
+orderer1-5dc77795f9   1         1         1       26h
+orderer2-65ccbf97b8   1         1         1       5d7h
+peer0-8578465b4b      1         1         1       7d4h
+kubectl get all -n orgdcms
+kubectl delete pod net-debug -n orgdcms
+kubectl get all -n orgdcms
+kubectl get all -n orgx
+kubectl delete rs orderer3-6669998894 orderer3-75ccb58f68 orderer3-94679fcb9 orderer3-c9b869858 -n orgx
+kubectl get rs -n orgx
+kubectl get all -n orgx
+kubectl scale deploy orderer2 -n orgdcms --replicas=0
+ls -R /home/asantopadre/fabric-deploy/orderer-msps
+cd /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp/keystore
+ls
+openssl x509 -in /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp/signcerts/cert.pem -pubkey -noout | openssl sha256
+cd /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp/keystore
+for k in *_sk; do   echo "$k:";   openssl pkey -in "$k" -pubout | openssl sha256; done
+rm 1cfe354d4cc2281bcbd69568a926c663d28c71e1cfd3aa531470e649da96e062_sk
+rm b5644c9c9f91f39a93f38de63f33f1ac32022330beb35247d587652f1344fb51_sk
+ls
+kubectl scale deployment orderer2 -n orgdcms --replicas=0
+kubectl edit deployment orderer2 -n orgdcms
+kubectl scale deployment orderer2 -n orgdcms --replicas=1
+kubectl get pods -n orgdcms
+kubectl logs orderer2-859d84f47f-p8x2l -n orgdcms
+kubectl describe pod orderer2-859d84f47f-p8x2l -n orgdcms | grep -A5 -i error
+kubectl scale deployment orderer2 -n orgdcms --replicas=0
+kubectl edit deployment orderer2 -n orgdcms
+kubectl scale deployment orderer2 -n orgdcms --replicas=1
+kubectl get pods -n orgdcms
+kubectl describe pod orderer2-859d84f47f-p8x2l -n orgdcms | grep -A5 -i error
+kubectl scale deployment orderer2 -n orgdcms --replicas=1
+kubectl logs orderer2-859d84f47f-p8x2l -n orgdcms
+kubectl logs orderer2-56bc4c565f-mz54m -n orgdcms
+cd /home/asantopadre/fabric-deploy/orderer-msps/orderer1-msp/config.yaml
+cat > /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp/config.yaml <<'EOF'
+NodeOUs:
+  Enable: true
+  ClientOUIdentifier:
+    Certificate: cacerts/localhost-7054.pem
+    OrganizationalUnitIdentifier: client
+  PeerOUIdentifier:
+    Certificate: cacerts/localhost-7054.pem
+    OrganizationalUnitIdentifier: peer
+  AdminOUIdentifier:
+    Certificate: cacerts/localhost-7054.pem
+    OrganizationalUnitIdentifier: admin
+  OrdererOUIdentifier:
+    Certificate: cacerts/localhost-7054.pem
+    OrganizationalUnitIdentifier: orderer
+EOF
+
+ls /home/asantopadre/fabric-deploy/orderer-msps/orderer2-msp
+kubectl scale deployment orderer2 -n orgdcms --replicas=0
+kubectl scale deployment orderer2 -n orgdcms --replicas=1
+kubectl get pods -n orgdcms
+osnadmin channel list   --orderer-address localhost:7053   --ca-file /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key /home/asantopadre/fabric-deploy/orderer2-tls/keystore/*_sk
+osnadmin channel list   --orderer-address localhost:7053   --ca-file /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key /home/asantopadre/fabric-deploy/orderer2-tls/keystore/*_sk
+cd /home/asantopadre
+osnadmin channel list   --orderer-address localhost:7053   --tls-server-name orderer2.orgdcms.svc.cluster.local   --ca-file /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key /home/asantopadre/fabric-deploy/orderer2-tls/keystore/*_sk
+osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file /home/asantopadre/fabric-deploy/orderer2-tls/tlscacerts/tls-localhost-7054.pem   --client-cert /home/asantopadre/fabric-deploy/orderer2-tls/signcerts/cert.pem   --client-key /home/asantopadre/fabric-deploy/orderer2-tls/keystore/*_sk
+kubectl get all,pvc,pv,cm,secret -A -o yaml > snapshot-cluster-$(date +%F).yaml
+kubectl get deploy,statefulset,svc -A -o yaml > snapshot-workloads-$(date +%F).yaml
+kubectl get all -n orgdcms -o yaml > snapshot-orgdcms-$(date +%F).yaml
+kubectl get all -n orgx -o yaml > snapshot-orgx-$(date +%F).yaml
+tar czf fabric-deploy-backup-$(date +%F).tgz /home/asantopadre/fabric-deploy
+ls -lh snapshot-* fabric-deploy-backup-*.tgz
+kubectl delete deployment fabric-ca -n orgdcms
+kubectl delete deployment fabric-ca -n orgx
+kubectl delete svc fabric-ca -n orgdcms
+kubectl delete svc fabric-ca -n orgx
+mkdir -p artifacts/ca/{orgdcms,orgx}
+cat > artifacts/ca/orgdcms/ca-config.yaml <<'EOF'
+version: 1.5.0
+ca:
+  name: ca-orgdcms
+  keyfile: ca-key.pem
+  certfile: ca-cert.pem
+csr:
+  cn: ca-orgdcms
+  hosts:
+    - fabric-ca
+    - fabric-ca.orgdcms.svc.cluster.local
+EOF
+
+cat > artifacts/ca/orgdcms/tls-ca-config.yaml <<'EOF'
+version: 1.5.0
+ca:
+  name: tlsca-orgdcms
+  keyfile: tls-ca-key.pem
+  certfile: tls-ca-cert.pem
+csr:
+  cn: tlsca-orgdcms
+  hosts:
+    - fabric-ca
+    - fabric-ca.orgdcms.svc.cluster.local
+EOF
+
+kubectl apply -f artifacts/ca/orgdcms/fabric-ca-deployment.yaml
+cat > artifacts/ca/orgdcms/fabric-ca-deployment.yaml <<'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fabric-ca
+  namespace: orgdcms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fabric-ca
+  template:
+    metadata:
+      labels:
+        app: fabric-ca
+    spec:
+      containers:
+        - name: fabric-ca
+          image: hyperledger/fabric-ca:1.5
+          env:
+            - name: FABRIC_CA_HOME
+              value: /etc/hyperledger/fabric-ca-server
+            - name: FABRIC_CA_SERVER_CA_NAME
+              value: ca-orgdcms
+            - name: FABRIC_CA_SERVER_PORT
+              value: "7054"
+          ports:
+            - containerPort: 7054
+          volumeMounts:
+            - name: ca-data
+              mountPath: /etc/hyperledger/fabric-ca-server
+      volumes:
+        - name: ca-data
+          persistentVolumeClaim:
+            claimName: fabric-ca-pvc
+EOF
+
+kubectl apply -f artifacts/ca/orgdcms/fabric-ca-deployment.yaml
+kubectl get pods -n orgdcms
+cat > artifacts/ca/orgdcms/fabric-ca-service.yaml <<'EOF'
+apiVersion: v1
+kind: Service
+metadata:
+  name: fabric-ca
+  namespace: orgdcms
+spec:
+  selector:
+    app: fabric-ca
+  ports:
+    - port: 7054
+      targetPort: 7054
+EOF
+
+kubectl apply -f artifacts/ca/orgdcms/fabric-ca-service.yaml
+kubectl get svc fabric-ca -n orgdcms
+kubectl logs deploy/fabric-ca -n orgdcms
+cat > artifacts/ca/orgdcms/tls-ca-deployment.yaml <<'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fabric-tls-ca
+  namespace: orgdcms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fabric-tls-ca
+  template:
+    metadata:
+      labels:
+        app: fabric-tls-ca
+    spec:
+      containers:
+        - name: fabric-tls-ca
+          image: hyperledger/fabric-ca:1.5
+          env:
+            - name: FABRIC_CA_HOME
+              value: /etc/hyperledger/fabric-ca-server
+            - name: FABRIC_CA_SERVER_CA_NAME
+              value: tlsca-orgdcms
+            - name: FABRIC_CA_SERVER_PORT
+              value: "7052"
+          ports:
+            - containerPort: 7052
+          volumeMounts:
+            - name: tls-ca-data
+              mountPath: /etc/hyperledger/fabric-ca-server
+      volumes:
+        - name: tls-ca-data
+          persistentVolumeClaim:
+            claimName: fabric-tls-ca-pvc
+EOF
+
+kubectl apply -f artifacts/ca/orgdcms/tls-ca-deployment.yaml
+cat > artifacts/ca/orgdcms/tls-ca-service.yaml <<'EOF'
+apiVersion: v1
+kind: Service
+metadata:
+  name: fabric-tls-ca
+  namespace: orgdcms
+spec:
+  selector:
+    app: fabric-tls-ca
+  ports:
+    - port: 7052
+      targetPort: 7052
+EOF
+
+kubectl apply -f artifacts/ca/orgdcms/tls-ca-service.yaml
+kubectl get pods -n orgdcms
+kubectl get svc -n orgdcms | grep ca
+kubectl get pods -n orgdcms
+kubectl get svc -n orgdcms | grep ca
+kubectl get pvc -n orgdcms
+kubectl describe pod fabric-tls-ca-7669cc9b9c-wwgvd -n orgdcms
+cat > artifacts/ca/orgdcms/fabric-tls-ca-pvc.yaml <<'EOF'
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fabric-tls-ca-pvc
+  namespace: orgdcms
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: local-path
+EOF
+
+kubectl apply -f artifacts/ca/orgdcms/fabric-tls-ca-pvc.yaml
+kubectl rollout restart deploy/fabric-tls-ca -n orgdcms
+kubectl get pods -n orgdcms
+cat > artifacts/ca/orgx/fabric-ca-pvc.yaml <<'EOF'
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fabric-ca-pvc
+  namespace: orgx
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: local-path
+EOF
+
+kubectl apply -f artifacts/ca/orgx/fabric-ca-pvc.yaml
+cat > artifacts/ca/orgx/fabric-ca-deployment.yaml <<'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fabric-ca
+  namespace: orgx
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: fabric-ca }
+  template:
+    metadata:
+      labels: { app: fabric-ca }
+    spec:
+      containers:
+      - name: fabric-ca
+        image: hyperledger/fabric-ca:1.5
+        env:
+        - name: FABRIC_CA_HOME
+          value: /etc/hyperledger/fabric-ca-server
+        - name: FABRIC_CA_SERVER_CA_NAME
+          value: ca-orgx
+        - name: FABRIC_CA_SERVER_PORT
+          value: "7054"
+        ports:
+        - containerPort: 7054
+        volumeMounts:
+        - name: ca-data
+          mountPath: /etc/hyperledger/fabric-ca-server
+      volumes:
+      - name: ca-data
+        persistentVolumeClaim:
+          claimName: fabric-ca-pvc
+EOF
+
+kubectl apply -f artifacts/ca/orgx/fabric-ca-deployment.yaml
+cat > artifacts/ca/orgx/fabric-ca-service.yaml <<'EOF'
+apiVersion: v1
+kind: Service
+metadata:
+  name: fabric-ca
+  namespace: orgx
+spec:
+  selector: { app: fabric-ca }
+  ports:
+  - port: 7054
+    targetPort: 7054
+EOF
+
+kubectl apply -f artifacts/ca/orgx/fabric-ca-service.yaml
+cat > artifacts/ca/orgx/fabric-tls-ca-pvc.yaml <<'EOF'
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fabric-tls-ca-pvc
+  namespace: orgx
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: local-path
+EOF
+
+kubectl apply -f artifacts/ca/orgx/fabric-tls-ca-pvc.yaml
+cat > artifacts/ca/orgx/tls-ca-deployment.yaml <<'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fabric-tls-ca
+  namespace: orgx
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: fabric-tls-ca }
+  template:
+    metadata:
+      labels: { app: fabric-tls-ca }
+    spec:
+      containers:
+      - name: fabric-tls-ca
+        image: hyperledger/fabric-ca:1.5
+        env:
+        - name: FABRIC_CA_HOME
+          value: /etc/hyperledger/fabric-ca-server
+        - name: FABRIC_CA_SERVER_CA_NAME
+          value: tlsca-orgx
+        - name: FABRIC_CA_SERVER_PORT
+          value: "7052"
+        ports:
+        - containerPort: 7052
+        volumeMounts:
+        - name: tls-ca-data
+          mountPath: /etc/hyperledger/fabric-ca-server
+      volumes:
+      - name: tls-ca-data
+        persistentVolumeClaim:
+          claimName: fabric-tls-ca-pvc
+EOF
+
+kubectl apply -f artifacts/ca/orgx/tls-ca-deployment.yaml
+cat > artifacts/ca/orgx/tls-ca-service.yaml <<'EOF'
+apiVersion: v1
+kind: Service
+metadata:
+  name: fabric-tls-ca
+  namespace: orgx
+spec:
+  selector: { app: fabric-tls-ca }
+  ports:
+  - port: 7052
+    targetPort: 7052
+EOF
+
+kubectl apply -f artifacts/ca/orgx/tls-ca-service.yaml
+kubectl get pods -n orgx
+kubectl get svc -n orgx | grep ca
+export ORG=orgdcms
+export CA_HOST=fabric-ca.${ORG}.svc.cluster.local
+export TLS_CA_HOST=fabric-tls-ca.${ORG}.svc.cluster.local
+export CA_URL=https://${CA_HOST}:7054
+export TLS_CA_URL=https://${TLS_CA_HOST}:7052
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/${ORG}/admin
+fabric-ca-client enroll   -u https://admin:adminpw@${CA_HOST}:7054   --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem
+kubectl exec -n orgdcms deploy/fabric-ca --   cat /etc/hyperledger/fabric-ca-server/ca-cert.pem   > artifacts/ca/orgdcms/ca-cert.pem
+fabric-ca-client enroll   -u https://admin:adminpw@${CA_HOST}:7054   --tls.certfiles artifacts/ca/orgdcms/ca-cert.pem
+export CA_CERT=$HOME/artifacts/ca/orgdcms/ca-cert.pem
+fabric-ca-client enroll   -u https://admin:adminpw@${CA_HOST}:7054   --tls.certfiles ${CA_CERT}
+export CA_HOST=localhost
+export CA_URL=https://localhost:7054
+fabric-ca-client enroll   -u https://admin:adminpw@localhost:7054   --tls.certfiles ${CA_CERT}
+fabric-ca-client enroll   -u http://admin:adminpw@localhost:7054
+rm -rf runtime/orgdcms/admin
+kubectl patch deployment fabric-ca -n orgdcms --type='json' -p='[
+  {"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"FABRIC_CA_SERVER_TLS_ENABLED","value":"true"}},
+  {"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"FABRIC_CA_SERVER_TLS_CERTFILE","value":"/etc/hyperledger/fabric-ca-server/ca-cert.pem"}},
+  {"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"FABRIC_CA_SERVER_TLS_KEYFILE","value":"/etc/hyperledger/fabric-ca-server/ca-key.pem"}}
+]'
+kubectl patch deployment fabric-tls-ca -n orgdcms --type='json' -p='[
+  {"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"FABRIC_CA_SERVER_TLS_ENABLED","value":"true"}},
+  {"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"FABRIC_CA_SERVER_TLS_CERTFILE","value":"/etc/hyperledger/fabric-ca-server/tls-ca-cert.pem"}},
+  {"op":"add","path":"/spec/template/spec/containers/0/env/-","value":{"name":"FABRIC_CA_SERVER_TLS_KEYFILE","value":"/etc/hyperledger/fabric-ca-server/tls-ca-key.pem"}}
+]'
+kubectl rollout restart deploy/fabric-ca -n orgdcms
+kubectl rollout restart deploy/fabric-tls-ca -n orgdcms
+kubectl get pods -n orgdcms
+kubectl rollout undo deploy/fabric-ca -n orgdcms
+kubectl rollout undo deploy/fabric-tls-ca -n orgdcms
+kubectl get pods -n orgdcms
+# orgdcms
+kubectl delete deploy fabric-ca fabric-tls-ca -n orgdcms
+kubectl delete svc fabric-ca fabric-tls-ca -n orgdcms
+kubectl delete pvc fabric-ca-pvc fabric-tls-ca-pvc -n orgdcms
+# orgx
+kubectl delete deploy fabric-ca fabric-tls-ca -n orgx
+kubectl delete svc fabric-ca fabric-tls-ca -n orgx
+kubectl delete pvc fabric-ca-pvc fabric-tls-ca-pvc -n orgx
+kubectl apply -f artifacts/ca/orgdcms/fabric-ca-pvc.yaml
+kubectl apply -f artifacts/ca/orgdcms/fabric-tls-ca-pvc.yaml
+kubectl apply -f artifacts/ca/orgx/fabric-ca-pvc.yaml
+kubectl apply -f artifacts/ca/orgx/fabric-tls-ca-pvc.yaml
+kubectl apply -f artifacts/ca/orgdcms/fabric-ca-deployment-tls.yaml
+kubectl apply -f artifacts/ca/orgdcms/tls-ca-deployment-tls.yaml
+kubectl apply -f artifacts/ca/orgx/fabric-ca-deployment-tls.yaml
+kubectl apply -f artifacts/ca/orgx/tls-ca-deployment-tls.yaml
+cat > artifacts/ca/orgdcms/fabric-ca-deployment.yaml <<'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fabric-ca
+  namespace: orgdcms
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: fabric-ca }
+  template:
+    metadata:
+      labels: { app: fabric-ca }
+    spec:
+      containers:
+      - name: fabric-ca
+        image: hyperledger/fabric-ca:1.5
+        env:
+        - name: FABRIC_CA_HOME
+          value: /etc/hyperledger/fabric-ca-server
+        - name: FABRIC_CA_SERVER_CA_NAME
+          value: ca-orgdcms
+        - name: FABRIC_CA_SERVER_PORT
+          value: "7054"
+        - name: FABRIC_CA_SERVER_TLS_ENABLED
+          value: "true"
+        - name: FABRIC_CA_SERVER_TLS_CERTFILE
+          value: /etc/hyperledger/fabric-ca-server/ca-cert.pem
+        - name: FABRIC_CA_SERVER_TLS_KEYFILE
+          value: /etc/hyperledger/fabric-ca-server/ca-key.pem
+        ports:
+        - containerPort: 7054
+        volumeMounts:
+        - name: ca-data
+          mountPath: /etc/hyperledger/fabric-ca-server
+      volumes:
+      - name: ca-data
+        persistentVolumeClaim:
+          claimName: fabric-ca-pvc
+EOF
+
+cat > artifacts/ca/orgdcms/tls-ca-deployment.yaml <<'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fabric-tls-ca
+  namespace: orgdcms
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: fabric-tls-ca }
+  template:
+    metadata:
+      labels: { app: fabric-tls-ca }
+    spec:
+      containers:
+      - name: fabric-tls-ca
+        image: hyperledger/fabric-ca:1.5
+        env:
+        - name: FABRIC_CA_HOME
+          value: /etc/hyperledger/fabric-ca-server
+        - name: FABRIC_CA_SERVER_CA_NAME
+          value: tlsca-orgdcms
+        - name: FABRIC_CA_SERVER_PORT
+          value: "7052"
+        - name: FABRIC_CA_SERVER_TLS_ENABLED
+          value: "true"
+        - name: FABRIC_CA_SERVER_TLS_CERTFILE
+          value: /etc/hyperledger/fabric-ca-server/tls-ca-cert.pem
+        - name: FABRIC_CA_SERVER_TLS_KEYFILE
+          value: /etc/hyperledger/fabric-ca-server/tls-ca-key.pem
+        ports:
+        - containerPort: 7052
+        volumeMounts:
+        - name: tls-ca-data
+          mountPath: /etc/hyperledger/fabric-ca-server
+      volumes:
+      - name: tls-ca-data
+        persistentVolumeClaim:
+          claimName: fabric-tls-ca-pvc
+EOF
+
+kubectl apply -f artifacts/ca/orgdcms/fabric-ca-deployment.yaml
+kubectl apply -f artifacts/ca/orgdcms/tls-ca-deployment.yaml
+kubectl apply -f artifacts/ca/orgdcms/fabric-ca-service.yaml
+kubectl apply -f artifacts/ca/orgdcms/tls-ca-service.yaml
+kubectl get pods -n orgdcms
+kubectl get pvc -n orgdcms
+kubectl logs deploy/fabric-tls-ca -n orgdcms
+kubectl edit deploy fabric-tls-ca -n orgdcms
+kubectl rollout restart deploy fabric-tls-ca -n orgdcms
+kubectl get pvc -n orgdcms
+kubectl get pods -n orgdcms
+kubectl apply -f artifacts/ca/orgdcms/fabric-ca-pvc.yaml
+cat > artifacts/ca/orgdcms/fabric-ca-pvc.yaml <<'EOF'
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fabric-ca-pvc
+  namespace: orgdcms
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: local-path
+EOF
+
+kubectl apply -f artifacts/ca/orgdcms/fabric-ca-pvc.yaml
+kubectl rollout restart deploy/fabric-ca -n orgdcms
+kubectl get pods -n orgdcms
+kubectl edit deploy fabric-ca -n orgdcms
+kubectl rollout restart deploy/fabric-ca -n orgdcms
+kubectl get pods -n orgdcms
+cat > artifacts/ca/orgx/fabric-ca-pvc.yaml <<'EOF'
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fabric-ca-pvc
+  namespace: orgx
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 2Gi } }
+  storageClassName: local-path
+EOF
+
+cat > artifacts/ca/orgx/fabric-tls-ca-pvc.yaml <<'EOF'
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fabric-tls-ca-pvc
+  namespace: orgx
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 2Gi } }
+  storageClassName: local-path
+EOF
+
+kubectl apply -f artifacts/ca/orgx/
+cat > artifacts/ca/orgx/fabric-ca-deployment.yaml <<'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fabric-ca
+  namespace: orgx
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: fabric-ca } }
+  template:
+    metadata: { labels: { app: fabric-ca } }
+    spec:
+      containers:
+      - name: fabric-ca
+        image: hyperledger/fabric-ca:1.5
+        env:
+        - { name: FABRIC_CA_HOME, value: /etc/hyperledger/fabric-ca-server }
+        - { name: FABRIC_CA_SERVER_CA_NAME, value: ca-orgx }
+        - { name: FABRIC_CA_SERVER_PORT, value: "7054" }
+        - { name: FABRIC_CA_SERVER_TLS_ENABLED, value: "true" }
+        ports: [{ containerPort: 7054 }]
+        volumeMounts:
+        - { name: ca-data, mountPath: /etc/hyperledger/fabric-ca-server }
+      volumes:
+      - name: ca-data
+        persistentVolumeClaim: { claimName: fabric-ca-pvc }
+EOF
+
+cat > artifacts/ca/orgx/tls-ca-deployment.yaml <<'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fabric-tls-ca
+  namespace: orgx
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: fabric-tls-ca } }
+  template:
+    metadata: { labels: { app: fabric-tls-ca } }
+    spec:
+      containers:
+      - name: fabric-tls-ca
+        image: hyperledger/fabric-ca:1.5
+        env:
+        - { name: FABRIC_CA_HOME, value: /etc/hyperledger/fabric-ca-server }
+        - { name: FABRIC_CA_SERVER_CA_NAME, value: tlsca-orgx }
+        - { name: FABRIC_CA_SERVER_PORT, value: "7052" }
+        - { name: FABRIC_CA_SERVER_TLS_ENABLED, value: "true" }
+        ports: [{ containerPort: 7052 }]
+        volumeMounts:
+        - { name: tls-ca-data, mountPath: /etc/hyperledger/fabric-ca-server }
+      volumes:
+      - name: tls-ca-data
+        persistentVolumeClaim: { claimName: fabric-tls-ca-pvc }
+EOF
+
+cat > artifacts/ca/orgx/fabric-ca-service.yaml <<'EOF'
+apiVersion: v1
+kind: Service
+metadata: { name: fabric-ca, namespace: orgx }
+spec:
+  selector: { app: fabric-ca }
+  ports: [{ port: 7054, targetPort: 7054 }]
+EOF
+
+cat > artifacts/ca/orgx/tls-ca-service.yaml <<'EOF'
+apiVersion: v1
+kind: Service
+metadata: { name: fabric-tls-ca, namespace: orgx }
+spec:
+  selector: { app: fabric-tls-ca }
+  ports: [{ port: 7052, targetPort: 7052 }]
+EOF
+
+kubectl apply -f artifacts/ca/orgx/
+kubectl get pods -n orgx
+kubectl get svc -n orgx | grep ca
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgdcms/admin
+export CA_CERT=$HOME/artifacts/ca/orgdcms/ca-cert.pem
+export TLS_CA_CERT=$HOME/artifacts/ca/orgdcms/tls-ca-cert.pem
+kubectl exec -n orgdcms deploy/fabric-ca --   cat /etc/hyperledger/fabric-ca-server/ca-cert.pem > $CA_CERT
+kubectl exec -n orgdcms deploy/fabric-tls-ca --   cat /etc/hyperledger/fabric-ca-server/ca-cert.pem > $TLS_CA_CERT
+fabric-ca-client enroll   -u https://admin:adminpw@localhost:7054   --tls.certfiles $CA_CERT
+kubectl logs deploy/fabric-ca -n orgdcms
+openssl x509 -in $CA_CERT -noout -subject -issuer
+kubectl logs deploy/fabric-ca -n orgdcms | grep -i bootstrap
+ubectl edit deploy fabric-ca -n orgdcms
+kubectl edit deploy fabric-ca -n orgdcms
+kubectl rollout restart deploy/fabric-ca -n orgdcms
+fabric-ca-client register   --id.name orgdcms-admin   --id.secret orgdcms-adminpw   --id.type admin   --tls.certfiles $CA_CERT
+kubectl rollout restart deploy/fabric-ca -n orgdcms
+FABRIC_CA_CLIENT_DEBUG=true fabric-ca-client enroll   -u https://admin:adminpw@localhost:7054   --tls.certfiles $CA_CERT
+kubectl rollout restart deploy/fabric-ca -n orgdcms
+fabric-ca-client register   --id.name orgdcms-admin   --id.secret orgdcms-adminpw   --id.type admin   --tls.certfiles $CA_CERT
+fabric-ca-client enroll   -u https://admin:adminpw@localhost:7054   --tls.certfiles $CA_CERT
+kubectl logs deploy/fabric-ca -n orgdcms
+FABRIC_CA_CLIENT_DEBUG=true fabric-ca-client enroll   -u https://admin:adminpw@localhost:7054   --tls.certfiles $CA_CERT
+FABRIC_CA_CLIENT_DEBUG=true fabric-ca-client enroll   -u https://admin:adminpw@localhost:7054   --tls.certfiles $CA_CERT
+fabric-ca-client register   --id.name orgdcms-admin   --id.secret orgdcms-adminpw   --id.type admin   --tls.certfiles $CA_CERT
+fabric-ca-client enroll   -u https://orgdcms-admin:orgdcms-adminpw@localhost:7054   -M $FABRIC_CA_CLIENT_HOME/msp   --tls.certfiles $CA_CERT
+fabric-ca-client enroll   -u https://orgdcms-admin:orgdcms-adminpw@localhost:7052   --enrollment.profile tls   -M $FABRIC_CA_CLIENT_HOME/tls   --tls.certfiles $TLS_CA_CERT
+fabric-ca-client register   --id.name orgdcms-admin   --id.secret orgdcms-adminpw   --id.type admin   --tls.certfiles $TLS_CA_CERT   -u https://admin:adminpw@localhost:7052
+kubectl edit deploy fabric-tls-ca -n orgdcms
+kubectl rollout restart deploy/fabric-tls-ca -n orgdcms
+fabric-ca-client register   --id.name orgdcms-admin   --id.secret orgdcms-adminpw   --id.type admin   --tls.certfiles $TLS_CA_CERT   -u https://admin:adminpw@localhost:7052
+fabric-ca-client register   --caname tlsca-orgdcms   --id.name orgdcms-admin   --id.secret orgdcms-adminpw   --id.type admin   -u https://admin:adminpw@localhost:7052   --tls.certfiles $TLS_CA_CERT
+fabric-ca-client enroll   --caname tlsca-orgdcms   -u https://admin:adminpw@localhost:7052   --tls.certfiles $TLS_CA_CERT
+fabric-ca-client register   --caname tlsca-orgdcms   --id.name orgdcms-admin   --id.secret orgdcms-adminpw   --id.type admin   --tls.certfiles $TLS_CA_CERT
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgdcms/tls-admin
+fabric-ca-client enroll --caname tlsca-orgdcms -u https://admin:adminpw@localhost:7052 --tls.certfiles $TLS_CA_CERT
+fabric-ca-client register --caname tlsca-orgdcms --id.name orgdcms-admin --id.secret orgdcms-adminpw --id.type admin --tls.certfiles $TLS_CA_CERT
+fabric-ca-client enroll --caname tlsca-orgdcms -u https://orgdcms-admin:orgdcms-adminpw@localhost:7052 --enrollment.profile tls -M $PWD/runtime/orgdcms/admin/tls --tls.certfiles $TLS_CA_CERT
+ls runtime/orgdcms/admin/
+ls runtime/orgdcms/admin/tls
+ls runtime/orgdcms/admin/msp
+openssl x509 -in runtime/orgdcms/admin/tls/signcerts/cert.pem -noout -subject -issuer
+ls runtime/orgdcms/admin/msp/{cacerts,keystore,signcerts}
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgx/admin
+export CA_CERT=$HOME/artifacts/ca/orgx/ca-cert.pem
+export TLS_CA_CERT=$HOME/artifacts/ca/orgx/tls-ca-cert.pem
+kubectl exec -n orgx deploy/fabric-ca --   cat /etc/hyperledger/fabric-ca-server/ca-cert.pem > $CA_CERT
+kubectl exec -n orgx deploy/fabric-tls-ca --   cat /etc/hyperledger/fabric-ca-server/ca-cert.pem > $TLS_CA_CERT
+fabric-ca-client enroll   -u https://admin:adminpw@localhost:8054   --tls.certfiles $CA_CERT
+fabric-ca-client enroll   -u https://admin:adminpw@localhost:8054   --tls.certfiles $CA_CERT
+fabric-ca-client register   --id.name orgx-admin   --id.secret orgx-adminpw   --id.type admin   --tls.certfiles $CA_CERT
+fabric-ca-client enroll   -u https://orgx-admin:orgx-adminpw@localhost:8054   -M $FABRIC_CA_CLIENT_HOME/msp   --tls.certfiles $CA_CERT
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgx/tls-admin
+fabric-ca-client enroll   --caname tlsca-orgx   -u https://admin:adminpw@localhost:8052   --tls.certfiles $TLS_CA_CERT
+fabric-ca-client register   --caname tlsca-orgx   --id.name orgx-admin   --id.secret orgx-adminpw   --id.type admin   --tls.certfiles $TLS_CA_CERT
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgx/admin
+fabric-ca-client enroll   --caname tlsca-orgx   -u https://orgx-admin:orgx-adminpw@localhost:8052   --enrollment.profile tls   -M $FABRIC_CA_CLIENT_HOME/tls   --tls.certfiles $TLS_CA_CERT
+# orgdcms
+kubectl delete deploy orderer1 orderer2 -n orgdcms
+kubectl delete svc orderer1 orderer2 -n orgdcms
+# orgx
+kubectl delete deploy orderer3 -n orgx
+kubectl delete svc orderer3 -n orgx
+mkdir -p runtime/orgdcms/orderer{1,2}/{msp,tls}
+cp -r runtime/orgdcms/admin/msp runtime/orgdcms/orderer1/
+cp -r runtime/orgdcms/admin/tls runtime/orgdcms/orderer1/
+cp -r runtime/orgdcms/admin/msp runtime/orgdcms/orderer2/
+cp -r runtime/orgdcms/admin/tls runtime/orgdcms/orderer2/
+openssl x509 -in runtime/orgdcms/orderer1/tls/signcerts/cert.pem -noout -text | grep -A1 "Subject Alternative Name"
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgdcms/tls-admin
+fabric-ca-client register --caname tlsca-orgdcms   --id.name orderer1 --id.secret orderer1pw --id.type orderer   --tls.certfiles $TLS_CA_CERT
+fabric-ca-client register --caname tlsca-orgdcms   --id.name orderer2 --id.secret orderer2pw --id.type orderer   --tls.certfiles $TLS_CA_CERT
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgdcms/tls-admin
+fabric-ca-client register --caname tlsca-orgdcms   --id.name orderer1 --id.secret orderer1pw --id.type orderer   --tls.certfiles $TLS_CA_CERT
+fabric-ca-client register --caname tlsca-orgdcms   --id.name orderer2 --id.secret orderer2pw --id.type orderer   --tls.certfiles $TLS_CA_CERT
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgdcms/orderer1
+fabric-ca-client enroll --caname tlsca-orgdcms   -u https://orderer1:orderer1pw@localhost:7052   --enrollment.profile tls   --csr.hosts orderer1,orderer1.orgdcms.svc.cluster.local   -M tls --tls.certfiles $TLS_CA_CERT
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgdcms/orderer2
+fabric-ca-client enroll --caname tlsca-orgdcms   -u https://orderer2:orderer2pw@localhost:7052   --enrollment.profile tls   --csr.hosts orderer2,orderer2.orgdcms.svc.cluster.local   -M tls --tls.certfiles $TLS_CA_CERT
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgdcms/orderer1
+fabric-ca-client enroll --caname tlsca-orgdcms   -u https://orderer1:orderer1pw@localhost:7052   --enrollment.profile tls   --csr.hosts orderer1,orderer1.orgdcms.svc.cluster.local   -M tls --tls.certfiles $TLS_CA_CERT
+kubectl exec -n orgdcms deploy/fabric-tls-ca --   cat /etc/hyperledger/fabric-ca-server/ca-cert.pem   > artifacts/ca/orgdcms/tls-ca-cert.pem
+export TLS_CA_CERT=$HOME/artifacts/ca/orgdcms/tls-ca-cert.pem
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgdcms/orderer1
+fabric-ca-client enroll   --caname tlsca-orgdcms   -u https://orderer1:orderer1pw@localhost:7052   --enrollment.profile tls   --csr.hosts orderer1,orderer1.orgdcms.svc.cluster.local   -M tls   --tls.certfiles $TLS_CA_CERT
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgdcms/tls-admin
+fabric-ca-client register   --caname tlsca-orgdcms   --id.name orderer1   --id.secret orderer1pw   --id.type orderer   --tls.certfiles $TLS_CA_CERT
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgdcms/orderer1
+fabric-ca-client enroll   --caname tlsca-orgdcms   -u https://orderer1:orderer1pw@localhost:7052   --enrollment.profile tls   --csr.hosts orderer1,orderer1.orgdcms.svc.cluster.local   -M tls   --tls.certfiles $TLS_CA_CERT
+openssl x509 -in runtime/orgdcms/orderer1/tls/signcerts/cert.pem   -noout -text | grep -A1 "Subject Alternative Name"
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgdcms/tls-admin
+fabric-ca-client register   --caname tlsca-orgdcms   --id.name orderer2   --id.secret orderer2pw   --id.type orderer   --tls.certfiles $TLS_CA_CERT
+export FABRIC_CA_CLIENT_HOME=$PWD/runtime/orgdcms/orderer2
+fabric-ca-client enroll   --caname tlsca-orgdcms   -u https://orderer2:orderer2pw@localhost:7052   --enrollment.profile tls   --csr.hosts orderer2,orderer2.orgdcms.svc.cluster.local   -M tls   --tls.certfiles $TLS_CA_CERT
+openssl x509 -in runtime/orgdcms/orderer2/tls/signcerts/cert.pem   -noout -text | grep -A1 "Subject Alternative Name"
+cat > artifacts/orderer/orgdcms/orderer1-service.yaml <<'EOF'
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer1
+  namespace: orgdcms
+spec:
+  selector: { app: orderer1 }
+  ports:
+  - name: grpc
+    port: 7050
+    targetPort: 7050
+  - name: admin
+    port: 7053
+    targetPort: 7053
+EOF
+
+kubectl apply -f artifacts/orderer/orgdcms/orderer1-service.yaml
+mkdir -p artifacts/orderer/orgdcms
+cat > artifacts/orderer/orgdcms/orderer1-service.yaml <<'EOF'
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer1
+  namespace: orgdcms
+spec:
+  selector:
+    app: orderer1
+  ports:
+  - name: grpc
+    port: 7050
+    targetPort: 7050
+  - name: admin
+    port: 7053
+    targetPort: 7053
+EOF
+
+kubectl apply -f artifacts/orderer/orgdcms/orderer1-service.yaml
+cat > artifacts/orderer/orgdcms/orderer1-deployment.yaml <<'EOF'
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderer1
+  namespace: orgdcms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderer1
+  template:
+    metadata:
+      labels:
+        app: orderer1
+    spec:
+      containers:
+      - name: orderer
+        image: hyperledger/fabric-orderer:2.4
+        env:
+        - name: ORDERER_GENERAL_LISTENADDRESS
+          value: "0.0.0.0"
+        - name: ORDERER_GENERAL_LISTENPORT
+          value: "7050"
+        - name: ORDERER_GENERAL_LOCALMSPID
+          value: OrgDCMSOrdererMSP
+        - name: ORDERER_GENERAL_LOCALMSPDIR
+          value: /var/hyperledger/orderer/msp
+        - name: ORDERER_GENERAL_TLS_ENABLED
+          value: "true"
+        - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+          value: /var/hyperledger/orderer/tls/keystore/key.pem
+        - name: ORDERER_GENERAL_TLS_CERTIFICATE
+          value: /var/hyperledger/orderer/tls/signcerts/cert.pem
+        - name: ORDERER_GENERAL_TLS_ROOTCAS
+          value: /var/hyperledger/orderer/tls/tlscacerts/*.pem
+        - name: ORDERER_ADMIN_LISTENADDRESS
+          value: "0.0.0.0:7053"
+        - name: ORDERER_ADMIN_TLS_ENABLED
+          value: "true"
+        - name: ORDERER_ADMIN_TLS_CERTIFICATE
+          value: /var/hyperledger/orderer/tls/signcerts/cert.pem
+        - name: ORDERER_ADMIN_TLS_PRIVATEKEY
+          value: /var/hyperledger/orderer/tls/keystore/key.pem
+        volumeMounts:
+        - name: msp
+          mountPath: /var/hyperledger/orderer/msp
+        - name: tls
+          mountPath: /var/hyperledger/orderer/tls
+      volumes:
+      - name: msp
+        hostPath:
+          path: /home/asantopadre/runtime/orgdcms/orderer1/msp
+      - name: tls
+        hostPath:
+          path: /home/asantopadre/runtime/orgdcms/orderer1/tls
+EOF
+
+kubectl apply -f artifacts/orderer/orgdcms/orderer1-deployment.yaml
+kubectl get pods -n orgdcms
+kubectl logs deploy/orderer1 -n orgdcms | head
+kubectl get pods -n orgdcms
+kubectl logs deploy/orderer1 -n orgdcms | head
+kubectl logs deploy/orderer1 -n orgdcms
+mkdir -p runtime/orgdcms/orderer1/msp/admincerts
+cp runtime/orgdcms/admin/msp/signcerts/cert.pem runtime/orgdcms/orderer1/msp/admincerts/
+mkdir -p runtime/orgdcms/orderer2/msp/admincerts
+cp runtime/orgdcms/admin/msp/signcerts/cert.pem runtime/orgdcms/orderer2/msp/admincerts/
+kubectl rollout restart deploy/orderer1 -n orgdcms
+kubectl get pods -n orgdcms
+cp runtime/orgdcms/admin/msp/config.yaml runtime/orgdcms/orderer1/msp/
+cat > runtime/orgdcms/admin/msp/config.yaml <<'EOF'
+NodeOUs:
+  Enable: true
+  ClientOUIdentifier:
+    Certificate: cacerts/ca-cert.pem
+    OrganizationalUnitIdentifier: client
+  PeerOUIdentifier:
+    Certificate: cacerts/ca-cert.pem
+    OrganizationalUnitIdentifier: peer
+  AdminOUIdentifier:
+    Certificate: cacerts/ca-cert.pem
+    OrganizationalUnitIdentifier: admin
+  OrdererOUIdentifier:
+    Certificate: cacerts/ca-cert.pem
+    OrganizationalUnitIdentifier: orderer
+EOF
+
+cp runtime/orgdcms/admin/msp/config.yaml runtime/orgdcms/orderer1/msp/
+cp runtime/orgdcms/admin/msp/config.yaml runtime/orgdcms/orderer2/msp/
+kubectl rollout restart deploy/orderer1 -n orgdcms
+kubectl get pods -n orgdcms
+kubectl logs orderer1-5b49cb44cf-q8zb6 -n orgdcms
+mkdir -p runtime/orgdcms/orderer1/msp/cacerts
+cp runtime/orgdcms/admin/msp/cacerts/*.pem runtime/orgdcms/orderer1/msp/cacerts/ca-cert.pem
+ls runtime/orgdcms/orderer1/tls/keystore
+cd runtime/orgdcms/orderer1/tls/keystore
+ls *_sk | head -n 1
+cd runtime/orgdcms/orderer1/tls/keystore
+find runtime/orgdcms/orderer1 -type f | grep _sk
+ls runtime/orgdcms
+ls runtime/orgdcms/orderer1/tls/keystore
+cd hone/asantopadre
+cd home/asantopadre
+cd /home/asantopadre
+cd runtime
+ls ~runtime/orgdcms/orderer1/tls/keystore
+cd orgdcms
+cd orderer1
+cd tls
+cd keystore
+ls
+kubectl describe pod orderer1 -n orgdcms | grep -A5 Mounts
+ls -R /home/asantopadre/runtime/orgdcms/orderer1/msp
+cp /home/asantopadre/runtime/orgdcms/orderer1/msp/cacerts/localhost-7054.pem    /home/asantopadre/runtime/orgdcms/orderer1/msp/cacerts/ca-cert.pem
+ls -R /home/asantopadre/runtime/orgdcms/orderer1/msp
+ls /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore
+mv /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore/*_sk    /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore/key.pem
+mv /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore/f5928bc48ce89e7fa9a1104c420decc1a2cbc9122decdfb3f14c17ffa3e468a8_sk    /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore/key.pem
+rm /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore/*_sk
+ls /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore
+kubectl rollout restart deploy/orderer1 -n orgdcms
+kubectl get pods -n orgdcms
+openssl x509 -in /home/asantopadre/runtime/orgdcms/orderer1/tls/signcerts/cert.pem -noout -pubkey > /tmp/cert.pub
+for k in /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore/*_sk; do   openssl pkey -in "$k" -pubout | diff - /tmp/cert.pub >/dev/null && echo "MATCH: $k"; done
+openssl x509 -in /home/asantopadre/runtime/orgdcms/orderer1/tls/signcerts/cert.pem -noout -modulus
+openssl pkey -in /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore/key.pem -pubout | openssl rsa -pubin -noout -modulus
+openssl x509 -in /home/asantopadre/runtime/orgdcms/orderer1/tls/signcerts/cert.pem -noout -pubkey > /tmp/cert.pub
+openssl pkey -in /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore/key.pem -pubout > /tmp/key.pub
+diff /tmp/cert.pub /tmp/key.pub
+rm -rf /home/asantopadre/runtime/orgdcms/orderer1/tls
+mkdir -p /home/asantopadre/runtime/orgdcms/orderer1/tls
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/runtime/orgdcms/orderer1
+fabric-ca-client enroll   --caname tlsca-orgdcms   -u https://orderer1:orderer1pw@localhost:7052   --enrollment.profile tls   --csr.hosts orderer1,orderer1.orgdcms.svc.cluster.local   -M tls   --tls.certfiles $TLS_CA_CERT
+ls tls/keystore
+mv tls/keystore/*_sk tls/keystore/key.pem
+ls tls/keystore
+ls /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore
+mv /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore/*_sk    /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore/key.pem
+openssl x509 -in /home/asantopadre/runtime/orgdcms/orderer1/tls/signcerts/cert.pem -noout -pubkey > /tmp/cert.pub
+openssl pkey -in /home/asantopadre/runtime/orgdcms/orderer1/tls/keystore/key.pem -pubout > /tmp/key.pub
+diff /tmp/cert.pub /tmp/key.pub
+kubectl rollout restart deploy/orderer1 -n orgdcms
+kubectl get pods -n orgdcms
+orderer1-55b4c499c7-dwgkr        0/1     CrashLoopBackOff   6 (4m6s ago)    9m56s
+orderer1-6f89564479-knhsb        0/1     Error              1 (9s ago)      10s
+kubectl logs orderer1-6f89564479-knhsb -n orgdcms
+ls /home/asantopadre/runtime/orgdcms/orderer1/tls/tlscacerts
+kubectl apply -f artifacts/orderer/orgdcms/orderer1-deployment.yaml
+ls /home/asantopadre/runtime/orgdcms/orderer1/tls/tlscacerts
+kubectl set env deploy/orderer1 -n orgdcms   ORDERER_GENERAL_TLS_ROOTCAS=/var/hyperledger/orderer/tls/tlscacerts/tls-localhost-7052-tlsca-orgdcms.pem
+kubectl rollout restart deploy/orderer1 -n orgdcm
+kubectl rollout restart deploy/orderer1 -n orgdcms
+kubectl get pods -n orgdcms
+kubectl logs orderer1-5796f44895-4nhh2 -n orgdcms
+configtxgen   -profile EtcdRaft   -channelID system-channel   -outputBlock genesis.block
+export FABRIC_CFG_PATH=/home/asantopadre/artifacts/configtx
+kubectl set env deploy/orderer1 -n orgdcms   ORDERER_GENERAL_BOOTSTRAPMETHOD=none
+kubectl rollout restart deploy/orderer1 -n orgdcms
+kubectl logs deploy/orderer1 -n orgdcms | tail
+kubectl get pods -n orgdcms
+kubectl delete deployment orderer2 -n orgdcms
+kubectl delete service orderer2 -n orgdcms
+# nessuna delete pvc
+# 1) Register su TLS-CA
+fabric-ca-client register   --id.name orderer2   --id.secret orderer2pw   --id.type orderer   --tls.certfiles tls-ca-cert.pem
+# verifica dove sta davvero il TLS CA cert
+ls ~/runtime/orgdcms/tls-ca/tlscacerts
+openssl x509 -in runtime/orgdcms/orderer2/tls/signcerts/cert.pem -noout -text | grep -A1 "Subject Alternative Name"
+openssl x509 -in runtime/orgdcms/orderer1/tls/signcerts/cert.pem -noout -text | grep -A1 "Subject Alternative Name"
+openssl x509 -in runtime/orgdcms/orderer2/tls/signcerts/cert.pem -noout -text | grep -A1 "Subject Alternative Name"
+openssl x509 -in runtime/orgdcms/orderer1/tls/signcerts/cert.pem -noout -text | grep -A1 "Subject Alternative Name"
+openssl x509 -in runtime/orgdcms/orderer2/tls/signcerts/cert.pem -noout -text | grep -A1 "Subject Alternative Name"
+ls ~/runtime/orgdcms/tls-ca/tlscacerts
+find ~ -name "*tls-ca*.pem"
+# Register su TLS-CA (orgdcms)
+fabric-ca-client register   --id.name orderer2   --id.secret orderer2pw   --id.type orderer   --tls.certfiles /home/asantopadre/artifacts/ca/orgdcms/tls-ca-cert.pem
+# Login come TLS-CA admin (orgdcms)
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/runtime/ca-tls-orgdcms
+fabric-ca-client enroll   -u https://tls-ca-admin:tls-ca-adminpw@ca-orgdcms:7054   --tls.certfiles /home/asantopadre/artifacts/ca/orgdcms/tls-ca-cert.pem
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/runtime/ca-tls-orgdcms
+fabric-ca-client enroll   -u https://tls-ca-admin:tls-ca-adminpw@localhost:7054   --tls.certfiles /home/asantopadre/artifacts/ca/orgdcms/tls-ca-cert.pem
+openssl s_client -connect localhost:7054 -showcerts </dev/null
+# Salva il cert
+cat > /home/asantopadre/runtime/orgdcms/tls-ca-runtime.pem <<'EOF'
+-----BEGIN CERTIFICATE-----
+MIICjzCCAjWgAwIBAgIUDZCBYUUUCvR25FPVrzVG0GI/S3kwCgYIKoZIzj0EAwIw
+aDELMAkGA1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQK
+EwtIeXBlcmxlZGdlcjEPMA0GA1UECxMGRmFicmljMRkwFwYDVQQDExBmYWJyaWMt
+Y2Etc2VydmVyMB4XDTI2MDExMjE2MTAwMFoXDTI3MDExMjE2MTAwMFowcjELMAkG
+A1UEBhMCVVMxFzAVBgNVBAgTDk5vcnRoIENhcm9saW5hMRQwEgYDVQQKEwtIeXBl
+cmxlZGdlcjEPMA0GA1UECxMGRmFicmljMSMwIQYDVQQDExpmYWJyaWMtY2EtNjc3
+YjU2Yzk4ZC05OThjaDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABDHfasbCtTQ4
+NujIMPXZK/cEzD+zXZFgaMO5miEAopcL2vVYhQFP1lY2qdqvoyI8jeZmgBTrLlp8
+oyZhKe6yD4qjgbIwga8wDgYDVR0PAQH/BAQDAgOoMB0GA1UdJQQWMBQGCCsGAQUF
+BwMBBggrBgEFBQcDAjAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBT8IieRqlpiBsmp
+o+BiSgAIw5GnXTAfBgNVHSMEGDAWgBSGcLko6bRRr6208G+TRbKiVKt8yzAwBgNV
+HREEKTAnghpmYWJyaWMtY2EtNjhkNDg0Nzg4OC1rNTJoeoIJbG9jYWxob3N0MAoG
+CCqGSM49BAMCA0gAMEUCIQDe2XPtQFjbS7dim2o4LTzjG0TIzVbWgmz224coK0I2
+8gIgda/2FDEXdONzk8YinxLFp/xFTU8QtOc05m6SV3zmw+s=
+-----END CERTIFICATE-----
+EOF
+
+# Enroll TLS-CA admin (orgdcms)
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/runtime/ca-tls-orgdcms
+fabric-ca-client enroll   -u https://tls-ca-admin:tls-ca-adminpw@localhost:7054   --tls.certfiles /home/asantopadre/runtime/orgdcms/tls-ca-runtime.pem
+kubectl get deployment ca-orgdcms -n orgdcms -o yaml | grep -A4 FABRIC_CA_SERVER_CA_NAME
+kubectl get deployment ca-orgdcms -n orgdcms -o yaml | grep -A6 FABRIC_CA_SERVER_BOOTSTRAP_USER
+kubectl get deployment -n orgdcms
+kubectl get deployment fabric-ca -n orgdcms -o yaml | grep -A6 FABRIC_CA_SERVER_BOOTSTRAP_USER
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/runtime/ca-tls-orgdcms
+fabric-ca-client enroll   -u https://admin:adminpw@localhost:7054   --caname ca-orgdcms   --tls.certfiles /home/asantopadre/runtime/orgdcms/tls-ca-runtime.pem
+fabric-ca-client register   --caname ca-orgdcms   --id.name orderer2   --id.secret orderer2pw   --id.type orderer   --tls.certfiles /home/asantopadre/runtime/orgdcms/tls-ca-runtime.pem
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/runtime/ca-tls-orgdcms
+fabric-ca-client register   --caname ca-orgdcms   --id.name orderer2   --id.secret orderer2pw   --id.type orderer   --tls.certfiles /home/asantopadre/runtime/orgdcms/tls-ca-runtime.pem
+nano /home/asantopadre/runtime/ca-tls-orgdcms/fabric-ca-client-config.yaml
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/runtime/ca-tls-orgdcms
+fabric-ca-client register   --caname ca-orgdcms   --id.name orderer2   --id.secret orderer2pw   --id.type orderer   --tls.certfiles /home/asantopadre/runtime/orgdcms/tls-ca-runtime.pem
+nano /home/asantopadre/runtime/ca-tls-orgdcms/fabric-ca-client-config.yaml
+fabric-ca-client register   --caname ca-orgdcms   --id.name orderer2   --id.secret orderer2pw   --id.type orderer   --tls.certfiles /home/asantopadre/runtime/orgdcms/tls-ca-runtime.pem
+mkdir -p /home/asantopadre/runtime/orgdcms/orderer2/tls
+# Enroll TLS orderer2 con SAN
+fabric-ca-client enroll   -u https://orderer2:orderer2pw@localhost:7054   --caname ca-orgdcms   --enrollment.profile tls   --csr.hosts orderer2   --csr.hosts orderer2.orgdcms.svc.cluster.local   -M /home/asantopadre/runtime/orgdcms/orderer2/tls   --tls.certfiles /home/asantopadre/runtime/orgdcms/tls-ca-runtime.pem
+openssl x509   -in /home/asantopadre/runtime/orgdcms/orderer2/tls/signcerts/cert.pem   -noout -text | grep -A1 "Subject Alternative Name"
+# 1) Verifica file TLS
+ls /home/asantopadre/runtime/orgdcms/orderer2/tls/{signcerts,keystore,tlscacerts}
+# 2) Verifica cert/key leggibili
+openssl x509 -in /home/asantopadre/runtime/orgdcms/orderer2/tls/signcerts/cert.pem -noout -subject
+openssl pkey -in /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore/* -noout
+# 3) Confronto variabili con orderer1
+kubectl get deployment orderer1 -n orgdcms -o yaml | grep ORDERER_GENERAL_
+kubectl get deployment orderer2 -n orgdcms -o yaml | grep ORDERER_GENERAL_
+# 4) Check canali non ancora joinati (prima del deploy)
+kubectl get pod -n orgdcms | grep or
+ls /home/asantopadre/runtime/orgdcms/orderer2/tls/{signcerts,keystore,tlscacerts}
+openssl x509 -in /home/asantopadre/runtime/orgdcms/orderer2/tls/signcerts/cert.pem -noout -subject
+openssl pkey -in /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore/* -noout
+kubectl get deployment orderer1 -n orgdcms -o yaml | grep ORDERER_GENERAL_
+kubectl get deployment orderer2 -n orgdcms -o yaml | grep ORDERER_GENERAL_
+kubectl get deployment orderer1 -n orgdcms -o yaml > /tmp/orderer1.yaml
+cat orderer2-deployment.yaml | grep ORDERER_GENERAL_
+grep ORDERER_GENERAL_ /tmp/orderer1.yaml
+ls /home/asantopadre/runtime/orgdcms/orderer2/tls/tlscacerts
+kubectl apply -f orderer2-deployment.yaml -n orgdcms
+kubectl get deployment orderer1 -n orgdcms -o yaml > /tmp/orderer1.yaml
+sed   -e 's/name: orderer1/name: orderer2/g'   -e 's/app: orderer1/app: orderer2/g'   -e 's|runtime/orgdcms/orderer1|runtime/orgdcms/orderer2|g'   /tmp/orderer1.yaml > /tmp/orderer2.yaml
+kubectl apply -f /tmp/orderer2.yaml -n orgdcms
+kubectl get pods -n orgdcms | grep orderer2
+orderer2-7cc9cfbf6b-clj9m        0/1     Error     1 (10s ago)     11s
+kubectl logs deployment/orderer2 -n orgdcms
+kubectl delete deployment orderer2 -n orgdcms
+mkdir -p /home/asantopadre/runtime/orgdcms/orderer2/msp
+fabric-ca-client enroll   -u https://orderer2:orderer2pw@localhost:7054   --caname ca-orgdcms   -M /home/asantopadre/runtime/orgdcms/orderer2/msp   --tls.certfiles /home/asantopadre/runtime/orgdcms/tls-ca-runtime.pem
+cp /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore/*    /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore/key.pem
+cp /home/asantopadre/runtime/orgdcms/orderer2/tls/signcerts/*    /home/asantopadre/runtime/orgdcms/orderer2/tls/signcerts/cert.pem
+cp /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore/*    /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore/key.pem
+cp /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore/*    /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore/key.pem
+# individua il file chiave reale
+ls /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore
+rm -f /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore/*
+fabric-ca-client enroll   -u https://orderer2:orderer2pw@localhost:7054   --caname ca-orgdcms   --enrollment.profile tls   --csr.hosts orderer2   --csr.hosts orderer2.orgdcms.svc.cluster.local   -M /home/asantopadre/runtime/orgdcms/orderer2/tls   --tls.certfiles /home/asantopadre/runtime/orgdcms/tls-ca-runtime.pem
+ls /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore
+cp /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore/*    /home/asantopadre/runtime/orgdcms/orderer2/tls/keystore/key.pem
+cp /home/asantopadre/runtime/orgdcms/orderer2/tls/signcerts/*    /home/asantopadre/runtime/orgdcms/orderer2/tls/signcerts/cert.pem
+kubectl apply -f /tmp/orderer2.yaml -n orgdcms
+kubectl get pods -n orgdcms | grep orderer2
+kubectl logs deployment/orderer2 -n orgdcms

@@ -1,0 +1,10 @@
+version: 1.5.0
+ca:
+  name: tlsca-orgdcms
+  keyfile: tls-ca-key.pem
+  certfile: tls-ca-cert.pem
+csr:
+  cn: tlsca-orgdcms
+  hosts:
+    - fabric-ca
+    - fabric-ca.orgdcms.svc.cluster.local
