@@ -1,0 +1,165 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"fabric-ca","namespace":"orgdcms"},"spec":{"ports":[{"port":7054,"targetPort":7054}],"selector":{"app":"fabric-ca"}}}
+    creationTimestamp: "2026-01-12T16:06:27Z"
+    name: fabric-ca
+    namespace: orgdcms
+    resourceVersion: "340438"
+    uid: 1628aea3-6def-4463-a041-0edfb6d34c60
+  spec:
+    clusterIP: 10.43.34.116
+    clusterIPs:
+    - 10.43.34.116
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 7054
+      protocol: TCP
+      targetPort: 7054
+    selector:
+      app: fabric-ca
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"fabric-tls-ca","namespace":"orgdcms"},"spec":{"ports":[{"port":7052,"targetPort":7052}],"selector":{"app":"fabric-tls-ca"}}}
+    creationTimestamp: "2026-01-12T16:06:27Z"
+    name: fabric-tls-ca
+    namespace: orgdcms
+    resourceVersion: "340444"
+    uid: 04108663-25f5-4fb7-92e7-8d0302a7f8d9
+  spec:
+    clusterIP: 10.43.190.112
+    clusterIPs:
+    - 10.43.190.112
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 7052
+      protocol: TCP
+      targetPort: 7052
+    selector:
+      app: fabric-tls-ca
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"orderer1","namespace":"orgdcms"},"spec":{"ports":[{"name":"grpc","port":7050,"targetPort":7050},{"name":"admin","port":7053,"targetPort":7053}],"selector":{"app":"orderer1"}}}
+    creationTimestamp: "2026-01-12T17:41:06Z"
+    name: orderer1
+    namespace: orgdcms
+    resourceVersion: "343227"
+    uid: eddcb808-a735-4f71-ac7b-c02045957f0d
+  spec:
+    clusterIP: 10.43.196.203
+    clusterIPs:
+    - 10.43.196.203
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: grpc
+      port: 7050
+      protocol: TCP
+      targetPort: 7050
+    - name: admin
+      port: 7053
+      protocol: TCP
+      targetPort: 7053
+    selector:
+      app: orderer1
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"orderer2","namespace":"orgdcms"},"spec":{"ports":[{"name":"grpc","port":7050,"targetPort":7050},{"name":"admin","port":7053,"targetPort":7053}],"selector":{"app":"orderer2"}}}
+    creationTimestamp: "2026-01-13T20:18:13Z"
+    name: orderer2
+    namespace: orgdcms
+    resourceVersion: "374814"
+    uid: 72393ec9-2959-4e36-92c3-ea4210c8fa29
+  spec:
+    clusterIP: 10.43.29.42
+    clusterIPs:
+    - 10.43.29.42
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: grpc
+      port: 7050
+      protocol: TCP
+      targetPort: 7050
+    - name: admin
+      port: 7053
+      protocol: TCP
+      targetPort: 7053
+    selector:
+      app: orderer2
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"peer0","namespace":"orgdcms"},"spec":{"ports":[{"name":"peer","port":7051,"targetPort":7051},{"name":"chaincode","port":7052,"targetPort":7052}],"selector":{"app":"peer0"}}}
+    creationTimestamp: "2026-01-05T09:54:55Z"
+    name: peer0
+    namespace: orgdcms
+    resourceVersion: "126684"
+    uid: 265fdd4b-5f73-47be-9dd1-7625597468fc
+  spec:
+    clusterIP: 10.43.157.237
+    clusterIPs:
+    - 10.43.157.237
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: peer
+      port: 7051
+      protocol: TCP
+      targetPort: 7051
+    - name: chaincode
+      port: 7052
+      protocol: TCP
+      targetPort: 7052
+    selector:
+      app: peer0
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: List
+metadata:
+  resourceVersion: ""

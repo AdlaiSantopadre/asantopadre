@@ -1,0 +1,13 @@
+# k8s/orgx/pvc/orderer3-ledger-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer3-ledger-pvc
+  namespace: orgx
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: local-path
+  

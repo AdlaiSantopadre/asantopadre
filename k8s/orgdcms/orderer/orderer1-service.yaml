@@ -1,0 +1,17 @@
+# k8s/orgdcms/orderer/orderer1-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer1
+  namespace: orgdcms
+spec:
+  type: ClusterIP
+  selector:
+    app: orderer1
+  ports:
+  - name: grpc
+    port: 7050
+    targetPort: 7050
+  - name: admin
+    port: 7053
+    targetPort: 7053

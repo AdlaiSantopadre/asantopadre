@@ -1,0 +1,6 @@
+NAME                             READY   STATUS    RESTARTS        AGE    LABELS
+fabric-ca-fcdc4d796-nz5js        1/1     Running   0               2d1h   app=fabric-ca,pod-template-hash=fcdc4d796
+fabric-tls-ca-5dd9f75d8d-m8ggc   1/1     Running   0               2d     app=fabric-tls-ca,pod-template-hash=5dd9f75d8d
+orderer1-56c5994dbf-dkvt4        1/1     Running   0               17h    app=orderer1,pod-template-hash=56c5994dbf
+orderer2-885b778fb-28v5m         1/1     Running   0               17h    app=orderer2,pod-template-hash=885b778fb
+peer0-8578465b4b-tqq2j           1/1     Running   1 (7d12h ago)   9d     app=peer0,pod-template-hash=8578465b4b

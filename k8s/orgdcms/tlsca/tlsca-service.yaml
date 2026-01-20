@@ -1,0 +1,13 @@
+# k8s/orgdcms/tlsca/tlsca-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: fabric-tls-ca
+  namespace: orgdcms
+spec:
+  type: ClusterIP
+  selector:
+    app: fabric-tls-ca
+  ports:
+  - port: 7052
+    targetPort: 7052

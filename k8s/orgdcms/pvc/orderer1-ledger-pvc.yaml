@@ -1,0 +1,12 @@
+# k8s/orgdcms/pvc/orderer-ledger-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer1-ledger-pvc
+  namespace: orgdcms
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: local-path

@@ -1,0 +1,12 @@
+# k8s/orgx/pvc/orderer3-msp-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer3-msp-pvc
+  namespace: orgx
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path

@@ -1,0 +1,13 @@
+# k8s/orgx/pvc/orderer3-tls-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer3-tls-pvc
+  namespace: orgx
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+  

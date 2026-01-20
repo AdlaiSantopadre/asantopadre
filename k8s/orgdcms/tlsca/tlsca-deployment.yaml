@@ -1,4 +1,4 @@
-#artifacts/ca/orgdcms/tls-ca-deployment.yaml versione 19/01
+# k8s/orgdcms/tlsca/tlsca-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,13 +26,11 @@ spec:
           value: "7052"
         - name: FABRIC_CA_SERVER_TLS_ENABLED
           value: "true"
-        - name: FABRIC_CA_SERVER_CSR_HOSTS
-          value: fabric-tls-ca,fabric-tls-ca.orgdcms,fabric-tls-ca.orgdcms.svc,fabric-tls-ca.orgdcms.svc.cluster.local,localhost
         ports:
         - containerPort: 7052
         volumeMounts:
-        - name: tls-ca-data
-          mountPath: /etc/hyperledger/fabric-ca-server
+        - mountPath: /etc/hyperledger/fabric-ca-server
+          name: tls-ca-data
       volumes:
       - name: tls-ca-data
         persistentVolumeClaim:
