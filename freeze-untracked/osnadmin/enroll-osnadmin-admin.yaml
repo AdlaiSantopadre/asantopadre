@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: enroll-osnadmin-admin
+  namespace: orgdcms
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: enroll
+        image: hyperledger/fabric-ca:1.5
+        env:
+        - name: FABRIC_CA_CLIENT_HOME
+          value: /osnadmin
+        - name: FABRIC_CA_CLIENT_TLS_CERTFILES
+          value: /ca/ca-cert.pem
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -e
+          fabric-ca-client enroll \
+            -u https://osnadmin:osnadminpw@fabric-ca.orgdcms.svc.cluster.local:7054 \
+            --mspdir /osnadmin/msp
+          echo DONE
+        volumeMounts:
+        - name: osnadmin
+          mountPath: /osnadmin
+        - name: ca
+          mountPath: /ca
+          readOnly: true
+      volumes:
+      - name: osnadmin
+        persistentVolumeClaim:
+          claimName: osnadmin-admin-pvc
+      - name: ca
+        persistentVolumeClaim:
+          claimName: fabric-ca-pvc

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: osnadmin-client
+  namespace: orgdcms
+spec:
+  restartPolicy: Never
+  containers:
+  - name: osnadmin
+    image: hyperledger/fabric-tools:2.5
+    command: ["sleep","infinity"]
+    volumeMounts:
+    - name: osnadmin-tls
+      mountPath: /osnadmin
+  volumes:
+  - name: osnadmin-tls
+    persistentVolumeClaim:
+      claimName: osnadmin-tls-pvc
