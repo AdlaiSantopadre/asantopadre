@@ -1,0 +1,139 @@
+# /home/asantopadre/fabric-2.5/artifacts/orderer1.yaml
+# DEPLOYMENT 24/01
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer1-ledger-pvc
+  namespace: orgdcms
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer1-msp-pvc
+  namespace: orgdcms
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer1-tls-pvc
+  namespace: orgdcms
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer1
+  namespace: orgdcms
+spec:
+  selector:
+    app: orderer1
+  ports:
+    - name: grpc
+      port: 7050
+      targetPort: 7050
+    - name: admin
+      port: 7053
+      targetPort: 7053
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderer1
+  namespace: orgdcms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderer1
+  template:
+    metadata:
+      labels:
+        app: orderer1
+    spec:
+      containers:
+        - name: orderer
+          image: hyperledger/fabric-orderer:2.5
+          ports:
+            - containerPort: 7050
+            - containerPort: 7053
+          env:
+            # Core
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: "0.0.0.0"
+            - name: ORDERER_GENERAL_LISTENPORT
+              value: "7050"
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: OrdererMSP
+            - name: ORDERER_GENERAL_LOCALMSPDIR
+              value: /var/hyperledger/orderer/msp
+            - name: ORDERER_GENERAL_BOOTSTRAPMETHOD
+              value: none
+            - name: ORDERER_CHANNELPARTICIPATION_ENABLED
+              value: "true"
+
+            # TLS
+            - name: ORDERER_GENERAL_TLS_ENABLED
+              value: "true"
+            - name: ORDERER_GENERAL_TLS_PRIVATEKEY
+              value: /var/hyperledger/orderer/tls/keystore/key.pem
+            - name: ORDERER_GENERAL_TLS_CERTIFICATE
+              value: /var/hyperledger/orderer/tls/signcerts/cert.pem
+            - name: ORDERER_GENERAL_TLS_ROOTCAS
+              value: /var/hyperledger/orderer/tls/tlscacerts/tls-ca-cert.pem
+
+            # Admin API
+            - name: ORDERER_ADMIN_LISTENADDRESS
+              value: "0.0.0.0:7053"
+            - name: ORDERER_ADMIN_TLS_ENABLED
+              value: "true"
+            - name: ORDERER_ADMIN_TLS_PRIVATEKEY
+              value: /var/hyperledger/orderer/tls/keystore/key.pem
+            - name: ORDERER_ADMIN_TLS_CERTIFICATE
+              value: /var/hyperledger/orderer/tls/signcerts/cert.pem
+            - name: ORDERER_ADMIN_TLS_ROOTCAS
+              value: /var/hyperledger/orderer/tls/tlscacerts/tls-ca-cert.pem
+            - name: ORDERER_ADMIN_TLS_CLIENTROOTCAS
+              value: /var/hyperledger/orderer/tls/tlscacerts/tls-ca-cert.pem
+
+            # Raft / Cluster (ready for orderer2)
+            - name: ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE
+              value: /var/hyperledger/orderer/tls/signcerts/cert.pem
+            - name: ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY
+              value: /var/hyperledger/orderer/tls/keystore/key.pem
+            - name: ORDERER_GENERAL_CLUSTER_ROOTCAS
+              value: /var/hyperledger/orderer/tls/tlscacerts/tls-ca-cert.pem
+
+          volumeMounts:
+            - name: ledger
+              mountPath: /var/hyperledger/orderer
+            - name: msp
+              mountPath: /var/hyperledger/orderer/msp
+            - name: tls
+              mountPath: /var/hyperledger/orderer/tls
+      volumes:
+        - name: ledger
+          persistentVolumeClaim:
+            claimName: orderer1-ledger-pvc
+        - name: msp
+          persistentVolumeClaim:
+            claimName: orderer1-msp-pvc
+        - name: tls
+          persistentVolumeClaim:
+            claimName: orderer1-tls-pvc

@@ -1,0 +1,43 @@
+#job che copia i valori dell'orderer enrolled dentro i PVC
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: copy-orderer3-msp-tls-again
+  namespace: orgx
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: copy
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            set -e
+
+            cp -r /src-tls/orderer3-tls/* /dst-tls/
+            echo OK
+        volumeMounts:
+       
+        - name: dst-msp
+          mountPath: /dst-msp
+        - name: dst-tls
+          mountPath: /dst-tls
+      volumes:
+      - name: src-msp
+        persistentVolumeClaim:
+          claimName: fabric-ca-orgx-pvc
+      - name: src-tls
+        persistentVolumeClaim:
+          claimName: fabric-tls-ca-pvc
+      - name: dst-msp
+        persistentVolumeClaim:
+          claimName: orderer3-msp-pvc
+      - name: dst-tls
+        persistentVolumeClaim:
+          claimName: orderer3-tls-pvc
+
+

@@ -1,0 +1,27 @@
+# POD di ispezione/lettura
+apiVersion: v1
+kind: Pod
+metadata:
+  name: inspect-orderer1-pvcs
+  namespace: orgdcms
+spec:
+  restartPolicy: Never
+  containers:
+  - name: reader
+    image: busybox
+    command: ["sh", "-c", "sleep 3600"]
+    volumeMounts:
+    - name: msp
+      mountPath: /mnt/msp
+    - name: msp
+      mountPath: /mnt/tls
+  volumes:
+  - name: msp
+    persistentVolumeClaim:
+      claimName: orderer1-msp-pvc
+  - name: tls
+    persistentVolumeClaim:
+      claimName: orderer1-tls-pvc
+
+
+

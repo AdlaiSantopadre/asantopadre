@@ -1,0 +1,37 @@
+# manifest minimo corretto per fabric-tools Fabric 2.5
+#25.01
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fabric-tools
+  namespace: fabric-tools
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fabric-tools
+  template:
+    metadata:
+      labels:
+        app: fabric-tools
+    spec:
+      containers:
+      - name: tools
+        image: hyperledger/fabric-tools:2.5
+        command: ["sleep", "infinity"]
+        volumeMounts:
+        - name: tls-ca
+          mountPath: /shared/tls
+          readOnly: true
+        - name: orderer1-tls
+          mountPath: /shared/orderer1/tls
+          readOnly: true
+      volumes:
+      - name: tls-ca
+        persistentVolumeClaim:
+          claimName: fabric-tls-ca-pvc
+          # namespace orgdcms
+      - name: orderer1-tls
+        persistentVolumeClaim:
+          claimName: orderer1-tls-pvc
+          # namespace orgdcms

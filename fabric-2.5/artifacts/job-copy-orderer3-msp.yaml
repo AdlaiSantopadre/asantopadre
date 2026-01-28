@@ -1,0 +1,35 @@
+#job che copia i valori dell'orderer enrolled da CA dentro i PVC
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: copy-orderer3-msp
+  namespace: orgx
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: copy
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              
+              cp -r /src/orderer3-msp/* /dst/
+              echo OK
+          volumeMounts:
+            - name: src
+              mountPath: /src
+            - name: dst
+              mountPath: /dst
+      volumes:
+        - name: src
+          persistentVolumeClaim:
+            claimName: fabric-ca-orgx-pvc
+        - name: dst
+          persistentVolumeClaim:
+            claimName: orderer3-msp-pvc
+

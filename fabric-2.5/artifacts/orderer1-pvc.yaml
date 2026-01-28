@@ -1,0 +1,36 @@
+# crea i PVC di orderer1
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer1-ledger-pvc
+  namespace: orgdcms
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer1-msp-pvc
+  namespace: orgdcms
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer1-tls-pvc
+  namespace: orgdcms
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path

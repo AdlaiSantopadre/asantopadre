@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: clean-orderer2-msp
+  namespace: orgdcms
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: clean
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              echo "Cleaning orderer2 MSP..."
+              rm -rf /dst-msp/*
+              echo "OK"
+          volumeMounts:
+            - name: dst-msp
+              mountPath: /dst-msp
+      volumes:
+        - name: dst-msp
+          persistentVolumeClaim:
+            claimName: orderer2-msp-pvc

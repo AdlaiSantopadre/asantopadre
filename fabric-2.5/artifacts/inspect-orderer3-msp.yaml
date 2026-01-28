@@ -1,0 +1,22 @@
+# POD di ispezione PVC orderer3-msp-pvc
+apiVersion: v1
+kind: Pod
+metadata:
+  name: inspect-orderer3-msp
+  namespace: orgx
+spec:
+  restartPolicy: Never
+  containers:
+    - name: inspect
+      image: busybox
+      command: ["sh", "-c", "sleep 1d"]
+      volumeMounts:
+        - name: msp
+          mountPath: /mnt/msp
+  volumes:
+    - name: msp
+      persistentVolumeClaim:
+        claimName: orderer3-msp-pvc
+
+
+

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: copy-orderer2-msp
+  namespace: orgdcms
+spec:
+  restartPolicy: Never
+  containers:
+    - name: copy
+      image: busybox
+      command:
+        - sh
+        - -c
+        - |
+          set -e
+          echo "Copying orderer2 MSP"
+          rm -rf /dst-msp/*
+          cp -r /src-orderer-msp/orderer2-msp/* /dst-msp/
+          mkdir -p /dst-msp/admincerts
+          cp /src-admin-msp/orgdcms-admin-msp/signcerts/cert.pem /dst-msp/admincerts/
+          echo "DONE"
+          sleep 3600
+      volumeMounts:
+        - name: src-ca
+          mountPath: /src-orderer-msp
+        - name: src-ca-admin
+          mountPath: /src-admin-msp
+        - name: dst-msp
+          mountPath: /dst-msp
+  volumes:
+    - name: src-ca
+      persistentVolumeClaim:
+        claimName: fabric-ca-orgdcms-pvc
+    - name: src-ca-admin
+      persistentVolumeClaim:
+        claimName: fabric-ca-orgdcms-pvc
+    - name: dst-msp
+      persistentVolumeClaim:
+        claimName: orderer2-msp-pvc

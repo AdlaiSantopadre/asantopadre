@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: add-orderer3-configyaml
+  namespace: orgx
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: add-config
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              cp /src/config.yaml /dst/config.yaml
+              echo "config.yaml copied"
+          volumeMounts:
+            - name: src
+              mountPath: /src
+            - name: dst
+              mountPath: /dst
+      volumes:
+        - name: src
+          configMap:
+            name: orderer3-nodeou-config
+        - name: dst
+          persistentVolumeClaim:
+            claimName: orderer3-msp-pvc
+
+

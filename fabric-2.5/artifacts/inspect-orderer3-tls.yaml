@@ -1,0 +1,22 @@
+# POD di ispezione/lettura
+apiVersion: v1
+kind: Pod
+metadata:
+  name: inspect-orderer3-tls
+  namespace: orgx
+spec:
+  restartPolicy: Never
+  containers:
+  - name: reader
+    image: busybox
+    command: ["sh", "-c", "sleep 3600"]
+    volumeMounts:
+    - name: tls
+      mountPath: /mnt/tls
+  volumes:
+  - name: tls
+    persistentVolumeClaim:
+      claimName: orderer3-tls-pvc
+
+
+

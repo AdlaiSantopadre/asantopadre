@@ -1,0 +1,32 @@
+# job di bind dei PVC di orderer2
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bind-orderer2-pvc
+  namespace: orgdcms
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: hold
+          image: busybox
+          command: ["sh", "-c", "sleep 300"]
+          volumeMounts:
+            - name: ledger
+              mountPath: /var/hyperledger/orderer
+            - name: msp
+              mountPath: /var/hyperledger/orderer/msp
+            - name: tls
+              mountPath: /var/hyperledger/orderer/tls
+      volumes:
+        - name: ledger
+          persistentVolumeClaim:
+            claimName: orderer2-ledger-pvc
+        - name: msp
+          persistentVolumeClaim:
+            claimName: orderer2-msp-pvc
+        - name: tls
+          persistentVolumeClaim:
+            claimName: orderer2-tls-pvc

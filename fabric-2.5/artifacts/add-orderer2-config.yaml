@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: add-orderer2-configyaml
+  namespace: orgdcms
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: add-config
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              cp /src/config.yaml /dst/config.yaml
+              echo "config.yaml installed"
+          volumeMounts:
+            - name: src
+              mountPath: /src
+            - name: dst
+              mountPath: /dst
+      volumes:
+        - name: src
+          configMap:
+            name: orderer2-nodeou-config
+        - name: dst
+          persistentVolumeClaim:
+            claimName: orderer2-msp-pvc

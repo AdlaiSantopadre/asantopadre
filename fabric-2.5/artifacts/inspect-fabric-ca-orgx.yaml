@@ -1,0 +1,19 @@
+# POD di ispezione (orgx)
+apiVersion: v1
+kind: Pod
+metadata:
+  name: inspect-fabric-ca-orgx
+  namespace: orgx
+spec:
+  restartPolicy: Never
+  containers:
+    - name: inspect
+      image: busybox
+      command: ["sh", "-c", "sleep 1d"]
+      volumeMounts:
+        - name: ca-data
+          mountPath: /mnt
+  volumes:
+    - name: ca-data
+      persistentVolumeClaim:
+        claimName: fabric-ca-orgx-pvc
