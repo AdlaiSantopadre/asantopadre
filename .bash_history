@@ -1,437 +1,3 @@
-kubectl scale deployment orderer2 -n orgdcms --replicas=0
-kubectl scale deployment orderer3 -n orgx --replicas=0
-kubectl exec -n orgdcms inspect-orderer1-pvc -- ls /var/hyperledger/orderer/tls
-kubectl exec -n orgdcms inspect-orderer1-pvc -- ls /var/hyperledger/orderer/msp
-kubectl run inspect-orderer1   -n orgdcms   --rm -it   --image=busybox   --overrides='
-{
-  "spec": {
-    "containers": [{
-      "name": "inspect",
-      "image": "busybox",
-      "command": ["sh"],
-      "volumeMounts": [
-        {
-          "name": "tls",
-          "mountPath": "/mnt/tls"
-        },
-        {
-          "name": "msp",
-          "mountPath": "/mnt/msp"
-        }
-      ]
-    }],
-    "volumes": [
-      {
-        "name": "tls",
-        "persistentVolumeClaim": {
-          "claimName": "orderer1-tls-pvc"
-        }
-      },
-      {
-        "name": "msp",
-        "persistentVolumeClaim": {
-          "claimName": "orderer1-msp-pvc"
-        }
-      }
-    ]
-  }
-}'
-kubectl run inspect-orderer1   -n orgdcms   --rm -it   --image=busybox   --overrides='
-{
-  "spec": {
-    "containers": [{
-      "name": "inspect",
-      "image": "busybox",
-      "command": ["sh"],
-      "volumeMounts": [
-        {
-          "name": "tls",
-          "mountPath": "/mnt/tls"
-        },
-        {
-          "name": "msp",
-          "mountPath": "/mnt/msp"
-        }
-      ]
-    }],
-    "volumes": [
-      {
-        "name": "tls",
-        "persistentVolumeClaim": {
-          "claimName": "orderer1-tls-pvc"
-        }
-      },
-      {
-        "name": "msp",
-        "persistentVolumeClaim": {
-          "claimName": "orderer1-msp-pvc"
-        }
-      }
-    ]
-  }
-}'
-kubectl delete pod inspect-orderer1 -n orgdcms
-kubectl run inspect-orderer1   -n orgdcms   --rm -it   --image=busybox   --overrides='
-{
-  "spec": {
-    "containers": [{
-      "name": "inspect",
-      "image": "busybox",
-      "command": ["sh"],
-      "volumeMounts": [
-        {
-          "name": "tls",
-          "mountPath": "/mnt/tls"
-        },
-        {
-          "name": "msp",
-          "mountPath": "/mnt/msp"
-        }
-      ]
-    }],
-    "volumes": [
-      {
-        "name": "tls",
-        "persistentVolumeClaim": {
-          "claimName": "orderer1-tls-pvc"
-        }
-      },
-      {
-        "name": "msp",
-        "persistentVolumeClaim": {
-          "claimName": "orderer1-msp-pvc"
-        }
-      }
-    ]
-  }
-}'
-kubectl get pods -n orgdcms
-kubectl delete pod inspect-orderer1 -n orgdcms
-kubectl run inspect-orderer1   -n orgdcms   --rm -it   --image=busybox   --overrides='
-{
-  "spec": {
-    "containers": [{
-      "name": "inspect",
-      "image": "busybox",
-      "command": ["sh"],
-      "volumeMounts": [
-        {
-          "name": "tls",
-          "mountPath": "/mnt/tls"
-        },
-        {
-          "name": "msp",
-          "mountPath": "/mnt/msp"
-        }
-      ]
-    }],
-    "volumes": [
-      {
-        "name": "tls",
-        "persistentVolumeClaim": {
-          "claimName": "orderer1-tls-pvc"
-        }
-      },
-      {
-        "name": "msp",
-        "persistentVolumeClaim": {
-          "claimName": "orderer1-msp-pvc"
-        }
-      }
-    ]
-  }
-}'
-kubectl get pods -n orgdcms
-kubectl delete pod inspect-orderer1 -n orgdcms
-kubectl apply -n orgdcms -f - <<'EOF'
-apiVersion: v1
-kind: Pod
-metadata:
-  name: inspect-orderer1
-spec:
-  restartPolicy: Never
-  containers:
-  - name: inspect
-    image: busybox
-    command: ["sleep", "3600"]
-    volumeMounts:
-    - name: tls
-      mountPath: /mnt/tls
-    - name: msp
-      mountPath: /mnt/msp
-  volumes:
-  - name: tls
-    persistentVolumeClaim:
-      claimName: orderer1-tls-pvc
-  - name: msp
-    persistentVolumeClaim:
-      claimName: orderer1-msp-pvc
-EOF
-
-kubectl get pods -n orgdcms
-kubectl exec -n orgdcms -it inspect-orderer1 -- sh
-kubectl delete pod inspect-orderer1 -n orgdcms
-kubectl scale deployment orderer1 -n orgdcms --replicas=1
-kubectl get pods -n orgdcms
-kubectl logs -n orgdcms orderer1-74b9b8dc87-qlx5t --previous
-kubectl logs -n orgdcms orderer1-74b9b8dc87-qlx5t
-kubectl edit deployment orderer1 -n orgdcms
-kubectl apply -f k8s/orgdcms/orderer/orderer1-deployment.yaml
-kubectl get pods -n orgdcms
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl get pods -n orgdcms
-kubectl logs -n orgdcms orderer1-987c7b847-kdwq5 --previous
-kubectl scale deployment orderer1 -n orgdcms --replicas=0
-kubectl delete replicaset -n orgdcms -l app=orderer1
-kubectl apply -f k8s/orgdcms/orderer/orderer1-deployment.yaml
-kubectl scale deployment orderer1 -n orgdcms --replicas=1
-kubectl get pods -n orgdcms
-kubectl logs -n orgdcms deployment/orderer1 | grep FATA
-kubectl get deployment orderer1 -n orgdcms -o yaml | grep ROOTCAS
-kubectl get pods -n orgdcms
-kubectl apply -n orgdcms -f - <<'EOF'
-apiVersion: v1
-kind: Pod
-metadata:
-  name: inspect-orderer1
-spec:
-  restartPolicy: Never
-  containers:
-  - name: inspect
-    image: busybox
-    command: ["sleep", "3600"]
-    volumeMounts:
-    - name: tls
-      mountPath: /mnt/tls
-    - name: msp
-      mountPath: /mnt/msp
-  volumes:
-  - name: tls
-    persistentVolumeClaim:
-      claimName: orderer1-tls-pvc
-  - name: msp
-    persistentVolumeClaim:
-      claimName: orderer1-msp-pvc
-EOF
-
-kubectl exec -n orgdcms -it inspect-orderer1 -- sh
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl logs -n orgdcms deployment/orderer1
-kubectl edit deployment orderer1 -n orgdcms
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl logs -n orgdcms deployment/orderer1
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl get pods -n orgdcms
-kubectl logs -n orgdcms deployment/orderer1 | grep FATA
-kubectl apply -f k8s/orgdcms/orderer/orderer1-deployment.yaml
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl get pods -n orgdcms
-kubectl exec -n orgdcms -it inspect-orderer1 -- sh
-kubectl apply -f k8s/orgdcms/orderer/orderer1-deployment.yaml
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl get pods -n orgdcms
-kubectl scale deployment orderer2 -n orgdcms --replicas=1
-kubectl get pods -n orgdcms
-kubectl apply -n orgdcms -f - <<'EOF'
-apiVersion: v1
-kind: Pod
-metadata:
-  name: inspect-orderer2
-spec:
-  restartPolicy: Never
-  containers:
-  - name: inspect
-    image: busybox
-    command: ["sleep", "3600"]
-    volumeMounts:
-    - name: tls
-      mountPath: /mnt/tls
-    - name: msp
-      mountPath: /mnt/msp
-  volumes:
-  - name: tls
-    persistentVolumeClaim:
-      claimName: orderer2-tls-pvc
-  - name: msp
-    persistentVolumeClaim:
-      claimName: orderer2-msp-pvc
-EOF
-
-kubectl get pods -n orgdcms
-kubectl apply -f k8s/orgdcms/orderer/orderer2-deployment.yaml
-kubectl exec -n orgdcms -it inspect-orderer2 -- sh
-kubectl apply -f k8s/orgdcms/orderer/orderer2-deployment.yaml
-kubectl rollout restart deployment orderer2 -n orgdcms
-kubectl get pods -n orgdcms
-kubectl scale deployment orderer3 -n orgdx --replicas=1
-kubectl scale deployment orderer3 -n orgx --replicas=1
-kubectl get pods -n orgx
-kubectl apply -n orgx -f - <<'EOF'
-apiVersion: v1
-kind: Pod
-metadata:
-  name: inspect-orderer3
-spec:
-  restartPolicy: Never
-  containers:
-  - name: inspect
-    image: busybox
-    command: ["sleep", "3600"]
-    volumeMounts:
-    - name: tls
-      mountPath: /mnt/tls
-    - name: msp
-      mountPath: /mnt/msp
-  volumes:
-  - name: tls
-    persistentVolumeClaim:
-      claimName: orderer3-tls-pvc
-  - name: msp
-    persistentVolumeClaim:
-      claimName: orderer3-msp-pvc
-EOF
-
-kubectl exec -n orgx -it inspect-orderer3 -- sh
-kubectl apply -f k8s/orgx/orderer/orderer3-deployment.yaml
-kubectl rollout restart deployment orderer3 -n orgx
-kubectl get pods -n orgx
-osnadmin channel list   --orderer-address <host>:7053   --ca-file <tlsca.pem>   --client-cert <admin-cert.pem>   --client-key <admin-key.pem>
-osnadmin channel list  --orderer-address orderer1.orgdcms.svc.cluster.local:7053  --ca-file ~/artifacts/orgdcms/tls-ca.pem  --client-cert ~/artifacts/orgdcms/admin-tls/cert.pem  --client-key  ~/artifacts/orgdcms/admin-tls/key.pem
-~/artifacts/orgdcms/tls-ca.pem
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/tls/orderer1/cert.pem   --client-cert ~/artifacts/tls/orderer1/cert.pem   --client-key ~/artifacts/tls/orderer1/key.pem
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/tls/orderer1/cert.pem   --client-cert ~/artifacts/tls/orderer1/cert.pem   --client-key  ~/artifacts/tls/orderer1/key.pem
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-key  ~/artifacts/orgdcms/orderer1/tls/key.pem
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-key  ~/artifacts/orgdcms/orderer1/tls/keystore/key.pem
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-key  ~/artifacts/orgdcms/orderer1/tls/keystore/key.pem
-osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer2/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer2/tls/cert.pem   --client-key  ~/artifacts/orgdcms/orderer2/tls/keystore/key.pem
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer2/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer2/tls/cert.pem   --client-key  ~/artifacts/orgdcms/orderer2/tls/keystore/key.pem
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/artifacts/orgx/orderer3/tls/cert.pem   --client-cert ~/artifacts/orgx/orderer3/tls/cert.pem   --client-key  ~/artifacts/orgx/orderer3/tls/keystore/key.pem
-osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/artifacts/orgx/orderer3/tls/cert.pem   --client-cert ~/artifacts/orgx/orderer3/tls/cert.pem   --client-key  ~/artifacts/orgx/orderer3/tls/keystore/key.pem
-kubectl logs -n orgdcms deployment/orderer1 | grep -E "Raft|consenter|onboard"
-kubectl logs -n orgdcms deployment/orderer2 | grep -E "Raft|consenter|onboard"
-kubectl logs -n orgdcms deployment/orderer1
-kubectl logs -n orgdcms deployment/orderer2
-kubectl logs -n orgx deployment/orderer3
-kubectl get pods -n orgdcms
-kubectl exec -n orgdcms -it $(kubectl get pod -n orgdcms -l app=orderer1 -o jsonpath='{.items[0].metadata.name}') -- sh
-kubectl cp -n orgdcms $(kubectl get pod -n orgdcms -l app=orderer1 -o jsonpath='{.items[0].metadata.name}'):/var/hyperledger/orderer/tls/signcerts/cert.pem /tmp/orderer1-tls-cert.pem
-kubectl cp -n orgdcms $(kubectl get pod -n orgdcms -l app=orderer1 -o jsonpath='{.items[0].metadata.name}'):/var/hyperledger/orderer/tls/tlscacerts /tmp/orderer1-tlscacerts
-penssl x509 -in /tmp/orderer1-tls-cert.pem -noout -issuer -subject
-openssl x509 -in /tmp/orderer1-tls-cert.pem -noout -issuer -subject
-kubectl apply -n orgdcms -f - <<'EOF'
-apiVersion: v1
-kind: Pod
-metadata:
-  name: inspect-orderer1
-spec:
-  restartPolicy: Never
-  containers:
-  - name: inspect
-    image: busybox
-    command: ["sleep", "3600"]
-    volumeMounts:
-    - name: tls
-      mountPath: /mnt/tls
-    - name: msp
-      mountPath: /mnt/msp
-  volumes:
-  - name: tls
-    persistentVolumeClaim:
-      claimName: orderer1-tls-pvc
-  - name: msp
-    persistentVolumeClaim:
-      claimName: orderer1-msp-pvc
-EOF
-
-kubectl get pods -n orgdcms
-kubectl exec -n orgdcms -it inspect-orderer1 -- sh
-kubectl delete pod inspect-orderer1 -n orgdcms
-kubectl apply -n orgdcms -f - <<'EOF'
-apiVersion: v1
-kind: Pod
-metadata:
-  name: inspect-orderer1
-spec:
-  restartPolicy: Never
-  containers:
-  - name: inspect
-    image: busybox
-    command: ["sleep", "3600"]
-    volumeMounts:
-    - name: tls
-      mountPath: /mnt/tls
-    - name: msp
-      mountPath: /mnt/msp
-  volumes:
-  - name: tls
-    persistentVolumeClaim:
-      claimName: orderer1-tls-pvc
-  - name: msp
-    persistentVolumeClaim:
-      claimName: orderer1-msp-pvc
-EOF
-
-kubectl exec -n orgdcms -it inspect-orderer1 -- sh
-kubectl cp -n orgdcms $(kubectl get pod -n orgdcms -l app=orderer1 -o jsonpath='{.items[0].metadata.name}'):/var/hyperledger/orderer/tls/signcerts/cert.pem /tmp/orderer1-tls-cert.pem
-openssl x509 -in /tmp/orderer1-tls-cert.pem -noout -issuer -subject
-cd /tmp
-ls
-cd 
-POD=$(kubectl get pod -n orgdcms -l app=orderer1 -o jsonpath='{.items[0].metadata.name}')
-kubectl cp -n orgdcms "$POD":/var/hyperledger/orderer/tls/signcerts/cert.pem /tmp/orderer1-cert.pem
-kubectl cp -n orgdcms "$POD":/mnt/tls/tlscacerts/raft-rootcas.pem /tmp/raft-rootcas.pem
-pod -n orgdcms -l app=orderer1 -o jsonpath='{.items[0].metadata.name}')
-kubectl cp -n orgdcms "$POD":/var/hyperledger/orderer/tls/signcerts/cert.pem /tmp/orderer1-cert.pem
-kubectl cp -n orgdcms "$POD":/mnt/tls/tlscacerts/raft-rootcas.pem /tmp/raft-rootcas.pem
-pod -n orgdcms -l app=orderer1 -o jsonpath='{.items[0].metadata.name}')
-kubectl cp -n orgdcms "$POD":/var/hyperledger/orderer/tls/signcerts/cert.pem /tmp/orderer1-cert.pem
-kubectl cp -n orgdcms "$POD":/mnt/tls/tlscacerts/raft-rootcas.pem /tmp/raft-rootcas.pem
-POD=$(kubectl get pod -n orgdcms -l app=orderer1 -o jsonpath='{.items[0].metadata.name}')
-echo "$POD"
-kubectl cp -n orgdcms "$POD":/var/hyperledger/orderer/tls/signcerts/cert.pem /tmp/orderer1-cert.pem
-kubectl cp -n orgdcms "$POD":/mnt/tls/tlscacerts/raft-rootcas.pem /tmp/raft-rootcas.pem
-kubectl exec -n orgdcms -it "$POD" -- sh
-kubectl cp -n orgdcms "$POD":/var/hyperledger/orderer/tls/tlscacerts/raft-rootcas.pem /tmp/raft-rootcas.pem
-openssl verify -CAfile /tmp/raft-rootcas.pem /tmp/orderer1-cert.pem
-openssl x509 -in /tmp/orderer1-cert.pem -noout -text | grep -A1 "Subject Alternative Name"
-POD2=$(kubectl get pod -n orgdcms -l app=orderer2 -o jsonpath='{.items[0].metadata.name}')
-kubectl cp -n orgdcms "$POD2":/var/hyperledger/orderer/tls/signcerts/cert.pem /tmp/orderer2-cert.pem
-kubectl cp -n orgdcms "$POD2":/var/hyperledger/orderer/tls/tlscacerts/raft-rootcas.pem /tmp/raft-rootcas.pem
-openssl verify -CAfile /tmp/raft-rootcas.pem /tmp/orderer2-cert.pem
-openssl x509 -in /tmp/orderer2-cert.pem -noout -text | grep -A1 "Subject Alternative Name"
-POD3=$(kubectl get pod -n orgx -l app=orderer3 -o jsonpath='{.items[0].metadata.name}')
-echo "$POD3"
-kubectl cp -n orgx "$POD3":/var/hyperledger/orderer/tls/signcerts/cert.pem /tmp/orderer3-cert.pem
-kubectl cp -n orgx "$POD3":/var/hyperledger/orderer/tls/tlscacerts/raft-rootcas.pem /tmp/raft-rootcas.pem
-openssl verify -CAfile /tmp/raft-rootcas.pem /tmp/orderer3-cert.pem
-openssl x509 -in /tmp/orderer3-cert.pem -noout -text | grep -A1 "Subject Alternative Name"
-POD=$(kubectl get pod -n orgdcms -l app=orderer1 -o jsonpath='{.items[0].metadata.name}')
-echo "$POD"
-kubectl exec -n orgdcms "$POD" -- sh -lc 'env | sort | grep -E "ORDERER_GENERAL|ADMIN|TLS"'
-kubectl exec -n orgdcms "$POD" -- sh -lc 'grep -R "Admin.ListenAddress" /var/hyperledger/orderer'
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl rollout status deployment orderer1 -n orgdcms
-kubectl exec -n orgdcms "$POD" -- sh -lc 'env | grep ORDERER_.*_TLS_ROOTCAS'
-# 1) Prendi il pod di orderer1
-POD=$(kubectl get pod -n orgdcms -l app=orderer1 -o jsonpath='{.items[0].metadata.name}')
-echo "$POD"
-kubectl exec -n orgdcms "$POD" -- sh -lc 'env | grep ORDERER_.*_TLS_ROOTCAS'
-kubectl get deployment orderer1 -n orgdcms -o yaml | grep -A2 ORDERER_.*_TLS_ROOTCAS
-kubectl apply -f k8s/orgdcms/orderer/orderer1-deployment.yaml
-kubectl rollout status deployment orderer1 -n orgdcms
-POD=$(kubectl get pod -n orgdcms -l app=orderer1 -o jsonpath='{.items[0].metadata.name}')
-echo "$POD"
-kubectl exec -n orgdcms "$POD" -- sh -lc 'env | grep ORDERER_.*_TLS_ROOTCAS'
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file /tmp/raft-rootcas.pem   --client-cert /tmp/orderer1-cert.pem   --client-key /tmp/orderer1-key.pem
-kubectl cp -n orgdcms "$POD":/var/hyperledger/orderer/tls/keystore/key.pem /tmp/orderer1-key.pem
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file /tmp/raft-rootcas.pem   --client-cert /tmp/orderer1-cert.pem   --client-key /tmp/orderer1-key.pem
-kubectl cp -n orgdcms "$POD":/var/hyperledger/orderer/tls/tlscacerts/tls-localhost-7052-tlsca-orgdcms.pem /tmp/admin-tlsca-orgdcms.pem
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file /tmp/admin-tlsca-orgdcms.pem   --client-cert /tmp/orderer1-cert.pem   --client-key /tmp/orderer1-key.pem
-kubectl apply -f k8s/orgdcms/orderer/orderer2-deployment.yaml
-kubectl rollout status deployment orderer2 -n orgdcms
-# Verifica ROOTCAS
-POD2=$(kubectl get pod -n orgdcms -l app=orderer2 -o jsonpath='{.items[0].metadata.name}')
-kubectl exec -n orgdcms "$POD2" -- sh -lc 'env | grep ORDERER_.*_TLS_ROOTCAS'
 kubectl apply -f k8s/orgx/orderer/orderer3-deployment.yaml
 kubectl rollout status deployment orderer3 -n orgx
 POD3=$(kubectl get pod -n orgx -l app=orderer3 -o jsonpath='{.items[0].metadata.name}')
@@ -1998,3 +1564,437 @@ find /mnt/msp -maxdepth 3 -type f -o -type d | sort
 '
 kubectl rollout restart deployment orderer1 -n orgdcms
 kubectl get pod  -n orgdcms
+kubectl get pod  -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/orderer3-pvc.yaml
+kubectl apply -f ~/fabric-2.5/artifacts/job-bind-orderer3-pvc.yaml
+kubectl get pvc -n orgx | grep orderer3
+kubectl exec -n orgx deploy/fabric-ca-orgx --   sh -c 'export HOME=/etc/hyperledger/fabric-ca-server && \
+  fabric-ca-client register \
+    --url https://localhost:7054 \
+    --id.name orderer3 \
+    --id.secret orderer3pw \
+    --id.type orderer \
+    --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem'
+kubectl exec -n orgdcms deploy/fabric-tls-ca --   fabric-ca-client register     --url https://localhost:7054     --id.name orderer3     --id.secret orderer3pw     --id.type orderer     --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem
+kubectl exec -n orgdcms deploy/fabric-tls-ca --   sh -c 'ls -l /etc/hyperledger/fabric-ca-server/msp/signcerts'
+kubectl exec -n orgx deploy/fabric-ca-orgx --   sh -c 'export HOME=/etc/hyperledger/fabric-ca-server && \
+  fabric-ca-client enroll \
+    -u https://orderer3:orderer3pw@localhost:7054 \
+    --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem \
+    -M /etc/hyperledger/fabric-ca-server/orderer3-msp'
+kubectl exec -n orgdcms deploy/fabric-tls-ca --   sh -c 'export HOME=/etc/hyperledger/fabric-ca-server && \
+  fabric-ca-client enroll \
+    -u https://orderer3:orderer3pw@localhost:7054 \
+    --enrollment.profile tls \
+    --csr.hosts orderer3,orderer3.orgx.svc,orderer3.orgx.svc.cluster.local,localhost \
+    --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem \
+    -M /etc/hyperledger/fabric-ca-server/orderer3-tls'
+kubectl apply -f ~/fabric-2.5/artifacts/job-copy-orderer3-msp-tls.yaml
+kubectl create configmap orderer3-nodeou-config   --from-file=config.yaml   -n orgx
+kubectl get configmap orderer3-nodeou-config -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/add-orderer3-config.yaml
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+echo "=== CONFIG ==="
+cat /mnt/msp/config.yaml
+
+'
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer3-pvcs.yaml
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+echo "=== CONFIG ==="
+cat /mnt/msp/config.yaml
+’
+
+'
+kubectl apply -f fabric-2.5/artifacts/orderer3.yaml
+kubectl get pod  -n orgx
+kubectl get pod  -n orgdcms
+kubectl delete pod inspect-orderer1-pvcs -n orgdcms
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer1-pvcs.yaml
+kubectl exec -n orgdcms deploy/orderer1 -- sh -c 'ls -R /var/hyperledger/orderer/tls'
+kubectl exec -n orgdcms deploy/orderer2 -- sh -c 'ls -R /var/hyperledger/orderer/tls'
+kubectl exec -n orgx deploy/orderer3 -- sh -c 'ls -R /var/hyperledger/orderer/tls'
+kubectl logs -n orgx deploy/orderer3 --tail=50
+kubectl exec -n orgx deploy/orderer3 -- sh -c '
+ls -l /var/hyperledger/orderer/tls/keystore &&
+ls -l /var/hyperledger/orderer/tls/signcerts &&
+ls -l /var/hyperledger/orderer/tls/tlscacerts
+'
+kubectl exec -n orgx deploy/fabric-ca-orgx --   ls /etc/hyperledger/fabric-ca-server/orderer3-msp/signcerts
+kubectl apply -f ~/fabric-2.5/artifacts/job-copy-orderer3-msp.yaml
+kubectl exec -n orgx deploy/orderer3 --   ls /var/hyperledger/orderer/msp/signcerts
+kubectl rollout restart deploy/orderer3 -n orgx
+kubectl get pod  -n orgx
+kubectl logs -n orgx deploy/orderer3 --tail=50
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+echo "=== CONFIG ==="
+cat /mnt/msp/config.yaml
+'
+kubectl delete pod inspect-orderer3-pvcs -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer3-pvcs.yaml
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+echo "=== CONFIG ==="
+cat /mnt/msp/config.yaml
+'
+kubectl apply -f ~/fabric-2.5/artifacts/add-orderer3-config.yaml
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+echo "=== CONFIG ==="
+cat /mnt/msp/config.yaml
+'
+kubectl get configmap orderer3-nodeou-config -n orgx
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh 
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+echo "=== CONFIG ==="
+cat /mnt/msp/config.yaml
+'
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+echo "=== CONFIG ==="
+ls'
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+cat > /mnt/msp/config.yaml <<EOF
+NodeOUs:
+  Enable: true
+  ClientOUIdentifier:
+    Certificate: cacerts/localhost-7054.pem
+    OrganizationalUnitIdentifier: client
+  PeerOUIdentifier:
+    Certificate: cacerts/localhost-7054.pem
+    OrganizationalUnitIdentifier: peer
+  AdminOUIdentifier:
+    Certificate: cacerts/localhost-7054.pem
+    OrganizationalUnitIdentifier: admin
+  OrdererOUIdentifier:
+    Certificate: cacerts/localhost-7054.pem
+    OrganizationalUnitIdentifier: orderer
+EOF
+'
+kubectl exec -n orgx inspect-orderer3-pvcs -- ls -l /mnt/msp/config.yaml
+kubectl rollout restart deploy/orderer3 -n orgx
+kubectl logs -n orgx deploy/orderer3 --tail=50
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+echo "=== CONFIG ==="
+cat /mnt/msp/config.yaml
+'
+kubectl logs -n orgx deploy/orderer3 --tail=50
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+ls -R /mnt/tls
+'
+kubectl delete pod inspect-orderer3-pvcs -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer3-pvcs.yaml
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+ls -R /mnt/tls
+'
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+ls -R /mnt/tls
+'
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+echo "=== CONFIG ==="
+ls'
+cd mon/
+cd /mnt
+ls
+kubectl get pod  -n orgx
+kubectl get pvc  -n orgx
+kubectl get pvc  -n orgdcms
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+ls -R /mnt/tls
+'
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer3-pvcs.yaml
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+ls -R /mnt/tls
+'
+kubectl get pod  -n orgx
+kubectl get pvc  -n orgdcms
+kubectl delete pod inspect-orderer3-pvcs -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer3-pvcs.yaml
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+ls -R /mnt/tls
+'
+kubectl get pod  -n orgx
+kubectl delete pod inspect-orderer3-pvcs -n orgx
+kubectl get pod  -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer3-pvcs.yaml
+kubectl get pod  -n orgx
+kubectl delete pod job-copy-orderer3-msp-tls -n orgx
+kubectl delete pod copy-orderer3-msp-tls -n orgx
+kubectl delete pod copy-orderer3-msp-tls-tgp6b -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/job-copy-orderer3-msp-tls.yaml
+kubectl get pod  -n orgx
+kubectl delete pod copy-orderer3-msp-tls-tgp6b -n orgx
+kubectl delete pod job-copy-orderer3-msp-tls-new -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/job-copy-orderer3-msp-tls-new.yaml
+kubectl apply -f ~/fabric-2.5/artifacts/job-copy-orderer3-msp-tls.yaml
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh -c '
+ls -R /mnt/tls
+'
+kubectl get pod  -n orgx
+kubectl delete pod inspect-orderer3-pvcs -n orgx
+kubectl get pod  -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer3-pvcs.yaml
+kubectl get pod  -n orgx
+kubectl get pvc  -n orgx
+kubectl delete pod inspect-orderer3-pvcs -n orgx
+kubectl delete pod job-copy-orderer3-msp-tls-new -n orgx
+kubectl delete pod inspect-orderer3-pvcs -n orgx
+kubectl delete pod job-copy-orderer3-msp-tls -n orgx
+kubectl delete pod copy-orderer3-msp-tls -n orgx
+kubectl get pod  -n orgx
+kubectl delete pod copy-orderer3-msp -n orgx
+kubectl delete pod copy-orderer3-msp-tls-again-226f9 -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-fabric-ca-orgx.yaml
+ls /etc/hyperledger/fabric-ca-server/orderer3-msp
+ls /etc/hyperledger/fabric-ca-server/orderer3-tls
+kubectl get pod  -n orgx
+kubectl get pod  -n orgdcms
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-fabric-ca-orgx.yaml
+kubectl delete pod inspect-fabric-ca-orgx -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-fabric-ca-orgx.yaml
+kubectl get pod  -n orgdcms
+kubectl get pod  -n orgx
+cd ..
+kubectl exec -n orgx inspect-fabric-ca-orgx -- sh
+cd /mnt
+ls -R
+kubectl exec -n orgx deploy/fabric-ca-orgx -- sh
+kubectl get pvc  -n orgx
+kubectl exec -it -n orgx deploy/fabric-ca-orgx -- sh
+kubectl exec -n orgx deploy/fabric-ca-orgx -- sh -c 'mount | grep fabric-ca || mount | grep "/etc/hyperledger/fabric-ca-server"'
+cd .
+..
+cd ~/
+kubectl exec -it -n orgx deploy/fabric-ca-orgx -- sh
+kubectl exec -it -n orgx inspect-fabric-ca-orgx -- sh
+kubectl get pod  -n orgx
+kubectl delete deployment fabric-ca-orgx -n orgx
+kubectl get pod  -n orgx
+ubectl delete pod -l app=fabric-ca-orgx -n orgx
+kubectl delete pod -l app=fabric-ca-orgx -n orgx
+kubectl get pod  -n orgx
+kubectl get pod -n orgx | grep fabric-ca || echo "OK: nessun pod CA"
+kubectl get pvc fabric-ca-orgx-pvc -n orgx
+kubectl run inspect-ca-orgx-pvc   -n orgx   --image=busybox   --restart=Never   --command -- sh -c "ls -la /mnt && sleep 600"
+kubectl exec -n orgx inspect-ca-orgx-pvc -- sh
+kubectl get pod  -n orgx
+kubectl delete pod -l inspect-ca-orgx-pvc
+kubectl get pod  -n orgx
+kubectl delete pod -l inspect-ca-orgx-pvc
+kubectl run inspect-ca-orgx-pvc   -n orgx   --image=busybox   --restart=Never   --command -- sh -c "sleep 3600"
+kubectl delete pod -l inspect-ca-orgx-pvc
+kubectl get pod -n orgx
+kubectl delete pod <NOME_POD> -n orgx --force --grace-period=0
+kubectl delete pod inspect-fabric-ca-orgx -n orgx --force --grace-period=0
+kubectl run inspect-ca-orgx-pvc   -n orgx   --image=busybox   --restart=Never   --command -- sh -c "sleep 3600"
+kubectl get pod -n orgx
+kubectl run inspect-ca-orgx-new-pvc   -n orgx   --image=busybox   --restart=Never   --command -- sh -c "sleep 3600"
+kubectl get pod -n orgx
+kubectl exec -n orgx inspect-ca-orgx-new-pvc -- sh
+kubectl exec -it -n orgx inspect-ca-orgx-new-pvc -- sh
+kubectl delete pod inspect-fabric-ca-orgx -n orgx --force --grace-period=0
+kubectl delete pod inspect-ca-orgx-pvx -n orgx --force --grace-period=0
+kubectl delete pod inspect-ca-orgx-pvc -n orgx --force --grace-period=0
+kubectl delete pod inspect-ca-orgx-new-pvc -n orgx 
+kubectl get pod -n orgx
+kubectl describe pod -n orgx fabric-ca-orgx | grep -A5 Mounts
+kubectl apply -f ~/fabric-2.5/artifacts/fabric-ca-orgx.yaml
+kubectl exec -n orgx deploy/fabric-ca-orgx --   mount | grep fabric-ca
+kubectl describe pod -n orgx   $(kubectl get pod -n orgx -l app=fabric-ca-orgx -o jsonpath='{.items[0].metadata.name}')
+kubectl exec -n orgx deploy/fabric-ca-orgx --   sh -c 'ls -l /etc/hyperledger/fabric-ca-server'
+kubectl describe pod -n orgx fabric-ca-orgx | grep -A5 Mounts
+kubectl get pod -n orgx
+kubectl get pod -n orgdcms
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-fabric-ca-orgx.yaml
+kubectl exec -n orgx inspect-fabric-ca-orgx-pvc -- sh
+kubectl get pod -n orgx
+kubectl exec -n orgx inspect-fabric-ca-orgx-pvc -- sh
+kubectl exec -n orgx inspect-fabric-ca-orgx -- sh
+kubectl exec -it -n orgx inspect-fabric-ca-orgx -- sh
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer3-msp.yaml
+kubectl exec -n orgx inspect-orderer3-msp -- sh -c '
+ls -R /mnt/msp
+'
+kubectl exec -it -n orgx inspect-orderer3-msp -- sh
+kubectl exec -n orgx deploy/fabric-ca-orgx -- sh -c '
+rm -rf /etc/hyperledger/fabric-ca-server/orderer3-msp/*
+'
+# prima
+kubectl exec -n orgx deploy/fabric-ca-orgx -- sh -c '
+ls -R /etc/hyperledger/fabric-ca-server | sed "s,^,BEFORE: ,"
+'
+# dopo la cancellazione
+kubectl exec -n orgx deploy/fabric-ca-orgx -- sh -c '
+ls -R /etc/hyperledger/fabric-ca-server | sed "s,^,AFTER: ,"
+'
+kubectl exec -n orgx deploy/fabric-ca-orgx -- sh -c '
+ls -R /etc/hyperledger/fabric-ca-server | sed "s,^,BEFORE: ,"
+'
+kubectl exec -n orgdcms deploy/fabric-tls-ca --   sh -c 'export HOME=/etc/hyperledger/fabric-ca-server && \
+  fabric-ca-client enroll \
+    -u https://orderer3:orderer3pw@localhost:7054 \
+    --enrollment.profile tls \
+    --csr.hosts orderer3,orderer3.orgx.svc,orderer3.orgx.svc.cluster.local,localhost \
+    --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem \
+    -M /etc/hyperledger/fabric-ca-server/orderer3-tls'
+kubectl exec -n orgx deploy/fabric-ca-orgx -- sh -c '
+cp -r /etc/hyperledger/fabric-ca-server/orderer3-msp/{cacerts,keystore,signcerts,IssuerPublicKey,IssuerRevocationPublicKey,user} /mnt/msp/
+
+'
+kubectl exec -n orgx deploy/fabric-ca-orgx -- sh -c '
+for d in cacerts keystore signcerts IssuerPublicKey IssuerRevocationPublicKey user; do
+  cp -r /etc/hyperledger/fabric-ca-server/orderer3-msp/$d /mnt/msp/
+done
+'
+kubectl exec -n orgx deploy/fabric-ca-orgx -- \ sh -c 'export HOME=/etc/hyperledger/fabric-ca-server && \ fabric-ca-client enroll \ -u https://orderer3:orderer3pw@localhost:7054 \ --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem \ -M /etc/hyperledger/fabric-ca-server/orderer3-msp'
+kubectl exec -n orgx deploy/fabric-ca-orgx --   sh -c 'export HOME=/etc/hyperledger/fabric-ca-server && \
+  fabric-ca-client enroll \
+    -u https://orderer3:orderer3pw@localhost:7054 \
+    --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem \
+    -M /etc/hyperledger/fabric-ca-server/orderer3-msp'
+kubectl exec -n orgx deploy/fabric-ca-orgx -- sh -c '
+cp -r /etc/hyperledger/fabric-ca-server/orderer3-msp/{cacerts,keystore,signcerts,IssuerPublicKey,IssuerRevocationPublicKey,user} /mnt/msp/
+'
+kubectl exec -n orgx deploy/fabric-ca-orgx -- sh -c '
+for d in cacerts keystore signcerts IssuerPublicKey IssuerRevocationPublicKey user; do
+  cp -r /etc/hyperledger/fabric-ca-server/orderer3-msp/$d /mnt/msp/
+done
+'
+kubectl exec -n orgx deploy/fabric-ca-orgx -- sh -c '
+ls -R /etc/hyperledger/fabric-ca-server/orderer3-msp
+'
+kubectl exec -n orgx deploy/fabric-ca-orgx -- sh -c '
+ls -R /etc/hyperledger/fabric-ca-server | sed "s,^,BEFORE: ,"
+'
+kubectl exec -n orgdcms deploy/fabric-tls-ca -- sh -c '
+rm -rf /etc/hyperledger/fabric-ca-server/orderer3-tls/*
+'
+kubectl exec -n orgdcms deploy/fabric-tls-ca -- sh -c '
+ls -l /etc/hyperledger/fabric-ca-server/orderer3-tls
+'
+kubectl exec -n orgdcms deploy/fabric-tls-ca --   sh -c 'export HOME=/etc/hyperledger/fabric-ca-server && \
+  fabric-ca-client enroll \
+    -u https://orderer3:orderer3pw@localhost:7054 \
+    --enrollment.profile tls \
+    --csr.hosts orderer3,orderer3.orgx.svc,orderer3.orgx.svc.cluster.local,localhost \
+    --tls.certfiles /etc/hyperledger/fabric-ca-server/ca-cert.pem \
+    -M /etc/hyperledger/fabric-ca-server/orderer3-tls'
+kubectl exec -n orgdcms deploy/fabric-tls-ca -- sh -c '
+ls -R /etc/hyperledger/fabric-ca-server/orderer3-tls
+'
+kubectl exec -n orgdcms deploy/fabric-tls-ca -- sh -c '
+openssl x509 -in /etc/hyperledger/fabric-ca-server/orderer3-tls/signcerts/cert.pem -noout -text | grep -A1 "Subject Alternative Name"
+'
+
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer3-pvcs.yaml
+kubectl exec -n orgx inspect-orderer3-pvcs -- sh
+kubectl get pod -n orgx
+kubectl delete pod inspect-orderer3-pvcs -n orgx
+kubectl get pod -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer3-tls-pvc.yaml
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer3-tls.yaml
+kubectl exec -n orgx inspect-orderer3-tls -- sh
+kubectl exec -it -n orgx inspect-orderer3-tls -- sh
+kubectl exec -n orgdcms deploy/fabric-tls-ca -- sh -c '
+cp -r /etc/hyperledger/fabric-ca-server/orderer3-tls/* /mnt/tls/
+'
+kubectl cp -n orgdcms deploy/fabric-tls-ca:/etc/hyperledger/fabric-ca-server/orderer3-tls /tmp/orderer3-tls
+kubectl get pods -n orgdcms | grep fabric-tls-ca
+kubectl cp -n orgdcms fabric-tls-ca-666c69bb4d-f6b7r:/etc/hyperledger/fabric-ca-server/orderer3-tls /tmp/orderer3-tls
+kubectl cp -n orgx /tmp/orderer3-tls/. inspect-orderer3-tls:/mnt/tls
+kubectl exec -it -n orgx inspect-orderer3-tls -- sh
+kubectl exec -n orgx inspect-orderer3-tls -- sh -c '
+cd /mnt/tls && \
+ln -sf tlscacerts/tls-localhost-7054.pem tls-ca-cert.pem && \
+ln -sf keystore/*_sk key.pem
+'
+ls -l /mnt/tls/tls-ca-cert.pem /mnt/tls/key.pem
+kubectl exec -it -n orgx inspect-orderer3-tls -- sh
+kubectl describe pod orderer3 -n orgx | grep -A3 ConfigMap
+kubectl describe pod orderer1 -n orgdcms | grep -A3 ConfigMap
+kubectl rollout restart deployment orderer3 -n orgx
+kubectl get pod -n orgx
+kubectl logs -n orgx orderer3-6fb8d64f4f-7hmhj
+kubectl describe deployment orderer3 -n orgx | grep -A5 msp
+kubectl exec -n orgx inspect-orderer3-msp
+kubectl exec -n orgx inspect-orderer3-msp -- ls /mnt/msp/signcerts
+kubectl exec -it -n orgx inspect-orderer3-msp -- sh
+kubectl get pod -n orgdcms
+kubectl get pod -n orgx
+kubectl cp -n orgx fabric-ca-orgx-5b89bf9b45-2xpzn:/etc/hyperledger/fabric-ca-server/orderer3-msp/. inspect-orderer3-msp:/mnt/msp
+kubectl cp -n orgx fabric-ca-orgx-5b89bf9b45-2xpzn:/etc/hyperledger/fabric-ca-server/orderer3-msp /tmp/orderer3-msp
+kubectl exec -n orgx inspect-orderer3-msp -- sh -c '
+ls -R /mnt/msp
+'
+kubectl cp -n orgx /tmp/orderer3-msp/. inspect-orderer3-msp:/mnt/msp
+kubectl exec -n orgx inspect-orderer3-msp -- ls /mnt/msp/signcerts
+kubectl exec -n orgx fabric-ca-orgx-5b89bf9b45-2xpzn -- sh -c '
+ls -R /etc/hyperledger/fabric-ca-server/orderer3-msp
+'
+ls -R /tmp/orderer3-msp
+kubectl exec -n orgx inspect-orderer3-msp -- sh -c '
+ls -R /mnt/msp
+'
+kubectl rollout restart deployment orderer3 -n orgx
+kubectl get pod -n orgx
+kubectl logs -n orgx orderer3-69b558468d-bkvgw
+kubectl logs -n orgx orderer3-69b558468d-bkvgw --previous
+kubectl exec -n orgx inspect-orderer3-tls -- sh -c '
+ls -l /mnt/tls/key.pem &&
+ls -l /mnt/tls/tls-ca-cert.pem &&
+ls -l /mnt/tls/keystore/key.pem
+'
+kubectl get pod -n orgx
+kubectl delete pod inspect-orderer3-tls -n orgx
+kubectl apply -f ~/fabric-2.5/artifacts/inspect-orderer3-tls.yaml
+kubectl get pod -n orgx
+kubectl exec -n orgx inspect-orderer3-tls -- sh -c '
+ls -l /mnt/tls/key.pem &&
+ls -l /mnt/tls/tls-ca-cert.pem &&
+ls -l /mnt/tls/keystore/key.pem
+'
+kubectl exec -n orgx inspect-orderer3-tls -- sh -c '
+mkdir -p /mnt/tls/keystore && ln -sf /mnt/tls/key.pem /mnt/tls/keystore/key.pem
+'
+kubectl exec -n orgx inspect-orderer3-tls -- sh -c '
+ls -l /mnt/tls/keystore/key.pem
+'
+kubectl rollout restart deployment orderer3 -n orgx
+kubectl get pod -n orgx
+kubectl logs -n orgx orderer3-64b4b6866f-8bl7t --previous
+kubectl logs -n orgx orderer3-64b4b6866f-8bl7t
+kubectl describe pod orderer3-64b4b6866f-8bl7t -n orgx
+kubectl exec -n orgx orderer3-64b4b6866f-8bl7t -- sh -c '
+ls -l /var/hyperledger/orderer/tls/keystore/key.pem &&
+ls -l /var/hyperledger/orderer/tls/signcerts/cert.pem &&
+ls -l /var/hyperledger/orderer/tls/tls-ca-cert.pem
+'
+kubectl get deployment orderer3 -n orgx -o yaml | grep ORDERER_GENERAL_TLS -A2
+kubectl get pod -n orgx
+kubectl logs -n orgx orderer3-64b4b6866f-8bl7t
+kubectl exec -n orgx inspect-orderer3-tls -- sh -c '
+mkdir -p /mnt/tls/keystore && \
+ln -sf ../key.pem /mnt/tls/keystore/key.pem
+'
+kubectl exec -n orgx inspect-orderer3-tls -- sh -c '
+ls -l /mnt/tls/keystore/key.pem
+'
+kubectl rollout restart deployment orderer3 -n orgx
+kubectl get pod -n orgx
+kubectl logs -n orgx orderer3-7f65675569-zplh5
+kubectl exec -n orgx inspect-orderer3-tls -- sh -c '
+mkdir -p /mnt/tls/tlscacerts && \
+ln -sf ../tls-ca-cert.pem /mnt/tls/tlscacerts/tls-ca-cert.pem
+'
+kubectl exec -n orgx inspect-orderer3-tls -- sh -c '
+ls -l /mnt/tls/tlscacerts/tls-ca-cert.pem
+'
+kubectl rollout restart deployment orderer3 -n orgx
+kubectl get pod -n orgx
+kubectl logs -n orgx orderer3-64b4b6866f-8bl7t --previous
+kubectl describe pod orderer3-6fdd7f8c4f-rdr89 -n orgx
+# 1) Admin API viva
+kubectl exec -n orgx orderer3-6fdd7f8c4f-rdr89 -- sh -c '
+wget -qO- https://127.0.0.1:7053/healthz --no-check-certificate || echo OK
+'
+# 2) Canali (osnadmin)
+osnadmin channel list   --orderer-address localhost:7053   --ca-file /home/asantopadre/fabric-2.5/artifacts/orderer3-tls/tls-ca-cert.pem   --client-cert /home/asantopadre/fabric-2.5/artifacts/orderer3-tls/signcerts/cert.pem   --client-key  /home/asantopadre/fabric-2.5/artifacts/orderer3-tls/keystore/key.pem
+osnadmin channel list   --orderer-address localhost:7053   --ca-file /home/asantopadre/fabric-2.5/artifacts/orderer3-tls/tls-ca-cert.pem   --client-cert /home/asantopadre/fabric-2.5/artifacts/orderer3-tls/signcerts/cert.pem   --client-key  /home/asantopadre/fabric-2.5/artifacts/orderer3-tls/keystore/key.pem
+kubectl get pod -n orgx
+kubectl get pod -n orgdcms

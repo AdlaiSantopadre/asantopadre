@@ -1,3 +1,0 @@
-NAME                STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
-fabric-ca-pvc       Bound    pvc-ffe649f7-ba76-4400-9f3f-2df96101ba28   2Gi        RWO            local-path     <unset>                 2d1h
-fabric-tls-ca-pvc   Bound    pvc-d5ab0e34-0ead-4192-97a4-be640bc76792   2Gi        RWO            local-path     <unset>                 2d1h

@@ -1,0 +1,15 @@
+# file per il service headless 
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer1
+  namespace: orgdcms
+spec:
+  clusterIP: None
+  selector:
+    app: orderer1
+  ports:
+    - name: grpc
+      port: 7050
+    - name: admin
+      port: 7053

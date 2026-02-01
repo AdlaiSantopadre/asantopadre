@@ -1,4 +1,0 @@
-NAME                             READY   STATUS    RESTARTS   AGE    IP            NODE             NOMINATED NODE   READINESS GATES
-fabric-ca-775cbf87d6-mcq8d       1/1     Running   0          2d1h   10.42.0.150   beelink-fabric   <none>           <none>
-fabric-tls-ca-687cdc98fc-jb5h7   1/1     Running   0          2d1h   10.42.0.151   beelink-fabric   <none>           <none>
-orderer3-57d5746fc9-hqmrc        1/1     Running   0          17h    10.42.0.212   beelink-fabric   <none>           <none>
