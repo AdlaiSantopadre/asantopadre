@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peer1
+  namespace: orgdcms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peer1
+  template:
+    metadata:
+      labels:
+        app: peer1
+    spec:
+      containers:
+        - name: peer
+          image: hyperledger/fabric-peer:2.5
+          env:
+            - name: CORE_PEER_ID
+              value: peer1.orgdcms
+            - name: CORE_PEER_ADDRESS
+              value: peer1.orgdcms.svc.cluster.local:7051
+            - name: CORE_PEER_LISTENADDRESS
+              value: 0.0.0.0:7051
+            - name: CORE_PEER_LOCALMSPID
+              value: OrgDCMSMSP
+            - name: CORE_PEER_CHAINCODELISTENADDRESS
+              value: 0.0.0.0:7052
+            - name: CORE_PEER_CHAINCODEADDRESS
+              value: peer1.orgdcms.svc.cluster.local:7052
+            
+            - name: CORE_PEER_MSPCONFIGPATH
+              value: /var/hyperledger/peer/msp
+
+            - name: CORE_PEER_TLS_ENABLED
+              value: "true"
+            - name: CORE_PEER_TLS_CERT_FILE
+              value: /var/hyperledger/peer/tls/server.crt
+            - name: CORE_PEER_TLS_KEY_FILE
+              value: /var/hyperledger/peer/tls/server.key
+            - name: CORE_PEER_TLS_ROOTCERT_FILE
+              value: /var/hyperledger/peer/tls/ca.crt
+
+            - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+              value: peer1.orgdcms.svc.cluster.local:7051
+            - name: CORE_PEER_GOSSIP_USELEADERELECTION
+              value: "true"
+            - name: CORE_PEER_GOSSIP_ORGLEADER
+              value: "false"
+
+          ports:
+            - containerPort: 7051
+
+          volumeMounts:
+            - name: msp
+              mountPath: /var/hyperledger/peer/msp
+              readOnly: true
+            - name: tls
+              mountPath: /var/hyperledger/peer/tls
+              readOnly: true
+
+      volumes:
+        - name: msp
+          persistentVolumeClaim:
+            claimName: peer1-orgdcms-msp-pvc
+        - name: tls
+          persistentVolumeClaim:
+            claimName: peer1-orgdcms-tls-pvc

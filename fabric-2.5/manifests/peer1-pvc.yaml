@@ -1,0 +1,26 @@
+# crea i PVC di peer1
+# PVC MSP peer1.orgdcms
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peer1-orgdcms-msp-pvc
+  namespace: orgdcms
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+# PVC TLS peer1.orgdcms
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peer1-orgdcms-tls-pvc
+  namespace: orgdcms
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path

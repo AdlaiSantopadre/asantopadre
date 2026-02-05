@@ -1,0 +1,36 @@
+# POD di ispezione/lettura
+# Helper pod enroll peer2.orgx
+apiVersion: v1
+kind: Pod
+metadata:
+  name: enroll-peer2-orgx
+  namespace: orgx
+spec:
+  restartPolicy: Never
+  containers:
+    - name: fabric-ca-client
+      image: hyperledger/fabric-ca:1.5.9
+      command: ["sh","-c","sleep infinity"]
+      env:
+        - name: FABRIC_CA_CLIENT_HOME
+          value: /work
+      volumeMounts:
+        - name: msp
+          mountPath: /work/msp
+        - name: tls
+          mountPath: /work/tls
+        - name: ca
+          mountPath: /ca
+  volumes:
+    - name: msp
+      persistentVolumeClaim:
+        claimName: peer2-orgx-msp-pvc
+    - name: tls
+      persistentVolumeClaim:
+        claimName: peer2-orgx-tls-pvc
+    - name: ca
+      persistentVolumeClaim:
+        claimName: fabric-ca-orgx-pvc
+
+
+

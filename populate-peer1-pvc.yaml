@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: populate-peer1-pvc
+  namespace: orgdcms
+spec:
+  restartPolicy: Never
+  containers:
+    - name: populate
+      image: busybox:1.36
+      command:
+        - sh
+        - -lc
+        - |
+          set -e
+          echo "clean MSP PVC"
+          rm -rf /msp/*
+          echo "copy MSP"
+          cp -R /src/msp/* /msp/
+
+          echo "clean TLS PVC"
+          rm -rf /tls/*
+          echo "copy TLS"
+          cp /src/tls/ca.crt /tls/ca.crt
+          cp /src/tls/server.crt /tls/server.crt
+          cp /src/tls/server.key /tls/server.key
+
+          echo "PVC populated"
+          sleep 5
+      volumeMounts:
+        - name: src
+          mountPath: /src
+          readOnly: true
+        - name: msp
+          mountPath: /msp
+        - name: tls
+          mountPath: /tls
+  volumes:
+    - name: src
+      hostPath:
+        path: /home/asantopadre/fabric-deploy/peer1-orgdcms
+        type: Directory
+    - name: msp
+      persistentVolumeClaim:
+        claimName: peer1-orgdcms-msp-pvc
+    - name: tls
+      persistentVolumeClaim:
+        claimName: peer1-orgdcms-tls-pvc
