@@ -1,246 +1,3 @@
-export FABRIC_CFG_PATH=~/artifacts/config
-configtxgen   -profile Canale1   -channelID canale1   -outputBlock ~/artifacts/channel-artifacts/canale1.block
-export FABRIC_CFG_PATH=~/artifacts/config
-configtxgen   -profile Canale1   -channelID canale1   -outputBlock ~/artifacts/channel-artifacts/canale1.block
-ls $FABRIC_CFG_PATH/configtx.yaml
-export FABRIC_CFG_PATH=~/artifacts
-ls $FABRIC_CFG_PATH/configtx.yaml
-configtxgen   -profile Canale1   -channelID canale1   -outputBlock ~/artifacts/channel-artifacts/canale1.block
-kubectl port-forward -n orgdcms svc/orderer1 7053:7053
-kubectl port-forward -n orgdcms svc/orderer2 7053:7053
-kubectl port-forward -n orgx svc/orderer3 7053:7053
-kubectl port-forward -n orgdcms svc/orderer1 7053:7053
-kubectl port-forward -n orgx svc/orderer3 7053:7053
-kubectl port-forward -n orgdcms svc/orderer2 7053:7053
-kubectl port-forward -n orgdcms svc/orderer1 7053:7053
-kubectl port-forward -n orgdcms svc/orderer2 7053:7053
-kubectl port-forward -n orgx svc/orderer3 7053:7053
-kubectl port-forward -n orgdcms svc/orderer1 7053:7053
-kubectl port-forward -n orgdcms svc/orderer2 7053:7053
-
-kubectl port-forward -n orgdcms svc/orderer1 7053:7053
-kubectl port-forward -n orgdcms svc/orderer2 7053:7053
-kubectl port-forward -n orgx svc/orderer3 7053:7053
-kubectl port-forward -n orgdcms svc/orderer1 7053:7053
-kubectl apply -f k8s/orgdcms/orderer/orderer1-headless.yaml
-kubectl apply -f k8s/orgdcms/orderer/orderer2-headless.yaml
-kubectl apply -f k8s/orgx/orderer/orderer3-headless.yaml
-POD1=$(kubectl get pod -n orgdcms -l app=orderer1 -o jsonpath='{.items[0].metadata.name}')
-kubectl exec -n orgdcms "$POD1" -- sh -lc 'nslookup orderer2-hl.orgdcms.svc.cluster.local'
-kubectl exec -n orgdcms "$POD1" -- sh -lc 'nslookup orderer3-hl.orgx.svc.cluster.local'
-osnadmin channel fetch config /tmp/canale1-config.block   --channelID canale1   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-key ~/artifacts/orgdcms/orderer1/tls/keystore/key.pem
-export FABRIC_CFG_PATH=~/artifacts
-configtxgen -profile Canale1   -channelID canale1   -outputBlock ~/artifacts/channel-artifacts/canale1.block
-kubectl get pvc -n orgdcms
-kubectl get pvc -n orgx
-kubectl delete pvc -n orgdcms orderer1-ledger-pvc
-kubectl delete pvc -n orgdcms orderer2-ledger-pvc
-kubectl delete pvc -n orgx   orderer3-ledger-pvc
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl rollout restart deployment orderer2 -n orgdcms
-kubectl rollout restart deployment orderer3 -n orgx
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-key ~/artifacts/orgdcms/orderer1/tls/keystore/key.pem
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-key ~/artifacts/orgdcms/orderer1/tls/keystore/key.pem
-kubectl get pod -n orgdcms 
-kubectl describe pod -n orgdcms orderer1-7d57dc77cd-swvnz
-kubectl apply -f k8s/orgdcms/orderer/orderer1-ledger-pvc.yaml
-kubectl apply -f k8s/orgdcms/orderer/orderer2-ledger-pvc.yaml
-kubectl apply -f k8s/orgx/orderer/orderer3-ledger-pvc.yaml
-cat > /tmp/orderer1-ledger-pvc.yaml <<'YAML'
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: orderer1-ledger-pvc
-  namespace: orgdcms
-spec:
-  accessModes: [ "ReadWriteOnce" ]
-  storageClassName: local-path
-  resources:
-    requests:
-      storage: 5Gi
-YAML
-
-cat > /tmp/orderer2-ledger-pvc.yaml <<'YAML'
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: orderer2-ledger-pvc
-  namespace: orgdcms
-spec:
-  accessModes: [ "ReadWriteOnce" ]
-  storageClassName: local-path
-  resources:
-    requests:
-      storage: 5Gi
-YAML
-
-kubectl apply -f /tmp/orderer1-ledger-pvc.yaml
-kubectl apply -f /tmp/orderer2-ledger-pvc.yaml
-kubectl get pvc -n orgdcms orderer1-ledger-pvc
-kubectl get pvc -n orgdcms orderer2-ledger-pvc
-kubectl get pvc -n orgdcms orderer1-ledger-pvc
-kubectl delete pod -n orgdcms orderer1-65cd9f9b5d-h9f4j
-kubectl delete pod -n orgdcms orderer2-6db9b6c857-jc7bf
-kubectl get pod -n orgx
-kubectl delete pod -n orgx   orderer3-784c66fc69-jx655
-kubectl get pvc -n orgdcms
-kubectl get pvc -n orgx
-kubectl get pvc -n orgdcms
-kubectl get pod -n orgx
-kubectl get pvc -n orgdcms
-kubectl get pod -n orgdcms
-kubectl apply -f /tmp/orderer1-ledger-pvc.yaml
-kubectl apply -f /tmp/orderer2-ledger-pvc.yaml
-kubectl apply -f /tmp/orderer3-ledger-pvc.yaml
-kubectl get pvc -n orgdcms orderer1-ledger-pvc
-kubectl patch pvc orderer1-ledger-pvc -n orgdcms -p '{"metadata":{"finalizers":null}}'
-kubectl delete pvc -n orgdcms orderer1-ledger-pvc
-cat > /tmp/orderer3-ledger-pvc.yaml <<'YAML'
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: orderer3-ledger-pvc
-  namespace: orgx
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: local-path
-  resources:
-    requests:
-      storage: 5Gi
-YAML
-
-kubectl apply -f /tmp/orderer3-ledger-pvc.yaml
-kubectl get pvc -n orgdcms
-kubectl get pvc -n orgx
-kubectl get pods -n orgdcms
-kubectl get pvc -n orgdcms orderer1-ledger-pvc
-kubectl apply -f /tmp/orderer1-ledger-pvc.yaml
-kubectl get pvc -n orgdcms orderer1-ledger-pvc
-kubectl get pods -n orgdcms | grep orderer1
-kubectl get pods -n orgdcms
-kubectl get pods -n orgx
-kubectl get pvc -n orgx
-kubectl patch pvc orderer3-ledger-pvc -n orgx -p '{"metadata":{"finalizers":null}}'
-kubectl delete pvc orderer3-ledger-pvc -n orgx
-kubectl get pvc -n orgx | grep orderer3-ledger
-kubectl apply -f /tmp/orderer3-ledger-pvc.yaml
-kubectl get pvc -n orgx orderer3-ledger-pvc
-kubectl get pods -n orgdcms
-kubectl get pods -n orgx
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-key ~/artifacts/orgdcms/orderer1/tls/keystore/key.pem
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer2/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer2/tls/cert.pem   --client-key ~/artifacts/orgdcms/orderer2/tls/keystore/key.pem
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/artifacts/orgx/orderer3/tls/cert.pem   --client-cert ~/artifacts/orgx/orderer3/tls/cert.pem   --client-key ~/artifacts/orgx/orderer3/tls/keystore/key.pem
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-key ~/artifacts/orgdcms/orderer1/tls/keystore/key.pem
-osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/artifacts/orgx/orderer3/tls/cert.pem   --client-cert ~/artifacts/orgx/orderer3/tls/cert.pem   --client-key ~/artifacts/orgx/orderer3/tls/keystore/key.pem
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key  ~/fabric-deploy/orderer1-tls/keystore/key.pem
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-key ~/artifacts/orgdcms/orderer1/tls/keystore/key.pem
-kubectl get pods -n orgx
-kubectl get pods -n orgdcms
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-key ~/artifacts/orgdcms/orderer1/tls/keystore/key.pem
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key  ~/fabric-deploy/orderer1-tls/keystore/key.pem
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-key ~/artifacts/orgdcms/orderer1/tls/keystore/key.pem
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key  ~/fabric-deploy/orderer1-tls/keystore/key.pem
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-cert ~/artifacts/orgdcms/orderer1/tls/cert.pem   --client-key ~/artifacts/orgdcms/orderer1/tls/keystore/key.pem
-ls ~/fabric-deploy/orderer1-tls/keystore
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/fabric-deploy/orderer1-tls/signcerts/cert.pem   --client-key  ~/fabric-deploy/orderer1-tls/keystore/db7bdec2a276b3cefa6960866cbf639dbaf92ad40aed6e46a10c8dfeed40ce85_sk
-POD_TLS_CA=$(kubectl get pod -n orgdcms -l app=fabric-tls-ca -o jsonpath='{.items[0].metadata.name}')
-kubectl exec -n orgdcms -it "$POD_TLS_CA" -- sh
-kubectl cp -n orgdcms "$POD_TLS_CA":/tmp/enroll-osnadmin-tls/msp/signcerts/cert.pem   ~/osnadmin-tls-cert.pem
-kubectl cp -n orgdcms "$POD_TLS_CA":/tmp/enroll-osnadmin-tls/msp/keystore   ~/osnadmin-tls-keystore
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-snadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgx/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-osnadmin channel list   --orderer-address localhost:7053   --ca-file ~/artifacts/ca/orgx/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-osnadmin channel list   --orderer-address localhost:7053   --tls-server-name orderer3.orgx.svc.cluster.local   --ca-file ~/artifacts/ca/orgx/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-POD_TLS_CA=$(kubectl get pod -n orgx -l app=fabric-tls-ca -o jsonpath='{.items[0].metadata.name}')
-kubectl exec -n orgx -it "$POD_TLS_CA" -- sh
-POD_ORDERER3=$(kubectl get pod -n orgx -l app=orderer3 -o jsonpath='{.items[0].metadata.name}')
-kubectl exec -n orgx -it "$POD_ORDERER3" -- sh
-osnadmin channel list   --orderer-address localhost:7053   --ca-file ~/artifacts/ca/orgx/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-sudo nano /etc/hosts
-osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgx/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-POD_TLS_CA=$(kubectl get pod -n orgx -l app=fabric-tls-ca -o jsonpath='{.items[0].metadata.name}')
-kubectl exec -n orgx -it "$POD_TLS_CA" -- sh
-kubectl cp -n orgx "$POD_TLS_CA":/tmp/enroll-osnadmin-tls/msp/signcerts/cert.pem   ~/osnadmin-orgx-cert.pem
-kubectl cp -n orgx "$POD_TLS_CA":/tmp/enroll-osnadmin-tls/msp/keystore   ~/osnadmin-orgx-keystore
-osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgx/tls-ca-cert.pem   --client-cert ~/osnadmin-orgx-cert.pem   --client-key  ~/osnadmin-orgx-keystore/*_sk
-osnadmin channel join   --channelID canale1   --config-block /path/to/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgx/tls-ca-cert.pem   --client-cert ~/osnadmin-orgx-cert.pem   --client-key  ~/osnadmin-orgx-keystore/*_sk
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgx/tls-ca-cert.pem   --client-cert ~/osnadmin-orgx-cert.pem   --client-key  ~/osnadmin-orgx-keystore/*_sk
-osnadmin channel list   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgx/tls-ca-cert.pem   --client-cert ~/osnadmin-orgx-cert.pem   --client-key  ~/osnadmin-orgx-keystore/*_sk
-osnadmin channel list   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgx/tls-ca-cert.pem   --client-cert ~/osnadmin-orgx-cert.pem   --client-key  ~/osnadmin-orgx-keystore/*_sk
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer2.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer3.orgx.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgx/tls-ca-cert.pem   --client-cert ~/osnadmin-orgx-cert.pem   --client-key  ~/osnadmin-orgx-keystore/*_sk
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-kubectl logs -n orgdcms deploy/orderer1 | grep -i raft
-export FABRIC_CFG_PATH=~/artifacts/config
-configtxgen -profile Canale1 -channelID canale1   -outputBlock ~/artifacts/channel-artifacts/canale1.block
-kubectl rollout restart deployment orderer1 -n orgdcms
-kubectl rollout restart deployment orderer2 -n orgdcms
-kubectl rollout restart deployment orderer3 -n orgx
-kubectl logs -n orgdcms deploy/orderer1 | grep -i raft
-osnadmin channel list   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-kubectl get pods -n orgdcms
-kubectl get pods -n orgx
-osnadmin channel join   --channelID canale1   --config-block ~/artifacts/channel-artifacts/canale1.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-export FABRIC_CFG_PATH=~/artifacts/config
-configtxgen -profile Canale1 -channelID canale1   -outputBlock ~/artifacts/channel-artifacts/canale1.block
-export FABRIC_CFG_PATH=~/artifacts/config
-configtxgen -profile Canale1 -channelID canale1   -outputBlock ~/artifacts/channel-artifacts/canale1.block
-kubectl get pods -n orgx
-export FABRIC_CFG_PATH=~/artifacts/config
-configtxgen -profile Canale1   -channelID canale2   -outputBlock ~/artifacts/channel-artifacts/canale2.block
-kubectl port-forward -n orgdcms svc/orderer1 7053:7053
-osnadmin channel join   --channelID canale2   --config-block ~/artifacts/channel-artifacts/canale2.block   --orderer-address orderer1.orgdcms.svc.cluster.local:7053   --ca-file ~/artifacts/ca/orgdcms/tls-ca-cert.pem   --client-cert ~/osnadmin-tls-cert.pem   --client-key  ~/osnadmin-tls-keystore/*_sk
-tree artifacts -L 4
-rm -rf artifacts/channel-artifacts
-rm -rf artifacts/orgdcms/orderer1 artifacts/orgdcms/orderer2
-rm -rf artifacts/orgx/orderer3
-rm -rf artifacts/tls
-tree artifacts -L 3
-rmdir artifacts/orgdcms artifacts/orgx 2>/dev/null
-tree artifacts -L 3
-kubectl get pods -n orgdcms | grep tls
-kubectl exec -n orgdcms fabric-tls-ca-5dd9f75d8d-m8ggc --   cat /etc/hyperledger/fabric-ca-server/tls-cert.pem | openssl x509 -noout -fingerprint -sha256
-openssl x509 -in artifacts/ca/orgdcms/tls-ca-cert.pem -noout -fingerprint -sha256
-kubectl exec -n orgdcms fabric-tls-ca-5dd9f75d8d-m8ggc --   cat /etc/hyperledger/fabric-ca-server/tls-cert.pem > artifacts/ca/orgdcms/tls-ca-cert.pem
-openssl x509 -in artifacts/ca/orgdcms/tls-ca-cert.pem -noout -fingerprint -sha256
-kubectl exec -n orgdcms fabric-tls-ca-5dd9f75d8d-m8ggc --   cat /etc/hyperledger/fabric-ca-server/tls-cert.pem | openssl x509 -noout -fingerprint -sha256
-openssl x509 -in artifacts/ca/orgdcms/tls-ca-cert.pem -noout -fingerprint -sha256
-kubectl get pods -n orgdcms
-kubectl get pods -n orgx
-kubectl scale deploy orderer1 -n orgdcms --replicas=0
-kubectl scale deploy orderer2 -n orgdcms --replicas=0
-kubectl scale deploy orderer3 -n orgx   --replicas=0
-kubectl run wipe-orderer1-tls -n orgdcms --image=busybox --restart=Never --rm -it -- sh
-kubectl run wipe-orderer1-tls -n orgdcms   --image=busybox --restart=Never --rm -it   --overrides='
-{
-  "spec": {
-    "containers": [{
-      "name": "wipe",
-      "image": "busybox",
-      "command": ["sh"],
-      "volumeMounts": [{
-        "mountPath": "/tls",
-        "name": "tls"
-      }]
-    }],
-    "volumes": [{
-      "name": "tls",
-      "persistentVolumeClaim": {
-        "claimName": "<PVC_TLS_ORDERER1>"
-      }
-    }]
-  }
-}'
 kubectl get pods -n orgx
 kubectl get pods -n orgdcms
 kubectl get pvc -n orgdcms
@@ -1998,3 +1755,246 @@ kubectl -n orgdcms port-forward svc/fabric-tls-ca 7054:7054
 kubectl port-forward -n orgdcms svc/fabric-ca-orgdcms 7054:7054
 kubectl get svc -n orgdcms
 kubectl port-forward -n orgdcms svc/fabric-ca-orgdcms 7054:7054
+kubectl get pvc -n orgdcms 
+kubectl get pod -n orgdcms 
+export FABRIC_CA_CLIENT_HOME=~/fabric-deploy/peer1-orgdcms
+fabric-ca-client enroll   -u https://peer1:peer1pw@localhost:7054   --enrollment.profile tls   --csr.hosts peer1   --csr.hosts peer1.orgdcms.svc.cluster.local   -M ~/fabric-deploy/peer1-orgdcms/tls
+cd ~/fabric-deploy/peer1-orgdcms/tls
+cp tlscacerts/*.pem ca.crt
+cp signcerts/cert.pem server.crt
+cp keystore/*_sk server.key
+tree
+kubectl apply -f init-peer1-pvc.yaml
+cd ~/
+kubectl apply -f init-peer1-pvc.yaml
+kubectl logs -n orgdcms job/init-peer1-crypto
+kubectl get pod -n orgdcms 
+kubectl run inspect-peer1-pvc   -n orgdcms   --image=busybox:1.36   --restart=Never   --command -- sh -lc "
+    echo '--- MSP ---';
+    ls -R /msp;
+    echo '--- TLS ---';
+    ls -R /tls;
+    sleep 10
+  "   --overrides='
+{
+  "spec": {
+    "containers": [{
+      "name": "c",
+      "image": "busybox:1.36",
+      "command": ["sh","-lc","echo --- MSP ---; ls -R /msp; echo --- TLS ---; ls -R /tls; sleep 10"],
+      "volumeMounts": [
+        {"name":"msp","mountPath":"/msp"},
+        {"name":"tls","mountPath":"/tls"}
+      ]
+    }],
+    "volumes": [
+      {"name":"msp","persistentVolumeClaim":{"claimName":"peer1-orgdcms-msp-pvc"}},
+      {"name":"tls","persistentVolumeClaim":{"claimName":"peer1-orgdcms-tls-pvc"}}
+    ]
+  }
+}'
+kubectl get pod -n orgdcms 
+kubectl delete pod inspect-peer1-pvc  -n orgdcms 
+kubectl run inspect-peer1-pvc   -n orgdcms   --image=busybox:1.36   --restart=Never   --command -- sh -lc "
+    ls -R /msp;
+    ls -R /tls;
+    sleep 300
+  "   --overrides='
+{
+  "spec": {
+    "containers": [{
+      "name": "c",
+      "image": "busybox:1.36",
+      "command": ["sh","-lc","ls -R /msp; ls -R /tls; sleep 300"],
+      "volumeMounts": [
+        {"name":"msp","mountPath":"/msp"},
+        {"name":"tls","mountPath":"/tls"}
+      ]
+    }],
+    "volumes": [
+      {"name":"msp","persistentVolumeClaim":{"claimName":"peer1-orgdcms-msp-pvc"}},
+      {"name":"tls","persistentVolumeClaim":{"claimName":"peer1-orgdcms-tls-pvc"}}
+    ]
+  }
+}'
+kubectl logs -n orgdcms inspect-peer1-pvc
+kubectl describe pod -n orgdcms inspect-peer1-pvc
+kubectl delete pod inspect-peer1-pvc  -n orgdcms 
+kubectl apply -f inspect-peer1-pvc.yaml
+kubectl logs -n orgdcms inspect-peer1-pvc
+kubectl run clean-peer1-msp   -n orgdcms   --image=busybox:1.36   --restart=Never   --command -- sh -lc "
+    rm -rf /msp/*;
+    echo cleaned;
+    sleep 5
+  "   --overrides='
+{
+  "spec": {
+    "containers": [{
+      "name": "c",
+      "image": "busybox:1.36",
+      "command": ["sh","-lc","rm -rf /msp/*; echo cleaned; sleep 5"],
+      "volumeMounts": [
+        {"name":"msp","mountPath":"/msp"}
+      ]
+    }],
+    "volumes": [
+      {"name":"msp","persistentVolumeClaim":{"claimName":"peer1-orgdcms-msp-pvc"}}
+    ]
+  }
+}'
+kubectl logs -n orgdcms clean-peer1-msp
+kubectl delete job -n orgdcms init-peer1-crypto
+kubectl delete job -n orgdcms init-peer1-crypto --cascade=foreground
+kubectl get pods -n orgdcms | grep init-peer1
+kubectl delete job -n orgdcms init-peer1-pvc --cascade=foreground
+kubectl apply -f init-peer1-pvc.yaml
+kubectl run clean-peer1-msp   -n orgdcms   --image=busybox:1.36   --restart=Never   --command -- sh -lc "
+    rm -rf /msp/*;
+    echo cleaned;
+    sleep 5
+  "   --overrides='
+{
+  "spec": {
+    "containers": [{
+      "name": "c",
+      "image": "busybox:1.36",
+      "command": ["sh","-lc","rm -rf /msp/*; echo cleaned; sleep 5"],
+      "volumeMounts": [
+        {"name":"msp","mountPath":"/msp"}
+      ]
+    }],
+    "volumes": [
+      {"name":"msp","persistentVolumeClaim":{"claimName":"peer1-orgdcms-msp-pvc"}}
+    ]
+  }
+}'
+kubectl apply -f inspect-peer1-pvc.yaml
+kubectl describe pod -n orgdcms inspect-peer1-pvc
+kubectl get pods -n orgdcms
+kubectl apply -f init-peer1-pvc.yaml
+kubectl apply -f inspect-peer1-pvc.yaml
+kubectl logs -n orgdcms inspect-peer1-pvc
+kubectl get pods -n orgdcms
+kubectl delete job -n orgdcms init-peer1-crypto --cascade=foreground
+kubectl apply -f init-peer1-pvc.yaml
+kubectl logs -n orgdcms job/init-peer1-crypto-v2
+kubectl apply -f inspect-peer1-pvc.yaml
+kubectl logs -n orgdcms inspect-peer1-pvc
+kubectl run pvc-shell-msp   -n orgdcms --image=busybox:1.36 --restart=Never   --command -- sh -lc "sh"
+kubectl get pods -n orgdcms
+kubectl delete job -n orgdcms init-peer1-crypto-v2 --cascade=foreground
+kubectl delete job -n orgdcms inspect-peer1-pvc --cascade=foreground
+kubectl delete job -n orgdcms pvc-shell-msp --cascade=foreground
+kubectl delete job -n orgdcms pvc-shell-msp
+kubectl get pods -n orgdcms
+kubectl delete pod -n orgdcms pvc-shell-msp
+kubectl delete pod -n orgdcms inspect-peer1-pvc --cascade=foreground
+kubectl apply -f pvc-shell-msp.yaml
+kubectl get pods -n orgdcms
+kubectl delete pod pvc-shell-msp.yaml
+kubectl delete pod pvc-shell-msp
+kubectl delete pod -n orgdcms pvc-shell-msp
+kubectl apply -f pvc-shell-msp.yaml
+kubectl get pods -n orgdcms
+kubectl delete pod -n orgdcms pvc-shell-msp
+kubectl apply -f pvc-shell-peer1-msp.yaml
+kubectl exec -n orgdcms -it pvc-shell-peer1-msp -- sh
+kubectl get pods -n orgdcms
+kubectl delete pod -n orgdcms clean-peer1-msp
+kubectl apply -f peer1-deployment.yaml
+kubectl get pods -n orgdcms
+kubectl logs -n orgdcms deploy/peer1
+kubectl apply -f populate-peer1-pvc.yaml
+kubectl logs -n orgdcms populate-peer1-pvc
+kubectl delete pod -n orgdcms populate-peer1-pvc
+kubectl exec -n orgdcms -it pvc-shell-peer1-msp -- sh
+kubectl logs -n orgdcms deploy/peer1
+kubectl apply -f peer1-service.yaml
+kubectl get svc -n orgdcms
+kubectl rollout restart deploy/peer1 -n orgdcms
+kubectl get pod -n orgdcms
+kubectl logs -n orgdcms deploy/peer1
+ubectl get pod -n orgdcms peer1-949bd578d-hqrzx -o yaml | grep CHAINCODE -A2
+kubectl get pod -n orgdcms peer1-949bd578d-hqrzx -o yaml | grep CHAINCODE -A2
+kubectl edit deploy peer1 -n orgdcms
+kubectl apply -f peer1-service.yaml
+kubectl apply -f peer1-deployment.yaml
+kubectl get pod -n orgdcms
+sudo find /home/asantopadre -type f \( -name "tls-ca-cert.pem" -o -name "tls-localhost-*.pem" -o -name "*tlsca*.pem" \) 2>/dev/null
+mkdir -p /home/asantopadre/fabric-deploy/ca/orgdcms-admin
+mkdir -p /home/asantopadre/fabric-deploy/orgdcms/admin
+mkdir -p /home/asantopadre/fabric-deploy/orgdcms/peers/peer1
+mkdir -p /home/asantopadre/fabric-deploy/orgdcms/orderers/orderer1
+mkdir -p /home/asantopadre/fabric-deploy/channels
+cp -R /home/asantopadre/ca-client-orgdcms/msp   /home/asantopadre/fabric-deploy/ca/orgdcms-admin/
+cp -R /home/asantopadre/osnadmin/orgdcms-admin/msp   /home/asantopadre/fabric-deploy/orgdcms/admin/
+cd /home/asantopadre/osnadmin/
+tree
+mkdir -p /home/asantopadre/fabric-deploy/orgdcms/orderers/orderer1
+cd ~/
+cp -R /home/asantopadre/osnadmin/orderer1-orgdcms/tls   /home/asantopadre/fabric-deploy/orgdcms/orderers/orderer1/osnadmin-tls
+mkdir -p /home/asantopadre/fabric-deploy/orgdcms/admin
+cp -R /home/asantopadre/osnadmin/orgdcms-admin/msp   /home/asantopadre/fabric-deploy/orgdcms/admin/
+cp -R /home/asantopadre/fabric-deploy/peer1-orgdcms/msp   /home/asantopadre/fabric-deploy/orgdcms/peers/peer1/
+cp -R /home/asantopadre/fabric-deploy/peer1-orgdcms/tls   /home/asantopadre/fabric-deploy/orgdcms/peers/peer1/
+tree /home/asantopadre/fabric-deploy/orgdcms
+cp -R /home/asantopadre/osnadmin/orgdcms-admin/msp   /home/asantopadre/fabric-deploy/orgdcms/admin/
+find /home/asantopadre -type d -name admin -o -name Admin -o -name admins 2>/dev/null
+find /home/asantopadre -type f -path "*/msp/signcerts/*" 2>/dev/null | grep -i admin
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/ca-client-orgdcms
+fabric-ca-client register   --id.name orgdcms-admin   --id.secret orgdcms-adminpw   --id.type admin
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/fabric-deploy/orgdcms/admin
+fabric-ca-client enroll   -u https://orgdcms-admin:orgdcms-adminpw@localhost:7054
+asantopadre@beelink-fabric:~/ca-client-orgdcms$ tree
+.
+├── fabric-ca-client-config.yaml
+└── msp
+export FABRIC_CA_CLIENT_HOME=/home/asantopadre/fabric-deploy/orgdcms/admin
+fabric-ca-client enroll   -u https://orgdcms-admin:orgdcms-adminpw@localhost:7054
+mkdir -p /home/asantopadre/fabric-deploy/orgdcms/admin/msp/tlscacerts
+cp /home/asantopadre/ca-client-orgdcms/msp/tlscacerts/tls-ca-cert.pem    /home/asantopadre/fabric-deploy/orgdcms/admin/msp/tlscacerts/
+fabric-ca-client enroll   -u https://orgdcms-admin:orgdcms-adminpw@localhost:7054
+cd /home/asantopadre/fabric-deploy
+tree
+tree -L 2 /home/asantopadre/fabric-deploy/orgdcms/admin/msp
+tree -L 2 /home/asantopadre/fabric-deploy/orgdcms/peers/peer1
+tree -L 3 /home/asantopadre/fabric-deploy/orgdcms/orderers/orderer1/tls
+export CORE_PEER_LOCALMSPID=OrgDCMSMSP
+export CORE_PEER_MSPCONFIGPATH=/home/asantopadre/fabric-deploy/orgdcms/admin/msp
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_TLS_ROOTCERT_FILE=/home/asantopadre/fabric-deploy/orgdcms/orderers/orderer1/tls/tlscacerts/tls-ca-cert.pem
+peer channel fetch 0 /home/asantopadre/fabric-deploy/channels/canale1.block   -o localhost:7050 -c canale1
+
+peer channel fetch 0 canale1.block \ -o localhost:7050 \ -c canale1
+peer channel fetch 0 /home/asantopadre/fabric-deploy/channels/canale1.block   -o localhost:7050 -c canale1
+kubectl exec -n orgdcms orderer1-8444799c85-wzwf2 -- env | grep ORDERER_GENERAL_TLS
+openssl s_client -connect localhost:7050   -CAfile /home/asantopadre/fabric-deploy/orgdcms/orderers/orderer1/tls/tlscacerts/tls-ca-cert.pem
+kubectl exec -n orgdcms orderer1-8444799c85-wzwf2 -- grep -A5 TLS /var/hyperledger/orderer/orderer.yaml
+env | grep ORDERER_GENERAL_TLS
+kubectl exec -n orgdcms orderer1-8444799c85-wzwf2 -- grep -A5 TLS /var/hyperledger/orderer/orderer.yaml
+kubectl exec -n orgdcms orderer1-8444799c85-wzwf2 -- sh -lc 'env | grep -E "^ORDERER_GENERAL_(LISTENADDRESS|LISTENPORT|TLS_)"'
+ss -lntp | grep 7050
+peer channel fetch 0 /home/asantopadre/fabric-deploy/channels/canale1.block   -o orderer1-8444799c85-wzwf2.orgdcms.svc.cluster.local:7050   -c canale1   --tls   --cafile /home/asantopadre/fabric-deploy/orgdcms/orderers/orderer1/tls/tlscacerts/tls-ca-cert.pem
+peer channel fetch 0 /home/asantopadre/fabric-deploy/channels/canale1.block   -o localhost:7050   -c canale1   --tls   --cafile /home/asantopadre/fabric-deploy/orgdcms/orderers/orderer1/tls/tlscacerts/tls-ca-cert.pem   --ordererTLSHostnameOverride orderer1.orgdcms.svc.cluster.local
+openssl x509   -in /home/asantopadre/fabric-deploy/orgdcms/admin/msp/signcerts/cert.pem   -noout -subject
+kubectl exec -n orgdcms orderer1-8444799c85-wzwf2 -- env | grep ORDERER_GENERAL_LOCALMSPID
+kubectl get pvc -n orgdcms | grep orderer
+kubectl exec -n orgdcms orderer1-8444799c85-wzwf2 -- ls /var/hyperledger/orderer
+mkdir -p /home/asantopadre/fabric-deploy/ordererorg
+kubectl cp -n orgdcms orderer1-8444799c85-wzwf2:/var/hyperledger/orderer/msp /home/asantopadre/fabric-deploy/ordererorg/msp
+tree /home/asantopadre/fabric-deploy/ordererorg/msp
+export CORE_PEER_LOCALMSPID=OrgDCMSMSP
+export CORE_PEER_MSPCONFIGPATH=/home/asantopadre/fabric-deploy/ordererorg/msp
+export CORE_PEER_LOCALMSPID=OrdererMSP
+export CORE_PEER_MSPCONFIGPATH=/home/asantopadre/fabric-deploy/ordererorg/msp
+export CORE_PEER_TLS_ENABLED=true
+export CORE_PEER_TLS_ROOTCERT_FILE=/home/asantopadre/fabric-deploy/orgdcms/orderers/orderer1/tls/tlscacerts/tls-ca-cert.pem
+peer channel fetch config /home/asantopadre/fabric-deploy/channels/canale1_config.pb   -o orderer1-8444799c85-wzwf2.orgdcms.svc.cluster.local:7050   -c canale1   --tls   --cafile /home/asantopadre/fabric-deploy/orgdcms/orderers/orderer1/tls/tlscacerts/tls-ca-cert.pem
+peer channel fetch config   /home/asantopadre/fabric-deploy/channels/canale1_config.pb   -o orderer1-8444799c85-wzwf2.orgdcms.svc.cluster.local:7050   -c canale1   --tls   --cafile /home/asantopadre/fabric-deploy/orgdcms/orderers/orderer1/tls/tlscacerts/tls-ca-cert.pem
+peer channel fetch config   /home/asantopadre/fabric-deploy/channels/canale1_config.pb   -o localhost:7050   -c canale1   --tls   --cafile /home/asantopadre/fabric-deploy/orgdcms/orderers/orderer1/tls/tlscacerts/tls-ca-cert.pem   --ordererTLSHostnameOverride orderer1.orgdcms.svc.cluster.local
+kubectl port-forward -n orgdcms svc/orderer1 7050:7050
+kubectl port-forward -n orgdcms svc/fabric-ca-orgdcms 7054:7054
+kubectl port-forward -n orgdcms svc/orderer1 7050:7050
+kubectl get svc -n orgdcms
+kubectl get pods -n orgdcms | grep orderer1
+kubectl port-forward -n orgdcms pod/orderer1-8444799c85-wzwf2 7050:7050
