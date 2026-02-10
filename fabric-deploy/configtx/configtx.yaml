@@ -4,7 +4,7 @@ Organizations:
   - &OrgDCMS
     Name: OrgDCMS
     ID: OrgDCMSMSP
-    MSPDir: /home/asantopadre/configtx/orgdcms/msp
+    MSPDir: /home/asantopadre/fabric-deploy/configtx/orgdcms/msp
     Policies:
       Readers:
         Type: Signature
@@ -15,11 +15,13 @@ Organizations:
       Admins:
         Type: Signature
         Rule: "OR('OrgDCMSMSP.admin')"
-
+    AnchorPeers:
+        - Host: peer1.orgdcms.svc.cluster.local
+          Port: 7051
   - &OrgX
     Name: OrgX
     ID: OrgXMSP
-    MSPDir: /home/asantopadre/configtx/orgx/msp
+    MSPDir: /home/asantopadre/fabric-deploy/configtx/orgx/msp
     Policies:
       Readers:
         Type: Signature
@@ -35,7 +37,7 @@ Organizations:
   - &Orderer1Org
     Name: Orderer1Org
     ID: Orderer1MSP
-    MSPDir: /home/asantopadre/configtx/orderers/orderer1/msp
+    MSPDir: /home/asantopadre/fabric-deploy/configtx/orderers/orderer1/msp
     Policies:
       Readers:
         Type: Signature
@@ -50,7 +52,7 @@ Organizations:
   - &Orderer2Org
     Name: Orderer2Org
     ID: Orderer2MSP
-    MSPDir: /home/asantopadre/configtx/orderers/orderer2/msp
+    MSPDir: /home/asantopadre/fabric-deploy/configtx/orderers/orderer2/msp
     Policies:
       Readers:
         Type: Signature
@@ -65,7 +67,7 @@ Organizations:
   - &Orderer3Org
     Name: Orderer3Org
     ID: Orderer3MSP
-    MSPDir: /home/asantopadre/configtx/orderers/orderer3/msp
+    MSPDir: /home/asantopadre/fabric-deploy/configtx/orderers/orderer3/msp
     Policies:
       Readers:
         Type: Signature
@@ -105,18 +107,18 @@ Orderer: &Orderer
     Consenters:
       - Host: orderer1.orgdcms.svc.cluster.local
         Port: 7050
-        ClientTLSCert: /home/asantopadre/osnadmin/orderer1-orgdcms/tls/signcerts/cert.pem
-        ServerTLSCert: /home/asantopadre/osnadmin/orderer1-orgdcms/tls/signcerts/cert.pem
+        ClientTLSCert: /home/asantopadre/fabric-deploy/osnadmin/orderer1-orgdcms/tls/signcerts/cert.pem
+        ServerTLSCert: /home/asantopadre/fabric-deploy/osnadmin/orderer1-orgdcms/tls/signcerts/cert.pem
 
       - Host: orderer2.orgdcms.svc.cluster.local
         Port: 7050
-        ClientTLSCert: /home/asantopadre/osnadmin/orderer2-orgdcms/tls/signcerts/cert.pem
-        ServerTLSCert: /home/asantopadre/osnadmin/orderer2-orgdcms/tls/signcerts/cert.pem
+        ClientTLSCert: /home/asantopadre/fabric-deploy/osnadmin/orderer2-orgdcms/tls/signcerts/cert.pem
+        ServerTLSCert: /home/asantopadre/fabric-deploy/osnadmin/orderer2-orgdcms/tls/signcerts/cert.pem
 
       - Host: orderer3.orgx.svc.cluster.local
         Port: 7050
-        ClientTLSCert: /home/asantopadre/osnadmin/orderer3-orgx/tls/signcerts/cert.pem
-        ServerTLSCert: /home/asantopadre/osnadmin/orderer3-orgx/tls/signcerts/cert.pem
+        ClientTLSCert: /home/asantopadre/fabric-deploy/osnadmin/orderer3-orgx/tls/signcerts/cert.pem
+        ServerTLSCert: /home/asantopadre/fabric-deploy/osnadmin/orderer3-orgx/tls/signcerts/cert.pem
 
 
 Profiles:
