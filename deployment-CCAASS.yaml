@@ -1,0 +1,30 @@
+# POD per il deployment kubernetes che esegue il chaincode
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: basic-ccaas
+  namespace: orgdcms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: basic-ccaas
+  template:
+    metadata:
+      labels:
+        app: basic-ccaas
+    spec:
+      containers:
+      - name: cc
+        image: alpine
+        command: ["/bin/sh","-c"]
+        args:
+          - "apk add --no-cache libc6-compat && ./basiccc"
+        env:
+        - name: CHAINCODE_SERVER_ADDRESS
+          value: 0.0.0.0:9999
+        - name: CHAINCODE_ID
+          value: "basic_1.0:800d2fc364dd759368911f640d91b5cb1a03a3838acb2088a065f66dc6e1be8a"
+        ports:
+        - containerPort: 9999

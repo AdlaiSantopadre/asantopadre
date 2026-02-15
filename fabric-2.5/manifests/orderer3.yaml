@@ -43,7 +43,7 @@ spec:
             - name: ORDERER_GENERAL_LISTENPORT
               value: "7050"
             - name: ORDERER_GENERAL_LOCALMSPID
-              value: OrdererMSP
+              value: Orderer3MSP
             - name: ORDERER_GENERAL_LOCALMSPDIR
               value: /var/hyperledger/orderer/msp
             - name: ORDERER_GENERAL_BOOTSTRAPMETHOD

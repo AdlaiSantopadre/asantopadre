@@ -1,5 +1,11 @@
-Organizations:
+# configtx.yaml completo v2.5  10/02/2026
 
+################################################################################
+#   ORGANIZATIONS
+#   This section defines the organizational identities that can be referenced
+#   in the configuration profiles.
+################################################################################
+Organizations:
   # --- Application orgs ---
   - &OrgDCMS
     Name: OrgDCMS
@@ -78,14 +84,32 @@ Organizations:
       Admins:
         Type: Signature
         Rule: "OR('Orderer3MSP.admin')"
+################################################################################
+#   CAPABILITIES
+################################################################################
 
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+
+  Orderer: &OrdererCapabilities
+    V2_0: true
+
+  Application: &ApplicationCapabilities
+    V2_0: true
+################################################################################
+#   ORDERER
+#   This section defines the values to encode into a config transaction or
+#   genesis block for orderer related parameters.
+################################################################################
+Orderer: &OrdererDefaults
 
 Orderer: &Orderer
   OrdererType: etcdraft
   Addresses:
-    - orderer1-hl.orgdcms.svc.cluster.local:7050
-    - orderer2-hl.orgdcms.svc.cluster.local:7050
-    - orderer3-hl.orgx.svc.cluster.local:7050
+    - orderer1.orgdcms.svc.cluster.local:7050
+    - orderer2.orgdcms.svc.cluster.local:7050
+    - orderer3.orgx.svc.cluster.local:7050
   Organizations:
     - *Orderer1Org
     - *Orderer2Org
@@ -103,6 +127,8 @@ Orderer: &Orderer
     BlockValidation:
       Type: ImplicitMeta
       Rule: "ANY Writers"
+  Capabilities:
+    <<: *OrdererCapabilities
   EtcdRaft:
     Consenters:
       - Host: orderer1.orgdcms.svc.cluster.local
@@ -119,11 +145,52 @@ Orderer: &Orderer
         Port: 7050
         ClientTLSCert: /home/asantopadre/fabric-deploy/osnadmin/orderer3-orgx/tls/signcerts/cert.pem
         ServerTLSCert: /home/asantopadre/fabric-deploy/osnadmin/orderer3-orgx/tls/signcerts/cert.pem
+################################################################################
+#   APPLICATION DEFAULTS
+################################################################################
+
+Application: &ApplicationDefaults
+  Organizations:
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+  Capabilities:
+    <<: *ApplicationCapabilities
 
 
+
+
+
+
+################################################################################
+#   PROFILES
+#
+#   Different configuration profiles may be encoded here to be specified as
+#   parameters to the configtxgen tool. The profiles which specify consortiums
+#   are to be used for generating the orderer genesis block. With the correct
+#   consortium members defined in the orderer genesis block, channel creation
+#   requests may be generated with only the org member names and a consortium
+#   name.
+################################################################################
 Profiles:
   Canale1:
     Consortium: SampleConsortium
+    Capabilities:
+      <<: *ChannelCapabilities
+
     Policies:
       Readers:
         Type: ImplicitMeta
@@ -135,16 +202,7 @@ Profiles:
         Type: ImplicitMeta
         Rule: "MAJORITY Admins"
     Application:
-      Policies:
-        Readers:
-          Type: ImplicitMeta
-          Rule: "ANY Readers"
-        Writers:
-          Type: ImplicitMeta
-          Rule: "ANY Writers"
-        Admins:
-          Type: ImplicitMeta
-          Rule: "MAJORITY Admins"
+      <<: *ApplicationDefaults
       Organizations:
         - *OrgDCMS
         - *OrgX

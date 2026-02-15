@@ -29,7 +29,7 @@ spec:
               value: 0.0.0.0:7052
             - name: CORE_PEER_CHAINCODEADDRESS
               value: peer1.orgdcms.svc.cluster.local:7052
-            
+
             - name: CORE_PEER_MSPCONFIGPATH
               value: /var/hyperledger/peer/msp
 
@@ -59,7 +59,8 @@ spec:
             - name: tls
               mountPath: /var/hyperledger/peer/tls
               readOnly: true
-
+            - name: peer1-ledger
+              mountPath: /var/hyperledger/production
       volumes:
         - name: msp
           persistentVolumeClaim:
@@ -67,3 +68,7 @@ spec:
         - name: tls
           persistentVolumeClaim:
             claimName: peer1-orgdcms-tls-pvc
+
+        - name: peer1-ledger
+          persistentVolumeClaim:
+            claimName: peer1-orgdcms-ledger-pvc

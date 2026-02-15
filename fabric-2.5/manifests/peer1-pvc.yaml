@@ -24,3 +24,17 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: local-path
+---
+# PVC LEDGER peer1.orgdcms
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peer1-orgdcms-ledger-pvc
+  namespace: orgdcms
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: local-path

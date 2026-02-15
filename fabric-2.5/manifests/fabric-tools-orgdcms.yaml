@@ -1,0 +1,62 @@
+# lifecycle chaincode OrgDCMS -
+# punta a /home/asantopadre/fabric-deploy/tls-ca
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fabric-tools
+  namespace: orgdcms
+spec:
+  containers:
+  - name: tools
+    image: hyperledger/fabric-tools:2.5
+    command: ["sleep","infinity"]
+    env:
+    - name: FABRIC_CFG_PATH
+      value: /etc/hyperledger/fabric
+    - name: CORE_PEER_LOCALMSPID
+      value: OrgDCMSMSP
+    - name: CORE_PEER_MSPCONFIGPATH
+      value: /msp/admin
+    - name: CORE_PEER_ADDRESS
+      value: peer1.orgdcms.svc.cluster.local:7051
+    - name: CORE_PEER_TLS_ENABLED
+      value: "true"
+    - name: CORE_PEER_TLS_ROOTCERT_FILE
+      value: /etc/hyperledger/fabric/tlscacerts/peer1-tls-ca.pem
+    volumeMounts:
+    - name: fabric-config
+      mountPath: /etc/hyperledger/fabric
+    - name: orgdcms-admin-msp
+      mountPath: /msp/admin
+    - name: tls-ca
+      mountPath: /etc/hyperledger/fabric/tlscacerts
+      readOnly: true
+    - name: chaincode-src
+      mountPath: /chaincode
+    - name: channel-blocks
+      mountPath: /channel-blocks
+      readOnly: true
+  volumes:
+  - name: fabric-config
+    hostPath:
+      path: /home/asantopadre/fabric-samples/config
+      type: Directory
+  - name: orgdcms-admin-msp
+    hostPath:
+      path: /home/asantopadre/fabric-deploy/orgdcms/admin/msp
+      type: Directory
+  - name: tls-ca
+    hostPath:
+      path: /home/asantopadre/fabric-deploy/tls-ca
+      type: Directory
+  - name: chaincode-src
+    hostPath:
+      path: /home/asantopadre/fabric-samples/asset-transfer-basic/chaincode-go
+      type: Directory
+  - name: channel-blocks
+    hostPath:
+      path: /home/asantopadre/fabric-deploy/channels
+      type: Directory
+
+
+

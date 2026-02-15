@@ -1,0 +1,12 @@
+# service kubernetes vhe espone il POD di elaborazione del chaincode
+apiVersion: v1
+kind: Service
+metadata:
+  name: basic-ccaas
+  namespace: orgdcms
+spec:
+  selector:
+    app: basic-ccaas
+  ports:
+    - port: 9999
+      targetPort: 9999
