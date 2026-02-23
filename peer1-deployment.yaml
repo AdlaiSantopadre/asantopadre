@@ -1,3 +1,61 @@
+# deployment 24-02 con pvc
+# PVC MSP peer1.orgdcms
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peer1-orgdcms-msp-pvc
+  namespace: orgdcms
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+# PVC TLS peer1.orgdcms
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peer1-orgdcms-tls-pvc
+  namespace: orgdcms
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+# PVC LEDGER peer1.orgdcms
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peer1-orgdcms-ledger-pvc
+  namespace: orgdcms
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: local-path
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer1
+  namespace: orgdcms
+spec:
+  selector:
+    app: peer1
+  ports:
+    - name: grpc
+      port: 7051
+      targetPort: 7051
+    - name: chaincode
+      port: 7052
+      targetPort: 7052
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -48,6 +106,8 @@ spec:
               value: "true"
             - name: CORE_PEER_GOSSIP_ORGLEADER
               value: "false"
+            - name: CORE_CHAINCODE_EXTERNALBUILDERS
+              value: '[{"name":"ccaas","path":"/opt/hyperledger/ccaas","propagateEnvironment":["CHAINCODE_SERVER_ADDRESS","CHAINCODE_ID"]}]'
 
           ports:
             - containerPort: 7051
@@ -61,6 +121,8 @@ spec:
               readOnly: true
             - name: peer1-ledger
               mountPath: /var/hyperledger/production
+            - mountPath: /opt/hyperledger/ccaas
+              name: ccaas
       volumes:
         - name: msp
           persistentVolumeClaim:
@@ -72,3 +134,7 @@ spec:
         - name: peer1-ledger
           persistentVolumeClaim:
             claimName: peer1-orgdcms-ledger-pvc
+        - name: ccaas
+          hostPath:
+            path: /opt/hyperledger/ccaas
+            type: Directory

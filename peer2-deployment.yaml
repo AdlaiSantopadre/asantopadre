@@ -1,0 +1,137 @@
+# deployment 24-02 con pvc
+# PVC MSP peer2.orgx
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peer2-orgx-msp-pvc
+  namespace: orgx
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+---
+# PVC TLS peer2.orgx
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peer2-orgx-tls-pvc
+  namespace: orgx
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
+# PVC LEDGER peer2.orgx
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peer2-orgx-ledger-pvc
+  namespace: orgx
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: local-path
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer2
+  namespace: orgx
+spec:
+  selector:
+    app: peer2
+  ports:
+    - name: grpc
+      port: 7051
+      targetPort: 7051
+    - name: chaincode
+      port: 7052
+      targetPort: 7052
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peer2
+  namespace: orgx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peer2
+  template:
+    metadata:
+      labels:
+        app: peer2
+    spec:
+      containers:
+        - name: peer
+          image: hyperledger/fabric-peer:2.5
+          env:
+            - name: CORE_PEER_ID
+              value: peer2.orgx
+            - name: CORE_PEER_ADDRESS
+              value: peer2.orgx.svc.cluster.local:7051
+            - name: CORE_PEER_LISTENADDRESS
+              value: 0.0.0.0:7051
+            - name: CORE_PEER_LOCALMSPID
+              value: OrgXMSP
+            - name: CORE_PEER_CHAINCODELISTENADDRESS
+              value: 0.0.0.0:7052
+            - name: CORE_PEER_CHAINCODEADDRESS
+              value: peer2.orgx.svc.cluster.local:7052
+            - name: CORE_PEER_MSPCONFIGPATH
+              value: /var/hyperledger/peer/msp
+
+            - name: CORE_PEER_TLS_ENABLED
+              value: "true"
+            - name: CORE_PEER_TLS_CERT_FILE
+              value: /var/hyperledger/peer/tls/server.crt
+            - name: CORE_PEER_TLS_KEY_FILE
+              value: /var/hyperledger/peer/tls/server.key
+            - name: CORE_PEER_TLS_ROOTCERT_FILE
+              value: /var/hyperledger/peer/tls/ca.crt
+
+            - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+              value: peer2.orgx.svc.cluster.local:7051
+            - name: CORE_PEER_GOSSIP_USELEADERELECTION
+              value: "true"
+            - name: CORE_PEER_GOSSIP_ORGLEADER
+              value: "false"
+            - name: CORE_CHAINCODE_EXTERNALBUILDERS
+              value: '[{"name":"ccaas","path":"/opt/hyperledger/ccaas","propagateEnvironment":["CHAINCODE_SERVER_ADDRESS","CHAINCODE_ID"]}]'
+          ports:
+            - containerPort: 7051
+            - containerPort: 7052
+          volumeMounts:
+            - name: msp
+              mountPath: /var/hyperledger/peer/msp
+              readOnly: true
+            - name: tls
+              mountPath: /var/hyperledger/peer/tls
+              readOnly: true
+            - name: peer2-ledger
+              mountPath: /var/hyperledger/production
+            - name: ccaas
+              mountPath: /opt/hyperledger/ccaas
+      volumes:
+        - name: msp
+          persistentVolumeClaim:
+            claimName: peer2-orgx-msp-pvc
+        - name: tls
+          persistentVolumeClaim:
+            claimName: peer2-orgx-tls-pvc
+        - name: peer2-ledger
+          persistentVolumeClaim:
+            claimName: peer2-orgx-ledger-pvc
+        - name: ccaas
+          hostPath:
+            path: /opt/hyperledger/ccaas
+            type: Directory
+

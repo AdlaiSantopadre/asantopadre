@@ -1,0 +1,58 @@
+# lifecycle chaincode OrgDCMS -
+# punta a /home/asantopadre/fabric-deploy/tls-ca
+#
+#il pod monta il contenuto di /home/asantopadre/fabric-samples/asset-transfer-basic/chaincode-go rinominata chaincode
+#Inoltre monta:
+#	MSP amministrativa OrgDCMS
+#	TLS-CA corretta del peer2
+#	core.yaml coerente
+#	rete interna k3s
+#In questo modo(rispetto a fabric-samples):
+#	il peer non utilizza Docker,
+#	il packaging non attiva go list,
+#	il lifecycle avviene in un contesto controllato,
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fabric-tools
+  namespace: orgx
+spec:
+  containers:
+  - name: tools
+    image: hyperledger/fabric-tools:2.5
+    command: ["sleep","infinity"]
+    env:
+    - name: FABRIC_CFG_PATH
+      value: /etc/hyperledger/fabric
+    - name: CORE_PEER_LOCALMSPID
+      value: OrgXMSP
+    - name: CORE_PEER_MSPCONFIGPATH
+      value: /msp/admin
+    - name: CORE_PEER_ADDRESS
+      value: peer2.orgx.svc.cluster.local:7051
+    - name: CORE_PEER_TLS_ENABLED
+      value: "true"
+    - name: CORE_PEER_TLS_ROOTCERT_FILE
+      value: /etc/hyperledger/fabric/tlscacerts/peer2-tls-ca.pem
+    volumeMounts:
+    - name: fabric-config
+      mountPath: /etc/hyperledger/fabric
+    - name: orgx-admin-msp
+      mountPath: /msp/admin
+    - name: tls-ca
+      mountPath: /etc/hyperledger/fabric/tlscacerts
+      readOnly: true
+
+  volumes:
+  - name: fabric-config
+    hostPath:
+      path: /home/asantopadre/fabric-samples/config
+      type: Directory
+  - name: orgx-admin-msp
+    hostPath:
+      path: /home/asantopadre/fabric-deploy/orgx/admin/msp
+      type: Directory
+  - name: tls-ca
+    hostPath:
+      path: /home/asantopadre/fabric-deploy/tls-ca
+      type: Directory

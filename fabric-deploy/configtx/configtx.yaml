@@ -1,4 +1,4 @@
-# configtx.yaml completo v2.5  10/02/2026
+# configtx.yaml completo v2.5  23/02/2026
 
 ################################################################################
 #   ORGANIZATIONS
@@ -38,6 +38,9 @@ Organizations:
       Admins:
         Type: Signature
         Rule: "OR('OrgXMSP.admin')"
+    AnchorPeers:
+        - Host: peer2.orgx.svc.cluster.local
+          Port: 7051
 
   # --- Orderer orgs ---
   - &Orderer1Org
@@ -102,8 +105,6 @@ Capabilities:
 #   This section defines the values to encode into a config transaction or
 #   genesis block for orderer related parameters.
 ################################################################################
-Orderer: &OrdererDefaults
-
 Orderer: &Orderer
   OrdererType: etcdraft
   Addresses:

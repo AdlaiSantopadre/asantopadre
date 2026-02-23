@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: clean-peer2-ledger
+  namespace: orgx
+spec:
+  restartPolicy: Never
+  containers:
+  - name: c
+    image: busybox:1.36
+    command: ["sh","-lc","rm -rf /prod/ledgersData /prod/transientStore /prod/chaincodes; echo OK; sleep 3"]
+    volumeMounts:
+    - name: ledger
+      mountPath: /prod
+  volumes:
+  - name: ledger
+    persistentVolumeClaim:
+      claimName: peer2-orgx-ledger-pvc

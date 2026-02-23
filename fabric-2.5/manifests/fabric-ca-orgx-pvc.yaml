@@ -1,0 +1,14 @@
+# deploy 18/2
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fabric-ca-orgx-pvc
+  namespace: orgx
+spec:
+  storageClassName: local-path
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi

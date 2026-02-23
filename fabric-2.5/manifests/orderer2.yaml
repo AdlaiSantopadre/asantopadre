@@ -1,5 +1,5 @@
 # /home/asantopadre/fabric-2.5/artifacts/orderer2.yaml
-# DEPLOYMENT 25/01
+# DEPLOYMENT 24/02
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -122,7 +122,7 @@ spec:
 
           volumeMounts:
             - name: ledger
-              mountPath: /var/hyperledger/orderer
+              mountPath: /var/hyperledger/production
             - name: msp
               mountPath: /var/hyperledger/orderer/msp
             - name: tls

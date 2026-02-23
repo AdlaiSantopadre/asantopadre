@@ -24,3 +24,16 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: local-path
+# PVC LEDGER peer2.orgx
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peer2-orgx-ledger-pvc
+  namespace: orgx
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: local-path
