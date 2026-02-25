@@ -1,0 +1,12 @@
+# PVC MSP peer2.orgx
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: peer2-orgx-msp-pvc
+  namespace: orgx
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path

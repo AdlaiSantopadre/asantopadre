@@ -1,0 +1,13 @@
+# crea i PVC di orderer3
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: orderer3-msp-pvc
+  namespace: orgx
+spec:
+  accessModes: [ "ReadWriteOnce" ]
+  resources:
+    requests:
+      storage: 1Gi
+
+
