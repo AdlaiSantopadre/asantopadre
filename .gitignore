@@ -1,6 +1,79 @@
+############################
+# VSCode / SSH
+############################
 
 .vscode-server/
 .ssh/
-.archive-fabric-pre-tabula/
-.k8s/
 
+############################
+# Kubernetes cache
+############################
+
+.k8s/
+.kube/
+
+############################
+# Backup
+############################
+
+.archive-fabric-pre-tabula/
+backup/
+
+############################
+# Fabric crypto material
+############################
+
+*/msp/*
+*/keystore/*
+*.key
+
+# attenzione:
+# lasciamo versionabili i certificati pubblici se servono
+# quindi NON ignoriamo tutti i .crt/.pem
+
+############################
+# Build artifacts
+############################
+
+*.tar
+*.tar.gz
+*.tgz
+
+############################
+# Docker / OCI images
+############################
+
+testimage/
+
+############################
+# Fabric samples (tooling)
+############################
+
+fabric-samples/
+
+############################
+# Go modules cache
+############################
+
+go/
+
+############################
+# System files
+############################
+
+.bash_history
+.wget-hsts
+.dotnet/
+
+############################
+# Temporary files
+############################
+
+tmp/
+allfiles.txt
+
+############################
+# Downloaded binaries
+############################
+
+nerdctl-*.tar.gz
