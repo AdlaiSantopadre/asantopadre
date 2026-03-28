@@ -1,0 +1,13 @@
+# service per il gateway
+apiVersion: v1
+kind: Service
+metadata:
+  name: fabric-gateway-test
+  namespace: orgdcms
+spec:
+  selector:
+    run: fabric-gateway-test
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000

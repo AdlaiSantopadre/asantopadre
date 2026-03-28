@@ -1,0 +1,57 @@
+# chaincode come servizio CCAAS
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: basicnode
+  namespace: orgdcms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: basicnode
+  template:
+    metadata:
+      labels:
+        app: basicnode
+    spec:
+      containers:
+        - name: basicnode
+          image: basicnode:1.0
+          imagePullPolicy: Never
+          #command:
+          #  - fabric-chaincode-node
+          args:
+          #  - server
+          #  - --
+            - --chaincode-address
+            - 0.0.0.0:9999
+            - --chaincode-id
+            - basic_1.0:3681143caa30992f62a501431c28f7f93281faf9bf7997c816c263cfea28c04c
+          #env:
+          #- name: CHAINCODE_SERVER_ADDRESS
+          #  value: "0.0.0.0:9999"
+          #- name: CHAINCODE_ID
+          #  value: "basic_1.0:3681143caa30992f62a501431c28f7f93281faf9bf7997c816c263cfea28c04c"
+
+
+
+
+          ports:
+            - containerPort: 9999
+          resources:
+            requests:
+              memory: "128Mi"
+            limits:
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: basicnode
+  namespace: orgdcms
+spec:
+  selector:
+    app: basicnode
+  ports:
+    - port: 9999
+      targetPort: 9999

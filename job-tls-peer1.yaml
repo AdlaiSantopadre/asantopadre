@@ -1,0 +1,35 @@
+#Job per accedere al PVC in scrittura
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tls-fix-peer1
+  namespace: orgdcms
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: fix
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            mkdir -p /mnt/tls/trusted
+            cp /src/peer2-tls-ca.crt /mnt/tls/trusted/
+            ls -l /mnt/tls/trusted
+            echo DONE
+        volumeMounts:
+        - name: tls
+          mountPath: /mnt/tls
+        - name: src
+          mountPath: /src
+      volumes:
+      - name: tls
+        persistentVolumeClaim:
+          claimName: peer1-orgdcms-tls-pvc
+      - name: src
+        hostPath:
+          path: /home/asantopadre
+          type: Directory

@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: update-peer1-tls
+  namespace: orgdcms
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: copy
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          cp /input/ca.crt /tls/ca.crt
+          cp /input/server.crt /tls/server.crt
+          cp /input/server.key /tls/server.key
+          ls -l /tls
+        volumeMounts:
+        - name: tls
+          mountPath: /tls
+        - name: input
+          mountPath: /input
+      volumes:
+      - name: tls
+        persistentVolumeClaim:
+          claimName: peer1-orgdcms-tls-pvc
+      - name: input
+        hostPath:
+          path: /home/asantopadre/fabric-deploy/peer1-orgdcms/tls-new
+          type: Directory

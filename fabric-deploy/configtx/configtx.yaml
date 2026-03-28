@@ -7,6 +7,9 @@
 ################################################################################
 Organizations:
   # --- Application orgs ---
+
+
+
   - &OrgDCMS
     Name: OrgDCMS
     ID: OrgDCMSMSP
@@ -21,13 +24,20 @@ Organizations:
       Admins:
         Type: Signature
         Rule: "OR('OrgDCMSMSP.admin')"
+  # Policy di Endorement
+      Endorsement:
+        Type: Signature
+        Rule: "OR('OrgDCMSMSP.peer')"
     AnchorPeers:
         - Host: peer1.orgdcms.svc.cluster.local
           Port: 7051
+
+
   - &OrgX
     Name: OrgX
     ID: OrgXMSP
     MSPDir: /home/asantopadre/fabric-deploy/configtx/orgx/msp
+
     Policies:
       Readers:
         Type: Signature
@@ -38,15 +48,24 @@ Organizations:
       Admins:
         Type: Signature
         Rule: "OR('OrgXMSP.admin')"
+  # Endorsment policy mancava
+      Endorsement:
+        Type: Signature
+        Rule: "OR('OrgXMSP.peer')"
+
     AnchorPeers:
         - Host: peer2.orgx.svc.cluster.local
           Port: 7051
 
+
+
   # --- Orderer orgs ---
+
   - &Orderer1Org
     Name: Orderer1Org
     ID: Orderer1MSP
     MSPDir: /home/asantopadre/fabric-deploy/configtx/orderers/orderer1/msp
+
     Policies:
       Readers:
         Type: Signature
@@ -115,6 +134,7 @@ Orderer: &Orderer
     - *Orderer1Org
     - *Orderer2Org
     - *Orderer3Org
+
   Policies:
     Readers:
       Type: ImplicitMeta
@@ -152,6 +172,7 @@ Orderer: &Orderer
 
 Application: &ApplicationDefaults
   Organizations:
+
   Policies:
     Readers:
       Type: ImplicitMeta
@@ -189,6 +210,7 @@ Application: &ApplicationDefaults
 Profiles:
   Canale1:
     Consortium: SampleConsortium
+
     Capabilities:
       <<: *ChannelCapabilities
 

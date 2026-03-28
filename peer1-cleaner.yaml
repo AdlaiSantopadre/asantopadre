@@ -1,0 +1,19 @@
+# pod di accesso al PVC ledger di peer1
+apiVersion: v1
+kind: Pod
+metadata:
+  name: peer1-cleaner
+  namespace: orgdcms
+spec:
+  restartPolicy: Never
+  containers:
+  - name: cleaner
+    image: busybox
+    command: ["sh", "-c", "sleep 3600"]
+    volumeMounts:
+    - name: ledger
+      mountPath: /var/hyperledger/production
+  volumes:
+  - name: ledger
+    persistentVolumeClaim:
+      claimName: peer1-orgdcms-ledger-pvc

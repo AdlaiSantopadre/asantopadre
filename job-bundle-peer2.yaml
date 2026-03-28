@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bundle-peer2
+  namespace: orgx
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: bundle
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            echo "Rebuilding TLS bundle..."
+
+            cat /tls/ca.crt \
+                /tls/trusted/peer1-tls-ca.crt \
+                /common/tls-ca-cert.pem \
+            > /tls/ca-bundle.crt
+
+            echo "=== /tls directory ==="
+            ls -l /tls
+
+            echo "=== certificate count ==="
+            grep -c "BEGIN CERTIFICATE" /tls/ca-bundle.crt
+
+        volumeMounts:
+        - name: tls
+          mountPath: /tls
+
+        - name: common
+          mountPath: /common
+
+      volumes:
+      - name: tls
+        persistentVolumeClaim:
+          claimName: peer2-orgx-tls-pvc
+
+      - name: common
+        hostPath:
+          path: /home/asantopadre/fabric-deploy/tls-ca
+          type: Directory

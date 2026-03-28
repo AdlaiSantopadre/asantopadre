@@ -1,4 +1,4 @@
-# deployment 24-02 con pvc
+# deployment 02-03 con pvc senza chaincode CCAAS
 # PVC MSP peer2.orgx
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -85,7 +85,7 @@ spec:
             - name: CORE_PEER_CHAINCODELISTENADDRESS
               value: 0.0.0.0:7052
             - name: CORE_PEER_CHAINCODEADDRESS
-              value: peer2.orgx.svc.cluster.local:7052
+              value: basicnode.orgx.svc.cluster.local:9999
             - name: CORE_PEER_MSPCONFIGPATH
               value: /var/hyperledger/peer/msp
 
@@ -97,6 +97,12 @@ spec:
               value: /var/hyperledger/peer/tls/server.key
             - name: CORE_PEER_TLS_ROOTCERT_FILE
               value: /var/hyperledger/peer/tls/ca.crt
+              #value: /var/hyperledger/peer/tls/ca-bundle.crt
+
+            - name: CORE_PEER_TLS_CLIENTROOTCAS_FILES
+              #value: /var/hyperledger/peer/tls/ca-bundle.crt
+              value: /var/hyperledger/peer/tls/ca.crt
+              #/var/hyperledger/peer/tls/trusted/peer1-tls-ca.crt
 
             - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
               value: peer2.orgx.svc.cluster.local:7051
@@ -104,8 +110,8 @@ spec:
               value: "true"
             - name: CORE_PEER_GOSSIP_ORGLEADER
               value: "false"
-            - name: CORE_CHAINCODE_EXTERNALBUILDERS
-              value: '[{"name":"ccaas","path":"/opt/hyperledger/ccaas","propagateEnvironment":["CHAINCODE_SERVER_ADDRESS","CHAINCODE_ID"]}]'
+            #- name: CORE_CHAINCODE_EXTERNALBUILDERS
+            #  value: '[{"name":"ccaas","path":"/opt/hyperledger/ccaas","propagateEnvironment":["CHAINCODE_SERVER_ADDRESS","CHAINCODE_ID"]}]'
           ports:
             - containerPort: 7051
             - containerPort: 7052
@@ -118,6 +124,7 @@ spec:
               readOnly: true
             - name: peer2-ledger
               mountPath: /var/hyperledger/production
+            #Il volume ccaas diventa inutilizato
             - name: ccaas
               mountPath: /opt/hyperledger/ccaas
       volumes:

@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: update-peer2-tls
+  namespace: orgx
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: update
+        image: busybox
+        command:
+        - sh
+        - -c
+        - |
+          cp /in/server.crt /tls/server.crt
+          cp /in/server.key /tls/server.key
+          cp /in/ca.crt /tls/ca.crt
+
+          cat /tls/ca.crt /tls/trusted/peer1-tls-ca.crt > /tls/ca-bundle.crt
+
+          echo "TLS updated:"
+          ls -l /tls
+        volumeMounts:
+        - name: tls
+          mountPath: /tls
+        - name: newtls
+          mountPath: /in
+
+      volumes:
+      - name: tls
+        persistentVolumeClaim:
+          claimName: peer2-orgx-tls-pvc
+
+      - name: newtls
+        hostPath:
+          path: /home/asantopadre/fabric-deploy/peer2-orgx/tls-new
+          type: Directory

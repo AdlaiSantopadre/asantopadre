@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bundle-peer2
+  namespace: orgx
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: bundle
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            cat /tls/ca.crt /tls/trusted/peer1-tls-ca.crt > /tls/ca-bundle.crt
+            ls -l /tls
+        volumeMounts:
+        - name: tls
+          mountPath: /tls
+      volumes:
+      - name: tls
+        persistentVolumeClaim:
+          claimName: peer2-orgx-tls-pvc

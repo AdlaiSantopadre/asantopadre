@@ -4,12 +4,14 @@ metadata:
   name: peer1
   namespace: orgdcms
 spec:
+  clusterIP: None
   selector:
     app: peer1
   ports:
-    - name: grpc
+    - name: peer
       port: 7051
       targetPort: 7051
     - name: chaincode
       port: 7052
       targetPort: 7052
+      

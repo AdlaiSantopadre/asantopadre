@@ -46,10 +46,11 @@ metadata:
   name: peer1
   namespace: orgdcms
 spec:
+  clusterIP: None
   selector:
     app: peer1
   ports:
-    - name: grpc
+    - name: peer
       port: 7051
       targetPort: 7051
     - name: chaincode
@@ -86,7 +87,7 @@ spec:
             - name: CORE_PEER_CHAINCODELISTENADDRESS
               value: 0.0.0.0:7052
             - name: CORE_PEER_CHAINCODEADDRESS
-              value: peer1.orgdcms.svc.cluster.local:7052
+              value: basicnode.orgdcms.svc.cluster.local:9999
 
             - name: CORE_PEER_MSPCONFIGPATH
               value: /var/hyperledger/peer/msp
@@ -98,16 +99,20 @@ spec:
             - name: CORE_PEER_TLS_KEY_FILE
               value: /var/hyperledger/peer/tls/server.key
             - name: CORE_PEER_TLS_ROOTCERT_FILE
+              #value: /var/hyperledger/peer/tls/ca-bundle.crt
               value: /var/hyperledger/peer/tls/ca.crt
-
+            - name: CORE_PEER_TLS_CLIENTROOTCAS_FILES
+              #value: /var/hyperledger/peer/tls/ca-bundle.crt
+              value: /var/hyperledger/peer/tls/ca.crt
+              #/var/hyperledger/peer/tls/trusted/peer1-tls-ca.crt
             - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
               value: peer1.orgdcms.svc.cluster.local:7051
             - name: CORE_PEER_GOSSIP_USELEADERELECTION
               value: "true"
             - name: CORE_PEER_GOSSIP_ORGLEADER
               value: "false"
-            - name: CORE_CHAINCODE_EXTERNALBUILDERS
-              value: '[{"name":"ccaas","path":"/opt/hyperledger/ccaas","propagateEnvironment":["CHAINCODE_SERVER_ADDRESS","CHAINCODE_ID"]}]'
+           # - name: CORE_CHAINCODE_EXTERNALBUILDERS
+           #   value: '[{"name":"ccaas","path":"/opt/hyperledger/ccaas","propagateEnvironment":["CHAINCODE_SERVER_ADDRESS","CHAINCODE_ID"]}]'
 
           ports:
             - containerPort: 7051

@@ -22,8 +22,8 @@ spec:
     - name: CORE_PEER_TLS_ENABLED
       value: "true"
     - name: CORE_PEER_TLS_ROOTCERT_FILE
-      value: /etc/hyperledger/fabric/tlscacerts/peer1-tls-ca.pem
-    volumeMounts:
+      value: /etc/hyperledger/fabric/tlscacerts/tls-ca-cert.pem
+
     - name: fabric-config
       mountPath: /etc/hyperledger/fabric
     - name: orgdcms-admin-msp

@@ -1,0 +1,55 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fix-peer2-tls-ca
+  namespace: orgx
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: fix
+        image: alpine:3.20
+        command:
+          - sh
+          - -c
+          - |
+            set -e
+
+            echo "=== TLS directory BEFORE ==="
+            ls -l /tls
+
+            echo "Removing old bundle..."
+            rm -f /tls/ca-bundle.crt
+
+            echo "Installing correct TLS root CA..."
+            cp /common/tls-ca-cert.pem /tls/ca.crt
+
+            chmod 644 /tls/ca.crt
+
+            echo "=== TLS directory AFTER ==="
+            ls -l /tls
+
+            apk add --no-cache openssl >/dev/null
+
+            echo "=== CA subject ==="
+            openssl x509 -in /tls/ca.crt -noout -subject -issuer -fingerprint -sha256
+
+        volumeMounts:
+        - name: tls
+          mountPath: /tls
+
+        - name: common-tls-ca
+          mountPath: /common
+          readOnly: true
+
+      volumes:
+      - name: tls
+        persistentVolumeClaim:
+          claimName: peer2-orgx-tls-pvc
+
+      - name: common-tls-ca
+        hostPath:
+          path: /home/asantopadre/fabric-deploy/tls-ca
+          type: Directory

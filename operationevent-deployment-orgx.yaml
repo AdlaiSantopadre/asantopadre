@@ -1,0 +1,50 @@
+# chaincode come servizio CCAAS
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: operationevent
+  namespace: orgx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: operationevent
+  template:
+    metadata:
+      labels:
+        app: operationevent
+    spec:
+      containers:
+        - name: operationevent
+          image: operationevent:1.0
+          imagePullPolicy: Never
+          #command:
+          # - npm
+          args:
+          #  - start
+          #  - --
+            - --chaincode-address
+            - 0.0.0.0:9999
+            - --chaincode-id
+            
+            - operationevent_1.0:bfd2a0ee91952307844ca1eb226c71edca0e666c31a034a866ca7ac5d2c9418a
+          ports:
+            - containerPort: 9999
+          resources:
+            requests:
+              memory: "128Mi"
+            limits:
+              memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: operationevent
+  namespace: orgx
+spec:
+  selector:
+    app: operationevent
+  ports:
+    - port: 9999
+      targetPort: 9999
+

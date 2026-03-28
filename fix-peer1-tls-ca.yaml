@@ -1,0 +1,55 @@
+# elimina il bundle e mette in ca.cert la tls-ca.cert
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fix-peer1-tls-ca
+  namespace: orgdcms
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: fix
+        image: alpine:3.20
+        command:
+          - sh
+          - -c
+          - |
+            set -e
+
+            echo "=== TLS directory BEFORE ==="
+            ls -l /tls
+
+            echo "Removing old bundle (if present)..."
+            rm -f /tls/ca-bundle.crt
+
+            echo "Installing correct TLS root CA..."
+            cp /common/tls-ca-cert.pem /tls/ca.crt
+
+            echo "Setting permissions..."
+            chmod 644 /tls/ca.crt
+
+            echo "=== TLS directory AFTER ==="
+            ls -l /tls
+
+            echo "=== CA subject ==="
+            apk add --no-cache openssl >/dev/null
+            openssl x509 -in /tls/ca.crt -noout -subject -issuer -fingerprint -sha256
+
+        volumeMounts:
+        - name: tls
+          mountPath: /tls
+        - name: common-tls-ca
+          mountPath: /common
+          readOnly: true
+
+      volumes:
+      - name: tls
+        persistentVolumeClaim:
+          claimName: peer1-orgdcms-tls-pvc
+
+      - name: common-tls-ca
+        hostPath:
+          path: /home/asantopadre/fabric-deploy/tls-ca
+          type: Directory

@@ -1,11 +1,6 @@
 # /home/asantopadre/fabric-2.5/artifacts/orderer3.yaml
 # DEPLOYMENT 24/03
 
-
-
-
-
-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

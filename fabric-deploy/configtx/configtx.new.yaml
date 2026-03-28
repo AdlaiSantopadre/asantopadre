@@ -1,0 +1,235 @@
+
+
+
+
+################################################################################
+#   ORGANIZATIONS
+################################################################################
+Organizations:
+
+  # ---------------------------------------------------------------------------
+  # Application Orgs
+  # ---------------------------------------------------------------------------
+
+  - &OrgDCMS
+    Name: OrgDCMS
+    ID: OrgDCMSMSP
+    MSPDir: /home/asantopadre/fabric-deploy/configtx/orgdcms/msp
+
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrgDCMSMSP.member')"
+
+      Writers:
+        Type: Signature
+        Rule: "OR('OrgDCMSMSP.member')"
+
+      Admins:
+        Type: Signature
+        Rule: "OR('OrgDCMSMSP.admin')"
+
+      Endorsement:
+        Type: Signature
+        Rule: "OR('OrgDCMSMSP.peer')"
+
+    AnchorPeers:
+      - Host: peer1.orgdcms.svc.cluster.local
+        Port: 7051
+
+
+  - &OrgX
+    Name: OrgX
+    ID: OrgXMSP
+    MSPDir: /home/asantopadre/fabric-deploy/configtx/orgx/msp
+
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrgXMSP.member')"
+
+      Writers:
+        Type: Signature
+        Rule: "OR('OrgXMSP.member')"
+
+      Admins:
+        Type: Signature
+        Rule: "OR('OrgXMSP.admin')"
+
+      Endorsement:
+        Type: Signature
+        Rule: "OR('OrgXMSP.peer')"
+
+    AnchorPeers:
+      - Host: peer2.orgx.svc.cluster.local
+        Port: 7051
+
+
+  # ---------------------------------------------------------------------------
+  # Orderer Orgs
+  # ---------------------------------------------------------------------------
+
+  - &Orderer1Org
+    Name: Orderer1Org
+    ID: Orderer1MSP
+    MSPDir: /home/asantopadre/fabric-deploy/configtx/orderers/orderer1/msp
+
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('Orderer1MSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('Orderer1MSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('Orderer1MSP.admin')"
+
+  - &Orderer2Org
+    Name: Orderer2Org
+    ID: Orderer2MSP
+    MSPDir: /home/asantopadre/fabric-deploy/configtx/orderers/orderer2/msp
+
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('Orderer2MSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('Orderer2MSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('Orderer2MSP.admin')"
+
+  - &Orderer3Org
+    Name: Orderer3Org
+    ID: Orderer3MSP
+    MSPDir: /home/asantopadre/fabric-deploy/configtx/orderers/orderer3/msp
+
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('Orderer3MSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('Orderer3MSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('Orderer3MSP.admin')"
+
+################################################################################
+#   CAPABILITIES
+################################################################################
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+
+  Orderer: &OrdererCapabilities
+    V2_0: true
+
+  Application: &ApplicationCapabilities
+    V2_0: true
+
+################################################################################
+#   ORDERER DEFAULTS
+################################################################################
+
+Orderer: &OrdererDefaults
+  OrdererType: etcdraft
+
+  Addresses:
+    - orderer1.orgdcms.svc.cluster.local:7050
+    - orderer2.orgdcms.svc.cluster.local:7050
+    - orderer3.orgx.svc.cluster.local:7050
+
+  Organizations:
+    - *Orderer1Org
+    - *Orderer2Org
+    - *Orderer3Org
+
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+  Capabilities:
+    <<: *OrdererCapabilities
+
+################################################################################
+#   APPLICATION DEFAULTS
+################################################################################
+
+Application: &ApplicationDefaults
+
+  Organizations:
+
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+################################################################################
+#   PROFILES
+################################################################################
+
+Profiles:
+
+  Canale1:
+    Consortium: SampleConsortium
+
+    Capabilities:
+      <<: *ChannelCapabilities
+
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
+
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *OrgDCMS
+        - *OrgX
+
+    Orderer:
+      <<: *OrdererDefaults

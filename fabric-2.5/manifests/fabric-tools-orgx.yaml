@@ -11,48 +11,64 @@
 #	il peer non utilizza Docker,
 #	il packaging non attiva go list,
 #	il lifecycle avviene in un contesto controllato,
+#riscritto con CA TLS di FABRIC-TLS-CA
 apiVersion: v1
 kind: Pod
 metadata:
-  name: fabric-tools
+  name: fabric-tools-orgx
   namespace: orgx
+
 spec:
   containers:
   - name: tools
     image: hyperledger/fabric-tools:2.5
     command: ["sleep","infinity"]
+
     env:
+
     - name: FABRIC_CFG_PATH
       value: /etc/hyperledger/fabric
+
     - name: CORE_PEER_LOCALMSPID
       value: OrgXMSP
+
     - name: CORE_PEER_MSPCONFIGPATH
       value: /msp/admin
+
     - name: CORE_PEER_ADDRESS
       value: peer2.orgx.svc.cluster.local:7051
+
     - name: CORE_PEER_TLS_ENABLED
       value: "true"
+
     - name: CORE_PEER_TLS_ROOTCERT_FILE
-      value: /etc/hyperledger/fabric/tlscacerts/peer2-tls-ca.pem
+      value: /etc/hyperledger/fabric/tlscacerts/tls-ca-cert.pem
+
     volumeMounts:
+
     - name: fabric-config
       mountPath: /etc/hyperledger/fabric
+
     - name: orgx-admin-msp
       mountPath: /msp/admin
+
     - name: tls-ca
       mountPath: /etc/hyperledger/fabric/tlscacerts
       readOnly: true
 
   volumes:
+
   - name: fabric-config
     hostPath:
       path: /home/asantopadre/fabric-samples/config
       type: Directory
+
   - name: orgx-admin-msp
     hostPath:
       path: /home/asantopadre/fabric-deploy/orgx/admin/msp
       type: Directory
+
   - name: tls-ca
     hostPath:
-      path: /home/asantopadre/fabric-deploy/tls-ca
+      path: /home/asantopadre/fabric-2.5/artifacts
       type: Directory

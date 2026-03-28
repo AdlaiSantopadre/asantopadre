@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bundle-peer1
+  namespace: orgdcms
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: bundle
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            cat  /tls/trusted/peer2-tls-ca.crt > /tls/ca-bundle.crt
+            ls -l /tls
+        volumeMounts:
+        - name: tls
+          mountPath: /tls
+      volumes:
+      - name: tls
+        persistentVolumeClaim:
+          claimName: peer1-orgdcms-tls-pvc
